@@ -33,7 +33,7 @@ public class KundbehovsflodeAdapter
 
    public KundbehovsflodeResponse getKundbehovsflodeInfo(KundbehovsflodeRequest kundbehovsflodeRequest)
    {
-      var apiResponse = kundbehovsClient.getKundbehovsflode(kundbehovsflodeRequest.kundbehovsflodeId().toString());
+      var apiResponse = kundbehovsClient.getKundbehovsflode(kundbehovsflodeRequest.kundbehovsflodeId());
       return mapper.toKundbehovsflodeResponse(apiResponse);
    }
 
