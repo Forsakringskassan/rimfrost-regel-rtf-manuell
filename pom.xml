@@ -61,7 +61,7 @@
     <dependency>
       <groupId>se.fk.rimfrost</groupId>
       <artifactId>rimfrost-service-kundbehovsflode-openapi-jaxrs-spec</artifactId>
-      <version>0.1.0</version>
+      <version>1.0.1</version>
     </dependency>
   </dependencies>
 
