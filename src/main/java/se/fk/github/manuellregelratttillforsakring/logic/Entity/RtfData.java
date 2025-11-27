@@ -1,5 +1,6 @@
-package se.fk.github.manuellregelratttillforsakring.logic.Entity;
+package se.fk.github.manuellregelratttillforsakring.logic.entity;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.immutables.value.Value;
@@ -10,6 +11,10 @@ public interface RtfData
 
    UUID kundebehovsflodeId();
 
-   boolean rattTillForsakring();
+   UUID cloudeventId();
+
+   UUID uppgiftId();
+
+   List<ErsattningData> ersattningar();
 
 }

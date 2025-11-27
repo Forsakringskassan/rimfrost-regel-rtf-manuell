@@ -23,8 +23,6 @@ public interface CreateRtfDataRequest
 
    String kogitoprocist();
 
-   String kogitoproctype();
-
    String kogitoprocversion();
 
 }

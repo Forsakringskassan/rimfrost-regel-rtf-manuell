@@ -39,7 +39,8 @@ public class RtfManuellConsumer
    public void onOulResponse(OperativtUppgiftslagerResponseMessage oulResponse)
    {
       LOGGER.info("RtfManuellRequestMessagePayload received with ID: " + oulResponse.getKundbehovsflodeId());
-      //TODO implement....
+      var request = mapper.toUpdateRtfDataRequest(oulResponse);
+      rtfService.updateRtfData(request);
    }
 
 }

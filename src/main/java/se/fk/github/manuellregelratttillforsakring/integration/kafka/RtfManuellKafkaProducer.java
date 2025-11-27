@@ -28,7 +28,7 @@ public class RtfManuellKafkaProducer
    Emitter<OperativtUppgiftslagerRequestMessage> oulEmitter;
 
    @Inject
-   @Channel("vah-rtf-manuell-responses")
+   @Channel("rtf-manuell-responses")
    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1024)
    Emitter<RtfManuellResponseMessagePayload> rtfManuellResponseEmitter;
 

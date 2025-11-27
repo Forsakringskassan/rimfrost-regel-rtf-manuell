@@ -10,27 +10,39 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 
 @ApplicationScoped
 public class RtfMapper
 {
 
    public GetRtfDataResponse toRtfResponse(KundbehovsflodeResponse kundbehovflodesResponse,
-         FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse)
+         FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RtfData rtfData)
    {
       var ersattningsList = new ArrayList<Ersattning>();
 
       for (var kundbehovErsattning : kundbehovflodesResponse.ersattning())
       {
-         ersattningsList.add(ImmutableErsattning.builder()
+         var rtfErsattning = rtfData.ersattningar().stream().filter(e -> e.id() == kundbehovErsattning.ersattningsId())
+               .findFirst()
+               .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
+
+         var ersattning = ImmutableErsattning.builder()
                .belopp(kundbehovErsattning.belopp())
                .berakningsgrund(kundbehovErsattning.berakningsgrund())
                .ersattningsId(kundbehovErsattning.ersattningsId())
                .ersattningsTyp(kundbehovErsattning.ersattningsTyp())
                .from(kundbehovErsattning.from())
                .tom(kundbehovErsattning.tom())
-               .omfattningsProcent(kundbehovErsattning.omfattningsProcent())
-               .build());
+               .avslagsanledning(rtfErsattning.avslagsanledning())
+               .omfattningsProcent(kundbehovErsattning.omfattningsProcent());
+
+         if (rtfErsattning.beslutsutfall() != null)
+         {
+            ersattning.beslutsutfall(rtfErsattning.beslutsutfall());
+         }
+
+         ersattningsList.add(ersattning.build());
       }
 
       return ImmutableGetRtfDataResponse.builder()
