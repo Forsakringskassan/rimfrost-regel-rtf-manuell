@@ -55,10 +55,13 @@ public interface GetRtfDataResponse
       int berakningsgrund();
 
       @Nullable
-      String beslutsutfall();
+      Beslutsutfall beslutsutfall();
 
       LocalDate from();
 
       LocalDate tom();
+
+      @Nullable
+      String avslagsanledning();
    }
 }

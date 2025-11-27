@@ -1,4 +1,4 @@
-package se.fk.github.manuellregelratttillforsakring.logic.Entity;
+package se.fk.github.manuellregelratttillforsakring.logic.entity;
 
 import java.util.UUID;
 

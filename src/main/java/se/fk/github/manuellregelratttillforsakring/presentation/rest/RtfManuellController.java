@@ -33,9 +33,9 @@ public class RtfManuellController implements RtfManuellControllerApi
    }
 
    @Override
-   public void updateData(UUID kundbehovsflodeId, @Valid @NotNull PatchDataRequest arg1)
+   public void updateData(UUID kundbehovsflodeId, @Valid @NotNull PatchDataRequest patchRequest)
    {
-      throw new UnsupportedOperationException("Unimplemented method 'updateData'");
+      var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, patchRequest);
+      rtfService.updateErsattningData(request);
    }
-
 }
