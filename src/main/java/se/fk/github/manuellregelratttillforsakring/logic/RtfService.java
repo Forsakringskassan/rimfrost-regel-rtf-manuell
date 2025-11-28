@@ -157,7 +157,7 @@ public class RtfService
 
       updateKundbehovsflodeInfo(updatedRtfData);
 
-      if (updateRequest.signerna())
+      if (updateRequest.signernad())
       {
          var rattTillForsakring = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA);
          var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
@@ -182,19 +182,5 @@ public class RtfService
       //TODO create correct request here
       var request = ImmutableUpdateKundbehovsflodeRequest.builder().kundbehovsflodeId(rtfData.kundebehovsflodeId()).build();
       kundbehovsflodeAdapter.updateKundbehovsflodeInfo(request);
-   }
-
-   private Status mapStatus(UppgiftStatus uppgiftStatus)
-   {
-      switch (uppgiftStatus)
-      {
-         case NY:
-            return Status.NY;
-         case TILLDELAD:
-            return Status.TILLDELAD;
-         case AVSLUTAD:
-         default:
-            return Status.AVSLUTAD;
-      }
    }
 }

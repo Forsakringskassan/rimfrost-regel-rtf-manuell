@@ -13,7 +13,6 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfData
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 
 @ApplicationScoped

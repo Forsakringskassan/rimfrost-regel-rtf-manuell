@@ -71,7 +71,7 @@ public class RtfManuellRestMapper
             .beslutsutfall(mapBeslutsutfall(patchRequest.getBeslutsutfall()))
             .ersattningId(patchRequest.getErsattningId())
             .avslagsanledning(patchRequest.getAvslagsanledning())
-            .signerna(patchRequest.getSignera())
+            .signernad(patchRequest.getSignera())
             .build();
    }
 
