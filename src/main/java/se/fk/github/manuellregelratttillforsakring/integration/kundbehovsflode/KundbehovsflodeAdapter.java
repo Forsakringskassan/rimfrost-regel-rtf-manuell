@@ -9,6 +9,7 @@ import se.fk.github.jaxrsclientfactory.JaxrsClientFactory;
 import se.fk.github.jaxrsclientfactory.JaxrsClientOptionsBuilders;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.KundbehovsflodeControllerApi;
 
 @ApplicationScoped
@@ -37,4 +38,9 @@ public class KundbehovsflodeAdapter
       return mapper.toKundbehovsflodeResponse(apiResponse);
    }
 
+   public void updateKundbehovsflodeInfo(UpdateKundbehovsflodeRequest request)
+   {
+      var apiRequest = mapper.toApiRequest(request);
+      kundbehovsClient.putKundbehovsflode(request.kundbehovsflodeId(), apiRequest);
+   }
 }

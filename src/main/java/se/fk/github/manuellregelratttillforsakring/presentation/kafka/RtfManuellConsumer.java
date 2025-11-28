@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import se.fk.github.logging.callerinfo.model.MDCKeys;
 import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.rimfrost.OperativtUppgiftslagerResponseMessage;
+import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
 import se.fk.rimfrost.regel.rtf.manuell.RtfManuellRequestMessagePayload;
 
 import org.slf4j.Logger;
@@ -29,7 +30,8 @@ public class RtfManuellConsumer
    public void onRtfManuellRequest(RtfManuellRequestMessagePayload rtfRequest)
    {
       MDC.put(MDCKeys.PROCESSID.name(), rtfRequest.getData().getKundbehovsflodeId());
-      LOGGER.info("RtfManuellRequestMessagePayload received with ID: " + rtfRequest.getData().getKundbehovsflodeId());
+      LOGGER.info(
+            "RtfManuellRequestMessagePayload received with KundbehovsflodeId: " + rtfRequest.getData().getKundbehovsflodeId());
 
       var request = mapper.toCreateRtfDataRequest(rtfRequest);
       rtfService.createRtfData(request);
@@ -38,9 +40,17 @@ public class RtfManuellConsumer
    @Incoming("operativt-uppgiftslager-responses")
    public void onOulResponse(OperativtUppgiftslagerResponseMessage oulResponse)
    {
-      LOGGER.info("RtfManuellRequestMessagePayload received with ID: " + oulResponse.getKundbehovsflodeId());
+      LOGGER.info("OperativtUppgiftslagerResponseMessage received with KundbehovsflodeId: " + oulResponse.getKundbehovsflodeId());
       var request = mapper.toUpdateRtfDataRequest(oulResponse);
       rtfService.updateRtfData(request);
+   }
+
+   @Incoming("operativt-uppgiftslager-status-notification")
+   public void onOulStatusMessage(OperativtUppgiftslagerStatusMessage statusMessage)
+   {
+      LOGGER.info("OperativtUppgiftslagerStatusMessage received with UppgiftId: " + statusMessage.getUppgiftId());
+      var request = mapper.toUpdateStatusRequest(statusMessage);
+      rtfService.updateStatus(request);
    }
 
 }

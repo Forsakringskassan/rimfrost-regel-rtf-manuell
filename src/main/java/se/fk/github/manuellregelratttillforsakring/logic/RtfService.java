@@ -14,17 +14,22 @@ import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.I
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.RtfManuellKafkaProducer;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableCloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
+import se.fk.rimfrost.Status;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.CreateRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateRtfDataRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.UppgiftStatus;
 
 @ApplicationScoped
 public class RtfService
@@ -66,6 +71,8 @@ public class RtfService
       var arbetsgivareResponse = arbetsgivareAdapter.getArbetsgivareInfo(arbetsgivareRequest);
 
       var rtfData = rtfDatas.get(request.kundbehovsflodeId());
+
+      updateKundbehovsflodeInfo(rtfData);
 
       return mapper.toRtfResponse(kundbehovflodesResponse, folkbokfordResponse, arbetsgivareResponse, rtfData);
    }
@@ -113,11 +120,13 @@ public class RtfService
    public void updateRtfData(UpdateRtfDataRequest updateRequest)
    {
       var rtfData = rtfDatas.get(updateRequest.kundbehovsflodeId());
-      var newRtfData = ImmutableRtfData.builder()
+      var updatedRtfData = ImmutableRtfData.builder()
             .from(rtfData)
             .uppgiftId(updateRequest.uppgiftId())
             .build();
-      rtfDatas.put(newRtfData.kundebehovsflodeId(), newRtfData);
+      rtfDatas.put(updatedRtfData.kundebehovsflodeId(), updatedRtfData);
+      updateKundbehovsflodeInfo(updatedRtfData);
+
    }
 
    public void updateErsattningData(UpdateErsattningDataRequest updateRequest)
@@ -145,6 +154,33 @@ public class RtfService
             .build();
 
       rtfDatas.put(updateRequest.kundbehovsflodeId(), updatedRtfData);
+
+      updateKundbehovsflodeInfo(updatedRtfData);
+
+      if (updateRequest.signernad())
+      {
+         var rattTillForsakring = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA);
+         var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
+         var rtfResponse = mapper.toRtfResponseRequest(updatedRtfData, cloudevent, rattTillForsakring);
+         kafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
+         kafkaProducer.sendRtfManuellResponse(rtfResponse);
+      }
    }
 
+   public void updateStatus(UpdateStatusRequest request)
+   {
+      RtfData rtfData = rtfDatas.values()
+            .stream()
+            .filter(r -> r.uppgiftId().equals(request.uppgiftId()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("RtfData not found"));
+      updateKundbehovsflodeInfo(rtfData);
+   }
+
+   private void updateKundbehovsflodeInfo(RtfData rtfData)
+   {
+      //TODO create correct request here
+      var request = ImmutableUpdateKundbehovsflodeRequest.builder().kundbehovsflodeId(rtfData.kundebehovsflodeId()).build();
+      kundbehovsflodeAdapter.updateKundbehovsflodeInfo(request);
+   }
 }
