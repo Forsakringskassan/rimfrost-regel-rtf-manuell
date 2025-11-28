@@ -5,11 +5,15 @@ import java.util.ArrayList;
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
+import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableRtfManuellResponseRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 
 @ApplicationScoped
@@ -62,4 +66,18 @@ public class RtfMapper
             .build();
    }
 
+   public RtfManuellResponseRequest toRtfResponseRequest(RtfData rtfData, CloudEventData cloudevent, boolean rattTillForsakring)
+   {
+      return ImmutableRtfManuellResponseRequest.builder()
+            .id(cloudevent.id())
+            .kundbehovsflodeId(rtfData.kundebehovsflodeId())
+            .kogitoparentprociid(cloudevent.kogitoparentprociid())
+            .kogitorootprociid(cloudevent.kogitorootprociid())
+            .kogitoprocid(cloudevent.kogitoprocid())
+            .kogitorootprocid(cloudevent.kogitorootprocid())
+            .kogitoprocinstanceid(cloudevent.kogitoprocinstanceid())
+            .kogitoprocist(cloudevent.kogitoprocist())
+            .rattTillForsakring(rattTillForsakring)
+            .build();
+   }
 }

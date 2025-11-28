@@ -14,7 +14,9 @@ import org.eclipse.microprofile.reactive.messaging.OnOverflow;
 
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
 import se.fk.rimfrost.OperativtUppgiftslagerRequestMessage;
+import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
 import se.fk.rimfrost.regel.rtf.manuell.RtfManuellResponseMessagePayload;
+import se.fk.rimfrost.Status;
 
 @ApplicationScoped
 public class RtfManuellKafkaProducer
@@ -25,7 +27,12 @@ public class RtfManuellKafkaProducer
    @Inject
    @Channel("operativt-uppgiftslager-requests")
    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1024)
-   Emitter<OperativtUppgiftslagerRequestMessage> oulEmitter;
+   Emitter<OperativtUppgiftslagerRequestMessage> oulRequestEmitter;
+
+   @Inject
+   @Channel("operativt-uppgiftslager-status-control")
+   @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1024)
+   Emitter<OperativtUppgiftslagerStatusMessage> oulStatusEmitter;
 
    @Inject
    @Channel("rtf-manuell-responses")
@@ -39,7 +46,15 @@ public class RtfManuellKafkaProducer
       var request = new OperativtUppgiftslagerRequestMessage();
       request.setRegeltyp("rtf-manuell");
       request.setKundbehovsflodeId(kundbehovsflodeId.toString());
-      oulEmitter.send(request);
+      oulRequestEmitter.send(request);
+   }
+
+   public void sendOulStatusUpdate(UUID uppgiftId, Status status)
+   {
+      var message = new OperativtUppgiftslagerStatusMessage();
+      message.setUppgiftId(uppgiftId.toString());
+      message.setStatus(status);
+      oulStatusEmitter.send(message);
    }
 
    public void sendRtfManuellResponse(RtfManuellResponseRequest rtfResponseRequest)

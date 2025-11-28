@@ -7,7 +7,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.GetKundbehovsflodeResponse;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Kundbehovsflode;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.PutKundbehovsflodeRequest;
 
 @ApplicationScoped
 public class KundbehovsflodeMapper
@@ -52,6 +55,16 @@ public class KundbehovsflodeMapper
             .kundbehovsflodeId(apiResponse.getKundbehovsflode().getId())
             .addErsattning(ersattning1, ersattning2, ersattning3)
             .build();
+   }
+
+   public PutKundbehovsflodeRequest toApiRequest(UpdateKundbehovsflodeRequest request)
+   {
+      //TODO implement   
+      var putRequest = new PutKundbehovsflodeRequest();
+      var kundbehovflode = new Kundbehovsflode();
+      kundbehovflode.setId(request.kundbehovsflodeId());
+      putRequest.setKundbehovsflode(kundbehovflode);
+      return putRequest;
    }
 
 }
