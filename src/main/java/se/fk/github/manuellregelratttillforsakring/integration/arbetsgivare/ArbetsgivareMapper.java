@@ -1,7 +1,5 @@
 package se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare;
 
-import java.time.LocalDate;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ImmutableArbetsgivareResponse;
@@ -13,14 +11,15 @@ public class ArbetsgivareMapper
 
    public ArbetsgivareResponse toArbetsgivareResponse(GetArbetsgivare200Response apiResponse)
    {
-      //TOOD hämta all info från responset
+      var anstallning = apiResponse.getAnstallningar().getFirst();
+
       return ImmutableArbetsgivareResponse.builder()
-            .organisationsnamn("CoolJobb AB")
-            .organisationsnummer("1234-567890")
-            .anstallningsdag(LocalDate.now().minusYears(2))
-            .arbetstidProcent(100)
-            .lonFrom(LocalDate.now().minusYears(1))
-            .loneSumma(40000)
+            .organisationsnamn(anstallning.getOrganisation().getNamn())
+            .organisationsnummer(anstallning.getOrganisation().getNummer())
+            .anstallningsdag(anstallning.getStartdag())
+            .arbetstidProcent(anstallning.getArbetstid())
+            .lonFrom(anstallning.getStartdag()) //TODO Lon should be in apiResponse
+            .loneSumma(40000) //TODO Lon should be in apiResponse
             .build();
    }
 }

@@ -7,9 +7,14 @@ import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableRtfManuellResponseRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeErsattning;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
@@ -78,5 +83,39 @@ public class RtfMapper
             .kogitoprocist(cloudevent.kogitoprocist())
             .rattTillForsakring(rattTillForsakring)
             .build();
+   }
+
+   public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData)
+   {
+
+      var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
+            .kundbehovsflodeId(rtfData.kundebehovsflodeId());
+
+      for (var rtfErsattning : rtfData.ersattningar())
+      {
+         var ersattning = ImmutableUpdateKundbehovsflodeErsattning.builder()
+               .beslutsutfall(mapBeslutsutfall(rtfErsattning.beslutsutfall()))
+               .id(rtfErsattning.id())
+               .avslagsanledning(rtfErsattning.avslagsanledning())
+               .build();
+         requestBuilder.addErsattningar(ersattning);
+      }
+
+      return requestBuilder.build();
+   }
+
+   private se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall mapBeslutsutfall(
+         Beslutsutfall beslutsutfall)
+   {
+      switch (beslutsutfall)
+      {
+         case JA:
+            return se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.JA;
+         case NEJ:
+            return se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.NEJ;
+         case FU:
+         default:
+            return se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.FU;
+      }
    }
 }
