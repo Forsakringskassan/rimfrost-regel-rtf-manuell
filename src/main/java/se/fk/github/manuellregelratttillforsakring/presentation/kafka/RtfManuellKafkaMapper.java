@@ -28,6 +28,7 @@ public class RtfManuellKafkaMapper
             .kogitoprocid(rtfRequest.getKogitoprocid())
             .kogitoprocinstanceid(UUID.fromString(rtfRequest.getKogitoprocinstanceid()))
             .kogitoprocist(rtfRequest.getKogitoprocist())
+            .kogitoprocversion(rtfRequest.getKogitoprocversion())
             .kundbehovsflodeId(UUID.fromString(rtfRequest.getData().getKundbehovsflodeId()))
             .build();
    }
