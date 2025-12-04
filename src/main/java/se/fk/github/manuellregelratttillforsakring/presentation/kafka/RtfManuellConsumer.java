@@ -26,7 +26,7 @@ public class RtfManuellConsumer
    @Inject
    RtfManuellKafkaMapper mapper;
 
-   @Incoming("vah-rtf-manuell-requests")
+   @Incoming("rtf-manuell-requests")
    public void onRtfManuellRequest(RtfManuellRequestMessagePayload rtfRequest)
    {
       MDC.put(MDCKeys.PROCESSID.name(), rtfRequest.getData().getKundbehovsflodeId());
