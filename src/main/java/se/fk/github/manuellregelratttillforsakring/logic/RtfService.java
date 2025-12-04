@@ -14,7 +14,6 @@ import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.I
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.RtfManuellKafkaProducer;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
-import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableCloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
@@ -29,7 +28,6 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.UppgiftStatus;
 
 @ApplicationScoped
 public class RtfService
@@ -126,7 +124,6 @@ public class RtfService
             .build();
       rtfDatas.put(updatedRtfData.kundebehovsflodeId(), updatedRtfData);
       updateKundbehovsflodeInfo(updatedRtfData);
-
    }
 
    public void updateErsattningData(UpdateErsattningDataRequest updateRequest)
@@ -179,8 +176,7 @@ public class RtfService
 
    private void updateKundbehovsflodeInfo(RtfData rtfData)
    {
-      //TODO create correct request here
-      var request = ImmutableUpdateKundbehovsflodeRequest.builder().kundbehovsflodeId(rtfData.kundebehovsflodeId()).build();
+      var request = mapper.toUpdateKundbehovsflodeRequest(rtfData);
       kundbehovsflodeAdapter.updateKundbehovsflodeInfo(request);
    }
 }

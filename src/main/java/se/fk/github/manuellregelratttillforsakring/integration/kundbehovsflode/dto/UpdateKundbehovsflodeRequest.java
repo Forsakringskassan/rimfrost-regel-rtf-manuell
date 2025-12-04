@@ -1,5 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.immutables.value.Value;
@@ -8,4 +9,9 @@ import org.immutables.value.Value;
 public interface UpdateKundbehovsflodeRequest
 {
    UUID kundbehovsflodeId();
+
+   UUID uppgiftId();
+
+   List<UpdateKundbehovsflodeErsattning> ersattningar();
+
 }
