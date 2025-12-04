@@ -2,6 +2,12 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.1.1 (2025-12-04)
+
+### Bug Fixes
+
+-  configure kafka messages and deserialzers (#12) ([b28ab](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/b28ab21b9cdaf64) NilsElveros)  
+
 ## 0.1.0 (2025-11-28)
 
 ### Features
