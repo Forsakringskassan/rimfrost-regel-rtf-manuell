@@ -104,13 +104,13 @@ public class RtfService
       }
 
       var rtfData = ImmutableRtfData.builder()
-            .kundebehovsflodeId(request.kundbehovsflodeId())
+            .kundbehovsflodeId(request.kundbehovsflodeId())
             .cloudeventId(cloudeventData.id())
             .ersattningar(ersattninglist)
             .build();
 
       cloudevents.put(cloudeventData.id(), cloudeventData);
-      rtfDatas.put(rtfData.kundebehovsflodeId(), rtfData);
+      rtfDatas.put(rtfData.kundbehovsflodeId(), rtfData);
 
       kafkaProducer.sendOulRequest(request.kundbehovsflodeId());
    }
@@ -122,7 +122,7 @@ public class RtfService
             .from(rtfData)
             .uppgiftId(updateRequest.uppgiftId())
             .build();
-      rtfDatas.put(updatedRtfData.kundebehovsflodeId(), updatedRtfData);
+      rtfDatas.put(updatedRtfData.kundbehovsflodeId(), updatedRtfData);
       updateKundbehovsflodeInfo(updatedRtfData);
    }
 
