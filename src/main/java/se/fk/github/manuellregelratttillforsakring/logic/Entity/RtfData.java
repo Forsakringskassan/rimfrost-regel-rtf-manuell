@@ -11,7 +11,7 @@ import jakarta.annotation.Nullable;
 public interface RtfData
 {
 
-   UUID kundebehovsflodeId();
+   UUID kundbehovsflodeId();
 
    UUID cloudeventId();
 

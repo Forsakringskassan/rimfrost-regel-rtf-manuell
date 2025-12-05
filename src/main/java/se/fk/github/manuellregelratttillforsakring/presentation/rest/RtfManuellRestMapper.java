@@ -6,14 +6,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableUpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Anstallning;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Kund;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Lon;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.PatchDataRequest;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Kund.KonEnum;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Ersattning;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Lon;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchDataRequest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund.KonEnum;
 
 @ApplicationScoped
 public class RtfManuellRestMapper

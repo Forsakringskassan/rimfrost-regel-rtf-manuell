@@ -40,7 +40,9 @@ public class KundbehovsflodeAdapter
 
    public void updateKundbehovsflodeInfo(UpdateKundbehovsflodeRequest request)
    {
-      var apiRequest = mapper.toApiRequest(request);
+      var apiResponse = kundbehovsClient.getKundbehovsflode(request.kundbehovsflodeId());
+
+      var apiRequest = mapper.toApiRequest(request, apiResponse);
       kundbehovsClient.putKundbehovsflode(request.kundbehovsflodeId(), apiRequest);
    }
 }

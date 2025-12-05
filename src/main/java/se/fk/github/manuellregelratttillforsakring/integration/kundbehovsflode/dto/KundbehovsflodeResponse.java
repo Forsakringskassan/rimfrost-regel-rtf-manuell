@@ -35,9 +35,9 @@ public interface KundbehovsflodeResponse
       @Nullable
       String beslutsutfall();
 
-      LocalDate from();
+      LocalDate franOchMed();
 
-      LocalDate tom();
+      LocalDate tillOchMed();
    }
 
 }

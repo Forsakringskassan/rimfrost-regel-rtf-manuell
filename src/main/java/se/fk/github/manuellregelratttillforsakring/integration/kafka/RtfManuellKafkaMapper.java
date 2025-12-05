@@ -30,7 +30,7 @@ public class RtfManuellKafkaMapper
       response.setKogitoprocversion(request.kogitoprocversion());
       response.setSpecversion(SpecVersion.NUMBER_1_DOT_0);
       response.setSource("/regel/rtf-manuell");
-      response.setType("vah-rtf-manuell-responses");
+      response.setType("rtf-manuell-responses");
       response.setKogitoproctype(KogitoProcType.BPMN);
       response.setData(data);
 

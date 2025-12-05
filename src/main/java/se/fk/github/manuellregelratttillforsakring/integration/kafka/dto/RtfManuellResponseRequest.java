@@ -24,11 +24,7 @@ public interface RtfManuellResponseRequest
 
    String kogitoprocist();
 
-   String kogitoproctype();
-
    String kogitoprocversion();
-
-   String kogitoprocrefid();
 
    boolean rattTillForsakring();
 

@@ -10,7 +10,6 @@ import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManu
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
-import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeErsattning;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
@@ -19,6 +18,7 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
 
 @ApplicationScoped
 public class RtfMapper
@@ -31,7 +31,7 @@ public class RtfMapper
 
       for (var kundbehovErsattning : kundbehovflodesResponse.ersattning())
       {
-         var rtfErsattning = rtfData.ersattningar().stream().filter(e -> e.id() == kundbehovErsattning.ersattningsId())
+         var rtfErsattning = rtfData.ersattningar().stream().filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
                .findFirst()
                .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
 
@@ -40,8 +40,8 @@ public class RtfMapper
                .berakningsgrund(kundbehovErsattning.berakningsgrund())
                .ersattningsId(kundbehovErsattning.ersattningsId())
                .ersattningsTyp(kundbehovErsattning.ersattningsTyp())
-               .from(kundbehovErsattning.from())
-               .tom(kundbehovErsattning.tom())
+               .from(kundbehovErsattning.franOchMed())
+               .tom(kundbehovErsattning.tillOchMed())
                .avslagsanledning(rtfErsattning.avslagsanledning())
                .omfattningsProcent(kundbehovErsattning.omfattningsProcent());
 
@@ -74,13 +74,14 @@ public class RtfMapper
    {
       return ImmutableRtfManuellResponseRequest.builder()
             .id(cloudevent.id())
-            .kundbehovsflodeId(rtfData.kundebehovsflodeId())
+            .kundbehovsflodeId(rtfData.kundbehovsflodeId())
             .kogitoparentprociid(cloudevent.kogitoparentprociid())
             .kogitorootprociid(cloudevent.kogitorootprociid())
             .kogitoprocid(cloudevent.kogitoprocid())
             .kogitorootprocid(cloudevent.kogitorootprocid())
             .kogitoprocinstanceid(cloudevent.kogitoprocinstanceid())
             .kogitoprocist(cloudevent.kogitoprocist())
+            .kogitoprocversion(cloudevent.kogitoprocversion())
             .rattTillForsakring(rattTillForsakring)
             .build();
    }
@@ -89,7 +90,7 @@ public class RtfMapper
    {
 
       var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
-            .kundbehovsflodeId(rtfData.kundebehovsflodeId());
+            .kundbehovsflodeId(rtfData.kundbehovsflodeId());
 
       for (var rtfErsattning : rtfData.ersattningar())
       {
@@ -104,18 +105,23 @@ public class RtfMapper
       return requestBuilder.build();
    }
 
-   private se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall mapBeslutsutfall(
+   private BeslutsutfallEnum mapBeslutsutfall(
          Beslutsutfall beslutsutfall)
    {
+      if (beslutsutfall == null)
+      {
+         return BeslutsutfallEnum.FU;
+      }
+
       switch (beslutsutfall)
       {
          case JA:
-            return se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.JA;
+            return BeslutsutfallEnum.JA;
          case NEJ:
-            return se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.NEJ;
+            return BeslutsutfallEnum.NEJ;
          case FU:
          default:
-            return se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.FU;
+            return BeslutsutfallEnum.FU;
       }
    }
 }
