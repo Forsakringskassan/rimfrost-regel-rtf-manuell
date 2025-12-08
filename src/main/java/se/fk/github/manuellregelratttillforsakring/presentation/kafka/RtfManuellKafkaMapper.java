@@ -45,6 +45,7 @@ public class RtfManuellKafkaMapper
    {
 
       return ImmutableUpdateStatusRequest.builder()
+            .kundbehovsflodeId(UUID.fromString(statusMessage.getKundbehovsflodeId()))
             .uppgiftId(UUID.fromString(statusMessage.getUppgiftId()))
             .uppgiftStatus(mapStatus(statusMessage.getStatus()))
             .build();

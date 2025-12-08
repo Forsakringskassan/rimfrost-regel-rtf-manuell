@@ -170,7 +170,7 @@ public class RtfService
             .stream()
             .filter(r -> r.uppgiftId().equals(request.uppgiftId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("RtfData not found"));
+            .orElse(rtfDatas.get(request.kundbehovsflodeId()));
       updateKundbehovsflodeInfo(rtfData);
    }
 

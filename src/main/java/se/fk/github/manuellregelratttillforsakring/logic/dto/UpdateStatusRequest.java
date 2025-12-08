@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface UpdateStatusRequest
 {
+   UUID kundbehovsflodeId();
 
    UUID uppgiftId();
 
