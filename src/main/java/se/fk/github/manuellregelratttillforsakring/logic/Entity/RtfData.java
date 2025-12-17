@@ -20,4 +20,6 @@ public interface RtfData
 
    List<ErsattningData> ersattningar();
 
+   List<Underlag> underlag();
+
 }

@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
+import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ImmutableArbetsgivareRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.FolkbokfordAdapter;
+import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.ImmutableFolkbokfordRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.RtfManuellKafkaProducer;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
@@ -18,6 +23,7 @@ import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableCloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableUnderlag;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.Status;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
@@ -32,6 +38,9 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest
 @ApplicationScoped
 public class RtfService
 {
+
+   @Inject
+   ObjectMapper objectMapper;
 
    @Inject
    RtfManuellKafkaProducer kafkaProducer;
@@ -51,7 +60,7 @@ public class RtfService
    Map<UUID, CloudEventData> cloudevents = new HashMap<UUID, CloudEventData>();
    Map<UUID, RtfData> rtfDatas = new HashMap<UUID, RtfData>();
 
-   public GetRtfDataResponse getData(GetRtfDataRequest request)
+   public GetRtfDataResponse getData(GetRtfDataRequest request) throws JsonProcessingException
    {
       var kundbehovsflodeRequest = ImmutableKundbehovsflodeRequest.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
@@ -69,6 +78,8 @@ public class RtfService
       var arbetsgivareResponse = arbetsgivareAdapter.getArbetsgivareInfo(arbetsgivareRequest);
 
       var rtfData = rtfDatas.get(request.kundbehovsflodeId());
+
+      updateRtfDataUnderlag(rtfData, folkbokfordResponse, arbetsgivareResponse);
 
       updateKundbehovsflodeInfo(rtfData);
 
@@ -105,8 +116,10 @@ public class RtfService
 
       var rtfData = ImmutableRtfData.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
+            .uppgiftId(UUID.randomUUID())
             .cloudeventId(cloudeventData.id())
             .ersattningar(ersattninglist)
+            .underlag(new ArrayList<>())
             .build();
 
       cloudevents.put(cloudeventData.id(), cloudeventData);
@@ -172,6 +185,29 @@ public class RtfService
             .findFirst()
             .orElse(rtfDatas.get(request.kundbehovsflodeId()));
       updateKundbehovsflodeInfo(rtfData);
+   }
+
+   private void updateRtfDataUnderlag(RtfData rtfData, FolkbokfordResponse folkbokfordResponse,
+         ArbetsgivareResponse arbetsgivareResponse) throws JsonProcessingException
+   {
+      var folkbokfordUnderlag = ImmutableUnderlag.builder()
+            .typ("FolkbokfördUnderlag")
+            .version("1.0")
+            .data(objectMapper.writeValueAsString(folkbokfordResponse))
+            .build();
+
+      var arbetsgivareUnderlag = ImmutableUnderlag.builder()
+            .typ("ArbetsgivareUnderlag")
+            .version("1.0")
+            .data(objectMapper.writeValueAsString(arbetsgivareResponse))
+            .build();
+
+      var updatedRtfData = ImmutableRtfData.builder()
+            .from(rtfData)
+            .addUnderlag(folkbokfordUnderlag, arbetsgivareUnderlag)
+            .build();
+
+      rtfDatas.put(rtfData.kundbehovsflodeId(), updatedRtfData);
    }
 
    private void updateKundbehovsflodeInfo(RtfData rtfData)
