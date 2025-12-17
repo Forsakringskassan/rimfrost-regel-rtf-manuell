@@ -9,8 +9,10 @@ import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.Immutab
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeUnderlag;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeUnderlag;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
@@ -90,7 +92,9 @@ public class RtfMapper
    {
 
       var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
-            .kundbehovsflodeId(rtfData.kundbehovsflodeId());
+            .kundbehovsflodeId(rtfData.kundbehovsflodeId())
+            .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>())
+            .uppgiftId(rtfData.uppgiftId());
 
       for (var rtfErsattning : rtfData.ersattningar())
       {
@@ -100,6 +104,16 @@ public class RtfMapper
                .avslagsanledning(rtfErsattning.avslagsanledning())
                .build();
          requestBuilder.addErsattningar(ersattning);
+      }
+
+      for (var rtfUnderlag : rtfData.underlag())
+      {
+         var underlag = ImmutableUpdateKundbehovsflodeUnderlag.builder()
+               .typ(rtfUnderlag.typ())
+               .version(rtfUnderlag.version())
+               .data(rtfUnderlag.data())
+               .build();
+         requestBuilder.addUnderlag(underlag);
       }
 
       return requestBuilder.build();
