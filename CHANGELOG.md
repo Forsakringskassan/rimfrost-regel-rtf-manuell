@@ -2,6 +2,21 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.2.0 (2025-12-17)
+
+### Features
+
+-  Update to use new PUT in kundbehovsflode (#18) ([c3c77](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c3c774c2786d296) NilsElveros)  
+-  call kundbehovs api with a PUT after model is updated (#10) ([da183](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/da183f1ed691b55) NilsElveros)  
+
+### Bug Fixes
+
+-  racecondition when status message received before response (#16) ([b4c8e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/b4c8e9e79ed6e8b) NilsElveros)  
+-  **deps**  update dependency se.fk.rimfrost.api.arbetsgivare:rimfrost-arbetsgivare-api-jaxrs-spec to v1.1.1 (#11) ([97b41](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/97b41f73d2373f4) renovate[bot])  
+-  integration between kundeflode and oul (#15) ([d948f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/d948f48fd81d71f) NilsElveros)  
+-  resolved two null issues (#14) ([bb73e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/bb73edc6f6e3b10) NilsElveros)  
+-  incorrect incoming topic (#13) ([38bd0](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/38bd0dd86aec33b) NilsElveros)  
+
 ## 0.1.1 (2025-12-04)
 
 ### Bug Fixes
