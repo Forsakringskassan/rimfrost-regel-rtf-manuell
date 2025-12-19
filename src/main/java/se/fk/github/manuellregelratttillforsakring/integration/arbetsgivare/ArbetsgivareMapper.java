@@ -11,8 +11,11 @@ public class ArbetsgivareMapper
 
    public ArbetsgivareResponse toArbetsgivareResponse(GetArbetsgivare200Response apiResponse)
    {
+      if (apiResponse == null)
+      {
+         return null;
+      }
       var anstallning = apiResponse.getAnstallningar().getFirst();
-
       return ImmutableArbetsgivareResponse.builder()
             .organisationsnamn(anstallning.getOrganisation().getNamn())
             .organisationsnummer(anstallning.getOrganisation().getNummer())

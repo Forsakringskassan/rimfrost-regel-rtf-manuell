@@ -190,24 +190,29 @@ public class RtfService
    private void updateRtfDataUnderlag(RtfData rtfData, FolkbokfordResponse folkbokfordResponse,
          ArbetsgivareResponse arbetsgivareResponse) throws JsonProcessingException
    {
-      var folkbokfordUnderlag = ImmutableUnderlag.builder()
-            .typ("FolkbokfördUnderlag")
-            .version("1.0")
-            .data(objectMapper.writeValueAsString(folkbokfordResponse))
-            .build();
+      var rtfDataBuilder = ImmutableRtfData.builder().from(rtfData);
 
-      var arbetsgivareUnderlag = ImmutableUnderlag.builder()
-            .typ("ArbetsgivareUnderlag")
-            .version("1.0")
-            .data(objectMapper.writeValueAsString(arbetsgivareResponse))
-            .build();
+      if (folkbokfordResponse != null)
+      {
+         var folkbokfordUnderlag = ImmutableUnderlag.builder()
+               .typ("FolkbokfördUnderlag")
+               .version("1.0")
+               .data(objectMapper.writeValueAsString(folkbokfordResponse))
+               .build();
+         rtfDataBuilder.addUnderlag(folkbokfordUnderlag);
+      }
 
-      var updatedRtfData = ImmutableRtfData.builder()
-            .from(rtfData)
-            .addUnderlag(folkbokfordUnderlag, arbetsgivareUnderlag)
-            .build();
+      if (arbetsgivareResponse != null)
+      {
+         var arbetsgivareUnderlag = ImmutableUnderlag.builder()
+               .typ("ArbetsgivareUnderlag")
+               .version("1.0")
+               .data(objectMapper.writeValueAsString(arbetsgivareResponse))
+               .build();
+         rtfDataBuilder.addUnderlag(arbetsgivareUnderlag);
+      }
 
-      rtfDatas.put(rtfData.kundbehovsflodeId(), updatedRtfData);
+      rtfDatas.put(rtfData.kundbehovsflodeId(), rtfDataBuilder.build());
    }
 
    private void updateKundbehovsflodeInfo(RtfData rtfData)

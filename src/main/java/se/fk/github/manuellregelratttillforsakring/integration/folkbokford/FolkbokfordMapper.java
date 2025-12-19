@@ -12,6 +12,10 @@ public class FolkbokfordMapper
 
    public FolkbokfordResponse toFolkbokfordResponse(FolkbokforingPersnrGet200Response apiResponse)
    {
+      if (apiResponse == null)
+      {
+         return null;
+      }
       return ImmutableFolkbokfordResponse.builder()
             .kon(apiResponse.getKon() == se.fk.rimfrost.api.folkbokforing.jaxrsspec.controllers.generatedsource.model.Kon.K
                   ? Kon.KVINNA
