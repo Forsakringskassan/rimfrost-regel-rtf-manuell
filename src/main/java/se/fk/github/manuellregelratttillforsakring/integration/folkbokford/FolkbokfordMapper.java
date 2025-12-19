@@ -7,19 +7,22 @@ import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.F
 import se.fk.rimfrost.api.folkbokforing.jaxrsspec.controllers.generatedsource.model.FolkbokforingPersnrGet200Response;
 
 @ApplicationScoped
-public class FolkbokfordMapper {
+public class FolkbokfordMapper
+{
 
-    public FolkbokfordResponse toFolkbokfordResponse(FolkbokforingPersnrGet200Response apiResponse) {
-        if (apiResponse == null) {
-            return null;
-        }
-        return ImmutableFolkbokfordResponse.builder()
-                .kon(apiResponse.getKon() == se.fk.rimfrost.api.folkbokforing.jaxrsspec.controllers.generatedsource.model.Kon.K
-                        ? Kon.KVINNA
-                        : Kon.MAN)
-                .fornamn(apiResponse.getFornamn())
-                .efternamn(apiResponse.getEfternamn())
-                .build();
-    }
+   public FolkbokfordResponse toFolkbokfordResponse(FolkbokforingPersnrGet200Response apiResponse)
+   {
+      if (apiResponse == null)
+      {
+         return null;
+      }
+      return ImmutableFolkbokfordResponse.builder()
+            .kon(apiResponse.getKon() == se.fk.rimfrost.api.folkbokforing.jaxrsspec.controllers.generatedsource.model.Kon.K
+                  ? Kon.KVINNA
+                  : Kon.MAN)
+            .fornamn(apiResponse.getFornamn())
+            .efternamn(apiResponse.getEfternamn())
+            .build();
+   }
 
 }

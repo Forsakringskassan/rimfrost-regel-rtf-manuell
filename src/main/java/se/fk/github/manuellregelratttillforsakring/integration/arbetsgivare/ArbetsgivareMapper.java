@@ -6,20 +6,23 @@ import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.
 import se.fk.rimfrost.api.arbetsgivare.jaxrsspec.controllers.generatedsource.model.GetArbetsgivare200Response;
 
 @ApplicationScoped
-public class ArbetsgivareMapper {
+public class ArbetsgivareMapper
+{
 
-    public ArbetsgivareResponse toArbetsgivareResponse(GetArbetsgivare200Response apiResponse) {
-        if (apiResponse == null) {
-            return null;
-        }
-        var anstallning = apiResponse.getAnstallningar().getFirst();
-        return ImmutableArbetsgivareResponse.builder()
-                .organisationsnamn(anstallning.getOrganisation().getNamn())
-                .organisationsnummer(anstallning.getOrganisation().getNummer())
-                .anstallningsdag(anstallning.getStartdag())
-                .arbetstidProcent(anstallning.getArbetstid())
-                .lonFrom(anstallning.getStartdag()) //TODO Lon should be in apiResponse
-                .loneSumma(40000) //TODO Lon should be in apiResponse
-                .build();
-    }
+   public ArbetsgivareResponse toArbetsgivareResponse(GetArbetsgivare200Response apiResponse)
+   {
+      if (apiResponse == null)
+      {
+         return null;
+      }
+      var anstallning = apiResponse.getAnstallningar().getFirst();
+      return ImmutableArbetsgivareResponse.builder()
+            .organisationsnamn(anstallning.getOrganisation().getNamn())
+            .organisationsnummer(anstallning.getOrganisation().getNummer())
+            .anstallningsdag(anstallning.getStartdag())
+            .arbetstidProcent(anstallning.getArbetstid())
+            .lonFrom(anstallning.getStartdag()) //TODO Lon should be in apiResponse
+            .loneSumma(40000) //TODO Lon should be in apiResponse
+            .build();
+   }
 }

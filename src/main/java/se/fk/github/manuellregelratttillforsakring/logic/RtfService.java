@@ -190,27 +190,29 @@ public class RtfService
    private void updateRtfDataUnderlag(RtfData rtfData, FolkbokfordResponse folkbokfordResponse,
          ArbetsgivareResponse arbetsgivareResponse) throws JsonProcessingException
    {
-       var rtfDataBuilder = ImmutableRtfData.builder().from(rtfData);
+      var rtfDataBuilder = ImmutableRtfData.builder().from(rtfData);
 
-       if (folkbokfordResponse != null) {
-           var folkbokfordUnderlag = ImmutableUnderlag.builder()
-                   .typ("FolkbokfördUnderlag")
-                   .version("1.0")
-                   .data(objectMapper.writeValueAsString(folkbokfordResponse))
-                   .build();
-           rtfDataBuilder.addUnderlag(folkbokfordUnderlag);
-       }
+      if (folkbokfordResponse != null)
+      {
+         var folkbokfordUnderlag = ImmutableUnderlag.builder()
+               .typ("FolkbokfördUnderlag")
+               .version("1.0")
+               .data(objectMapper.writeValueAsString(folkbokfordResponse))
+               .build();
+         rtfDataBuilder.addUnderlag(folkbokfordUnderlag);
+      }
 
-       if (arbetsgivareResponse != null) {
-           var arbetsgivareUnderlag = ImmutableUnderlag.builder()
-                   .typ("ArbetsgivareUnderlag")
-                   .version("1.0")
-                   .data(objectMapper.writeValueAsString(arbetsgivareResponse))
-                   .build();
-           rtfDataBuilder.addUnderlag(arbetsgivareUnderlag);
-       }
+      if (arbetsgivareResponse != null)
+      {
+         var arbetsgivareUnderlag = ImmutableUnderlag.builder()
+               .typ("ArbetsgivareUnderlag")
+               .version("1.0")
+               .data(objectMapper.writeValueAsString(arbetsgivareResponse))
+               .build();
+         rtfDataBuilder.addUnderlag(arbetsgivareUnderlag);
+      }
 
-       rtfDatas.put(rtfData.kundbehovsflodeId(), rtfDataBuilder.build());
+      rtfDatas.put(rtfData.kundbehovsflodeId(), rtfDataBuilder.build());
    }
 
    private void updateKundbehovsflodeInfo(RtfData rtfData)
