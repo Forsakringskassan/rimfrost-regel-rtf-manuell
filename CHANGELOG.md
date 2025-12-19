@@ -2,6 +2,13 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.2.1 (2025-12-19)
+
+### Bug Fixes
+
+-  spotless apply ([a1fdd](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a1fdd033ffd4dd1) Ulf Slunga)  
+-  Hantera 404 för folkbokford & arbetsgivare ([90438](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/90438ee789a3a62) Ulf Slunga)  
+
 ## 0.2.0 (2025-12-17)
 
 ### Features
