@@ -1,5 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.integration.folkbokford;
 
+import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import jakarta.annotation.PostConstruct;
@@ -10,6 +11,8 @@ import se.fk.github.jaxrsclientfactory.JaxrsClientOptionsBuilders;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.rimfrost.api.folkbokforing.jaxrsspec.controllers.generatedsource.FolkbokforingControllerApi;
+
+import java.util.Optional;
 
 @ApplicationScoped
 public class FolkbokfordAdapter
@@ -31,9 +34,13 @@ public class FolkbokfordAdapter
                   .build());
    }
 
-   public FolkbokfordResponse getFolkbokfordInfo(FolkbokfordRequest folkbokfordRequest)
-   {
-      var apiResponse = folkbokfordClient.folkbokforingPersnrGet(folkbokfordRequest.personnummer());
-      return mapper.toFolkbokfordResponse(apiResponse);
-   }
+    public FolkbokfordResponse getFolkbokfordInfo(FolkbokfordRequest request)
+    {
+        try {
+            var apiResponse = folkbokfordClient.folkbokforingPersnrGet(request.personnummer());
+            return mapper.toFolkbokfordResponse(apiResponse);
+        } catch (NotFoundException e) {
+            return null;
+        }
+    }
 }

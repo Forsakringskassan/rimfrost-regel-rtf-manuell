@@ -18,8 +18,8 @@ public interface RtfData
    @Nullable
    UUID uppgiftId();
 
-   List<ErsattningData> ersattningar();
+   List<se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData> ersattningar();
 
-   List<Underlag> underlag();
+   List<se.fk.github.manuellregelratttillforsakring.logic.entity.Underlag> underlag();
 
 }
