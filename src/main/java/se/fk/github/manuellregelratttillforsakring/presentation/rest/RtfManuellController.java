@@ -22,41 +22,47 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 @Consumes("application/json")
 @ApplicationScoped
 @Path("/regel")
-public class RtfManuellController implements RtfManuellControllerApi {
+public class RtfManuellController implements RtfManuellControllerApi
+{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RtfManuellController.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(RtfManuellController.class);
 
-    @Inject
-    RtfService rtfService;
+   @Inject
+   RtfService rtfService;
 
-    @Inject
-    RtfManuellRestMapper mapper;
+   @Inject
+   RtfManuellRestMapper mapper;
 
-    @GET
-    @Path("/rtf-manuell/{kundbehovsflodeId}")
-    @Override
-    public GetDataResponse getData(
-            @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId) {
+   @GET
+   @Path("/rtf-manuell/{kundbehovsflodeId}")
+   @Override
+   public GetDataResponse getData(
+         @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId)
+   {
 
-        try {
-            var request = ImmutableGetRtfDataRequest.builder()
-                    .kundbehovsflodeId(kundbehovsflodeId)
-                    .build();
-            var response = rtfService.getData(request);
-            return mapper.toGetDataResponse(response);
-        } catch (JsonProcessingException e) {
-            throw new InternalServerErrorException("Failed to process request");
-        }
-    }
+      try
+      {
+         var request = ImmutableGetRtfDataRequest.builder()
+               .kundbehovsflodeId(kundbehovsflodeId)
+               .build();
+         var response = rtfService.getData(request);
+         return mapper.toGetDataResponse(response);
+      }
+      catch (JsonProcessingException e)
+      {
+         throw new InternalServerErrorException("Failed to process request");
+      }
+   }
 
-    @PATCH
-    @Path("/rtf-manuell/{kundbehovsflodeId}")
-    @Override
-    public void updateData(
-            @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId,
-            @Valid @NotNull PatchDataRequest patchRequest) {
+   @PATCH
+   @Path("/rtf-manuell/{kundbehovsflodeId}")
+   @Override
+   public void updateData(
+         @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId,
+         @Valid @NotNull PatchDataRequest patchRequest)
+   {
 
-        var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, patchRequest);
-        rtfService.updateErsattningData(request);
-    }
+      var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, patchRequest);
+      rtfService.updateErsattningData(request);
+   }
 }

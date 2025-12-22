@@ -107,17 +107,19 @@ public class RtfManuellRestMapper
 
    private KonEnum mapKonEnum(String kon)
    {
-       if (kon == null) {
-           return null;
-       }
-       switch (kon.toUpperCase()) {
-           case "MAN":
-               return KonEnum.MAN;
-           case "KVINNA":
-               return KonEnum.KVINNA;
-           default:
-               return null;
-       }
+      if (kon == null)
+      {
+         return null;
+      }
+      switch (kon.toUpperCase())
+      {
+         case "MAN":
+            return KonEnum.MAN;
+         case "KVINNA":
+            return KonEnum.KVINNA;
+         default:
+            return null;
+      }
    }
 
 }

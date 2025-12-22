@@ -34,13 +34,16 @@ public class FolkbokfordAdapter
                   .build());
    }
 
-    public FolkbokfordResponse getFolkbokfordInfo(FolkbokfordRequest request)
-    {
-        try {
-            var apiResponse = folkbokfordClient.folkbokforingPersnrGet(request.personnummer());
-            return mapper.toFolkbokfordResponse(apiResponse);
-        } catch (NotFoundException e) {
-            return null;
-        }
-    }
+   public FolkbokfordResponse getFolkbokfordInfo(FolkbokfordRequest request)
+   {
+      try
+      {
+         var apiResponse = folkbokfordClient.folkbokforingPersnrGet(request.personnummer());
+         return mapper.toFolkbokfordResponse(apiResponse);
+      }
+      catch (NotFoundException e)
+      {
+         return null;
+      }
+   }
 }

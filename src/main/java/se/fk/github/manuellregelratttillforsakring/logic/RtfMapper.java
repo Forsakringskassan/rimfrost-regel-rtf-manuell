@@ -23,116 +23,130 @@ import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
 
 @ApplicationScoped
-public class RtfMapper {
+public class RtfMapper
+{
 
-    public GetRtfDataResponse toRtfResponse(KundbehovsflodeResponse kundbehovflodesResponse,
-                                            FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RtfData rtfData) {
-        var ersattningsList = new ArrayList<Ersattning>();
+   public GetRtfDataResponse toRtfResponse(KundbehovsflodeResponse kundbehovflodesResponse,
+         FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RtfData rtfData)
+   {
+      var ersattningsList = new ArrayList<Ersattning>();
 
-        for (var kundbehovErsattning : kundbehovflodesResponse.ersattning()) {
-            ErsattningData rtfErsattning = rtfData.ersattningar().stream().filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
+      for (var kundbehovErsattning : kundbehovflodesResponse.ersattning())
+      {
+         ErsattningData rtfErsattning = rtfData.ersattningar().stream()
+               .filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
+               .findFirst()
+               .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
 
-            var ersattning = ImmutableErsattning.builder()
-                    .belopp(kundbehovErsattning.belopp())
-                    .berakningsgrund(kundbehovErsattning.berakningsgrund())
-                    .ersattningsId(kundbehovErsattning.ersattningsId())
-                    .ersattningsTyp(kundbehovErsattning.ersattningsTyp())
-                    .from(kundbehovErsattning.franOchMed())
-                    .tom(kundbehovErsattning.tillOchMed())
-                    .avslagsanledning(rtfErsattning.avslagsanledning())
-                    .omfattningsProcent(kundbehovErsattning.omfattningsProcent());
+         var ersattning = ImmutableErsattning.builder()
+               .belopp(kundbehovErsattning.belopp())
+               .berakningsgrund(kundbehovErsattning.berakningsgrund())
+               .ersattningsId(kundbehovErsattning.ersattningsId())
+               .ersattningsTyp(kundbehovErsattning.ersattningsTyp())
+               .from(kundbehovErsattning.franOchMed())
+               .tom(kundbehovErsattning.tillOchMed())
+               .avslagsanledning(rtfErsattning.avslagsanledning())
+               .omfattningsProcent(kundbehovErsattning.omfattningsProcent());
 
-            if (rtfErsattning.beslutsutfall() != null) {
-                ersattning.beslutsutfall(rtfErsattning.beslutsutfall());
-            }
+         if (rtfErsattning.beslutsutfall() != null)
+         {
+            ersattning.beslutsutfall(rtfErsattning.beslutsutfall());
+         }
 
-            ersattningsList.add(ersattning.build());
-        }
+         ersattningsList.add(ersattning.build());
+      }
 
-        var builder = ImmutableGetRtfDataResponse.builder()
-                .kundbehovsflodeId(kundbehovflodesResponse.kundbehovsflodeId())
-                .ersattning(ersattningsList);
+      var builder = ImmutableGetRtfDataResponse.builder()
+            .kundbehovsflodeId(kundbehovflodesResponse.kundbehovsflodeId())
+            .ersattning(ersattningsList);
 
-        if (folkbokfordResponse != null) {
-            builder
-                    .fornamn(folkbokfordResponse.fornamn())
-                    .efternamn(folkbokfordResponse.efternamn())
-                    .kon(folkbokfordResponse.kon().toString());
-        }
+      if (folkbokfordResponse != null)
+      {
+         builder
+               .fornamn(folkbokfordResponse.fornamn())
+               .efternamn(folkbokfordResponse.efternamn())
+               .kon(folkbokfordResponse.kon().toString());
+      }
 
-        if (arbetsgivareResponse != null) {
-            builder
-                    .anstallningsdag(arbetsgivareResponse.anstallningsdag())
-                    .sistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag())
-                    .arbetstidProcent(arbetsgivareResponse.arbetstidProcent())
-                    .loneSumma(arbetsgivareResponse.loneSumma())
-                    .lonFrom(arbetsgivareResponse.lonFrom())
-                    .lonTom(arbetsgivareResponse.lonTom())
-                    .organisationsnamn(arbetsgivareResponse.organisationsnamn())
-                    .organisationsnummer(arbetsgivareResponse.organisationsnummer());
-        }
-        return builder.build();
-    }
+      if (arbetsgivareResponse != null)
+      {
+         builder
+               .anstallningsdag(arbetsgivareResponse.anstallningsdag())
+               .sistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag())
+               .arbetstidProcent(arbetsgivareResponse.arbetstidProcent())
+               .loneSumma(arbetsgivareResponse.loneSumma())
+               .lonFrom(arbetsgivareResponse.lonFrom())
+               .lonTom(arbetsgivareResponse.lonTom())
+               .organisationsnamn(arbetsgivareResponse.organisationsnamn())
+               .organisationsnummer(arbetsgivareResponse.organisationsnummer());
+      }
+      return builder.build();
+   }
 
-    public RtfManuellResponseRequest toRtfResponseRequest(RtfData rtfData, CloudEventData cloudevent, boolean rattTillForsakring) {
-        return ImmutableRtfManuellResponseRequest.builder()
-                .id(cloudevent.id())
-                .kundbehovsflodeId(rtfData.kundbehovsflodeId())
-                .kogitoparentprociid(cloudevent.kogitoparentprociid())
-                .kogitorootprociid(cloudevent.kogitorootprociid())
-                .kogitoprocid(cloudevent.kogitoprocid())
-                .kogitorootprocid(cloudevent.kogitorootprocid())
-                .kogitoprocinstanceid(cloudevent.kogitoprocinstanceid())
-                .kogitoprocist(cloudevent.kogitoprocist())
-                .kogitoprocversion(cloudevent.kogitoprocversion())
-                .rattTillForsakring(rattTillForsakring)
-                .build();
-    }
+   public RtfManuellResponseRequest toRtfResponseRequest(RtfData rtfData, CloudEventData cloudevent, boolean rattTillForsakring)
+   {
+      return ImmutableRtfManuellResponseRequest.builder()
+            .id(cloudevent.id())
+            .kundbehovsflodeId(rtfData.kundbehovsflodeId())
+            .kogitoparentprociid(cloudevent.kogitoparentprociid())
+            .kogitorootprociid(cloudevent.kogitorootprociid())
+            .kogitoprocid(cloudevent.kogitoprocid())
+            .kogitorootprocid(cloudevent.kogitorootprocid())
+            .kogitoprocinstanceid(cloudevent.kogitoprocinstanceid())
+            .kogitoprocist(cloudevent.kogitoprocist())
+            .kogitoprocversion(cloudevent.kogitoprocversion())
+            .rattTillForsakring(rattTillForsakring)
+            .build();
+   }
 
-    public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData) {
+   public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData)
+   {
 
-        var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
-                .kundbehovsflodeId(rtfData.kundbehovsflodeId())
-                .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>())
-                .uppgiftId(rtfData.uppgiftId());
+      var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
+            .kundbehovsflodeId(rtfData.kundbehovsflodeId())
+            .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>())
+            .uppgiftId(rtfData.uppgiftId());
 
-        for (ErsattningData rtfErsattning : rtfData.ersattningar()) {
-            var ersattning = ImmutableUpdateKundbehovsflodeErsattning.builder()
-                    .beslutsutfall(mapBeslutsutfall(rtfErsattning.beslutsutfall()))
-                    .id(rtfErsattning.id())
-                    .avslagsanledning(rtfErsattning.avslagsanledning())
-                    .build();
-            requestBuilder.addErsattningar(ersattning);
-        }
+      for (ErsattningData rtfErsattning : rtfData.ersattningar())
+      {
+         var ersattning = ImmutableUpdateKundbehovsflodeErsattning.builder()
+               .beslutsutfall(mapBeslutsutfall(rtfErsattning.beslutsutfall()))
+               .id(rtfErsattning.id())
+               .avslagsanledning(rtfErsattning.avslagsanledning())
+               .build();
+         requestBuilder.addErsattningar(ersattning);
+      }
 
-        for (var rtfUnderlag : rtfData.underlag()) {
-            var underlag = ImmutableUpdateKundbehovsflodeUnderlag.builder()
-                    .typ(rtfUnderlag.typ())
-                    .version(rtfUnderlag.version())
-                    .data(rtfUnderlag.data())
-                    .build();
-            requestBuilder.addUnderlag(underlag);
-        }
+      for (var rtfUnderlag : rtfData.underlag())
+      {
+         var underlag = ImmutableUpdateKundbehovsflodeUnderlag.builder()
+               .typ(rtfUnderlag.typ())
+               .version(rtfUnderlag.version())
+               .data(rtfUnderlag.data())
+               .build();
+         requestBuilder.addUnderlag(underlag);
+      }
 
-        return requestBuilder.build();
-    }
+      return requestBuilder.build();
+   }
 
-    private BeslutsutfallEnum mapBeslutsutfall(
-            Beslutsutfall beslutsutfall) {
-        if (beslutsutfall == null) {
+   private BeslutsutfallEnum mapBeslutsutfall(
+         Beslutsutfall beslutsutfall)
+   {
+      if (beslutsutfall == null)
+      {
+         return BeslutsutfallEnum.FU;
+      }
+
+      switch (beslutsutfall)
+      {
+         case JA:
+            return BeslutsutfallEnum.JA;
+         case NEJ:
+            return BeslutsutfallEnum.NEJ;
+         case FU:
+         default:
             return BeslutsutfallEnum.FU;
-        }
-
-        switch (beslutsutfall) {
-            case JA:
-                return BeslutsutfallEnum.JA;
-            case NEJ:
-                return BeslutsutfallEnum.NEJ;
-            case FU:
-            default:
-                return BeslutsutfallEnum.FU;
-        }
-    }
+      }
+   }
 }

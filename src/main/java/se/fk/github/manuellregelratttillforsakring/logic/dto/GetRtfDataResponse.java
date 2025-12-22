@@ -9,60 +9,62 @@ import org.immutables.value.Value;
 import jakarta.annotation.Nullable;
 
 @Value.Immutable
-public interface GetRtfDataResponse {
+public interface GetRtfDataResponse
+{
 
-    UUID kundbehovsflodeId();
+   UUID kundbehovsflodeId();
 
-    @Nullable
-    String fornamn();
+   @Nullable
+   String fornamn();
 
-    @Nullable
-    String efternamn();
+   @Nullable
+   String efternamn();
 
-    @Nullable
-    String kon();
+   @Nullable
+   String kon();
 
-    String organisationsnummer();
+   String organisationsnummer();
 
-    String organisationsnamn();
+   String organisationsnamn();
 
-    int arbetstidProcent();
+   int arbetstidProcent();
 
-    LocalDate anstallningsdag();
+   LocalDate anstallningsdag();
 
-    @Nullable
-    LocalDate sistaAnstallningsdag();
+   @Nullable
+   LocalDate sistaAnstallningsdag();
 
-    int loneSumma();
+   int loneSumma();
 
-    LocalDate lonFrom();
+   LocalDate lonFrom();
 
-    @Nullable
-    LocalDate lonTom();
+   @Nullable
+   LocalDate lonTom();
 
-    List<Ersattning> ersattning();
+   List<Ersattning> ersattning();
 
-    @Value.Immutable
-    public interface Ersattning {
+   @Value.Immutable
+   public interface Ersattning
+   {
 
-        UUID ersattningsId();
+      UUID ersattningsId();
 
-        String ersattningsTyp();
+      String ersattningsTyp();
 
-        int omfattningsProcent();
+      int omfattningsProcent();
 
-        int belopp();
+      int belopp();
 
-        int berakningsgrund();
+      int berakningsgrund();
 
-        @Nullable
-        Beslutsutfall beslutsutfall();
+      @Nullable
+      Beslutsutfall beslutsutfall();
 
-        LocalDate from();
+      LocalDate from();
 
-        LocalDate tom();
+      LocalDate tom();
 
-        @Nullable
-        String avslagsanledning();
-    }
+      @Nullable
+      String avslagsanledning();
+   }
 }
