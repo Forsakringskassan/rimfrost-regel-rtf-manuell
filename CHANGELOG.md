@@ -2,6 +2,14 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.2.2 (2025-12-23)
+
+### Bug Fixes
+
+-  spotless apply ([8fadd](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/8fadd8ab4814f2d) Ulf Slunga)  
+-  regel svarar 404 på regel-custom-url ([3c8de](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/3c8dee29a92e705) Ulf Slunga)  
+-  **deps**  update dependency se.fk.rimfrost.regel.rtf.manuell:rimfrost-regel-rtf-manuell-openapi-jaxrs-spec to v0.1.5 ([a3ca2](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a3ca28143994f52) renovate[bot])  
+
 ## 0.2.1 (2025-12-19)
 
 ### Bug Fixes
