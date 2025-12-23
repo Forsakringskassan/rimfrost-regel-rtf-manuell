@@ -1,7 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
 import java.util.ArrayList;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
@@ -19,6 +18,7 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
 
@@ -33,7 +33,8 @@ public class RtfMapper
 
       for (var kundbehovErsattning : kundbehovflodesResponse.ersattning())
       {
-         var rtfErsattning = rtfData.ersattningar().stream().filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
+         ErsattningData rtfErsattning = rtfData.ersattningar().stream()
+               .filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
                .findFirst()
                .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
 
@@ -55,21 +56,31 @@ public class RtfMapper
          ersattningsList.add(ersattning.build());
       }
 
-      return ImmutableGetRtfDataResponse.builder()
+      var builder = ImmutableGetRtfDataResponse.builder()
             .kundbehovsflodeId(kundbehovflodesResponse.kundbehovsflodeId())
-            .fornamn(folkbokfordResponse.fornamn())
-            .efternamn(folkbokfordResponse.efternamn())
-            .kon(folkbokfordResponse.kon().toString())
-            .anstallningsdag(arbetsgivareResponse.anstallningsdag())
-            .sistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag())
-            .arbetstidProcent(arbetsgivareResponse.arbetstidProcent())
-            .loneSumma(arbetsgivareResponse.loneSumma())
-            .lonFrom(arbetsgivareResponse.lonFrom())
-            .lonTom(arbetsgivareResponse.lonTom())
-            .organisationsnamn(arbetsgivareResponse.organisationsnamn())
-            .organistaionsnummer(arbetsgivareResponse.organisationsnummer())
-            .ersattning(ersattningsList)
-            .build();
+            .ersattning(ersattningsList);
+
+      if (folkbokfordResponse != null)
+      {
+         builder
+               .fornamn(folkbokfordResponse.fornamn())
+               .efternamn(folkbokfordResponse.efternamn())
+               .kon(folkbokfordResponse.kon().toString());
+      }
+
+      if (arbetsgivareResponse != null)
+      {
+         builder
+               .anstallningsdag(arbetsgivareResponse.anstallningsdag())
+               .sistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag())
+               .arbetstidProcent(arbetsgivareResponse.arbetstidProcent())
+               .loneSumma(arbetsgivareResponse.loneSumma())
+               .lonFrom(arbetsgivareResponse.lonFrom())
+               .lonTom(arbetsgivareResponse.lonTom())
+               .organisationsnamn(arbetsgivareResponse.organisationsnamn())
+               .organisationsnummer(arbetsgivareResponse.organisationsnummer());
+      }
+      return builder.build();
    }
 
    public RtfManuellResponseRequest toRtfResponseRequest(RtfData rtfData, CloudEventData cloudevent, boolean rattTillForsakring)
@@ -96,7 +107,7 @@ public class RtfMapper
             .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>())
             .uppgiftId(rtfData.uppgiftId());
 
-      for (var rtfErsattning : rtfData.ersattningar())
+      for (ErsattningData rtfErsattning : rtfData.ersattningar())
       {
          var ersattning = ImmutableUpdateKundbehovsflodeErsattning.builder()
                .beslutsutfall(mapBeslutsutfall(rtfErsattning.beslutsutfall()))

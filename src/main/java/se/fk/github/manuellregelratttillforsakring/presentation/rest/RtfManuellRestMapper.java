@@ -31,7 +31,7 @@ public class RtfManuellRestMapper
       anstallning.setArbetstidProcent(rtfResponse.arbetstidProcent());
       anstallning.setSistaAnstallningsdag(rtfResponse.sistaAnstallningsdag());
       anstallning.setOrganisationsnamn(rtfResponse.organisationsnamn());
-      anstallning.setOrganisationsnummer(rtfResponse.organistaionsnummer());
+      anstallning.setOrganisationsnummer(rtfResponse.organisationsnummer());
       anstallning.setLon(lon);
 
       var kund = new Kund();
@@ -107,13 +107,18 @@ public class RtfManuellRestMapper
 
    private KonEnum mapKonEnum(String kon)
    {
-      switch (kon)
+      if (kon == null)
       {
-         case "Man":
+         return null;
+      }
+      switch (kon.toUpperCase())
+      {
+         case "MAN":
             return KonEnum.MAN;
-         default:
          case "KVINNA":
             return KonEnum.KVINNA;
+         default:
+            return null;
       }
    }
 

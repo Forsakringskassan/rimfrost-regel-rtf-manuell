@@ -14,13 +14,16 @@ public interface GetRtfDataResponse
 
    UUID kundbehovsflodeId();
 
+   @Nullable
    String fornamn();
 
+   @Nullable
    String efternamn();
 
+   @Nullable
    String kon();
 
-   String organistaionsnummer();
+   String organisationsnummer();
 
    String organisationsnamn();
 
