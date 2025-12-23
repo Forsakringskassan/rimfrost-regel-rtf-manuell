@@ -1,7 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,6 +10,7 @@ import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.d
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.KundbehovsflodeControllerApi;
+import static io.quarkus.arc.impl.UncaughtExceptions.LOGGER;
 
 @ApplicationScoped
 public class KundbehovsflodeAdapter
@@ -43,6 +43,16 @@ public class KundbehovsflodeAdapter
       var apiResponse = kundbehovsClient.getKundbehovsflode(request.kundbehovsflodeId());
 
       var apiRequest = mapper.toApiRequest(request, apiResponse);
-      kundbehovsClient.putKundbehovsflode(request.kundbehovsflodeId(), apiRequest);
+      LOGGER.info("updateKundbehovsflodeInfo " + request.toString());
+      try
+      {
+         kundbehovsClient.putKundbehovsflode(request.kundbehovsflodeId(), apiRequest);
+      }
+      catch (Throwable t)
+      {
+         t.printStackTrace();
+         throw t;
+      }
+      LOGGER.info("putKundbehovsflode executed");
    }
 }

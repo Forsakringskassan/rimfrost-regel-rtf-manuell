@@ -1,7 +1,7 @@
 package se.fk.github.manuellregelratttillforsakring.presentation.kafka;
 
+import io.smallrye.common.annotation.Blocking;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import se.fk.github.logging.callerinfo.model.MDCKeys;
@@ -9,7 +9,6 @@ import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.rimfrost.OperativtUppgiftslagerResponseMessage;
 import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
 import se.fk.rimfrost.regel.rtf.manuell.RtfManuellRequestMessagePayload;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -27,6 +26,7 @@ public class RtfManuellConsumer
    RtfManuellKafkaMapper mapper;
 
    @Incoming("rtf-manuell-requests")
+   @Blocking
    public void onRtfManuellRequest(RtfManuellRequestMessagePayload rtfRequest)
    {
       MDC.put(MDCKeys.PROCESSID.name(), rtfRequest.getData().getKundbehovsflodeId());
@@ -38,6 +38,7 @@ public class RtfManuellConsumer
    }
 
    @Incoming("operativt-uppgiftslager-responses")
+   @Blocking
    public void onOulResponse(OperativtUppgiftslagerResponseMessage oulResponse)
    {
       LOGGER.info("OperativtUppgiftslagerResponseMessage received with KundbehovsflodeId: " + oulResponse.getKundbehovsflodeId());
@@ -46,6 +47,7 @@ public class RtfManuellConsumer
    }
 
    @Incoming("operativt-uppgiftslager-status-notification")
+   @Blocking
    public void onOulStatusMessage(OperativtUppgiftslagerStatusMessage statusMessage)
    {
       LOGGER.info("OperativtUppgiftslagerStatusMessage received with UppgiftId: " + statusMessage.getUppgiftId());

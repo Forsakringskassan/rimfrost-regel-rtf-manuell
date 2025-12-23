@@ -1,7 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.logic.entity;
 
 import java.util.UUID;
-
 import org.immutables.value.Value;
 
 @Value.Immutable
