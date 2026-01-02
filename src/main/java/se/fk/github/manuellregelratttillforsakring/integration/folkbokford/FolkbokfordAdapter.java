@@ -2,7 +2,6 @@ package se.fk.github.manuellregelratttillforsakring.integration.folkbokford;
 
 import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,8 +10,6 @@ import se.fk.github.jaxrsclientfactory.JaxrsClientOptionsBuilders;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.rimfrost.api.folkbokforing.jaxrsspec.controllers.generatedsource.FolkbokforingControllerApi;
-
-import java.util.Optional;
 
 @ApplicationScoped
 public class FolkbokfordAdapter

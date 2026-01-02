@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
@@ -66,12 +64,10 @@ public class RtfService
             .kundbehovsflodeId(request.kundbehovsflodeId())
             .build();
       var kundbehovflodesResponse = kundbehovsflodeAdapter.getKundbehovsflodeInfo(kundbehovsflodeRequest);
-
       var folkbokfordRequest = ImmutableFolkbokfordRequest.builder()
             .personnummer(kundbehovflodesResponse.personnummer())
             .build();
       var folkbokfordResponse = folkbokfordAdapter.getFolkbokfordInfo(folkbokfordRequest);
-
       var arbetsgivareRequest = ImmutableArbetsgivareRequest.builder()
             .personnummer(kundbehovflodesResponse.personnummer())
             .build();
