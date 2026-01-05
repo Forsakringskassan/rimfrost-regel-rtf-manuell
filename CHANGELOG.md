@@ -2,6 +2,12 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.2.3 (2026-01-05)
+
+### Bug Fixes
+
+-  Container test för komplett regel-sekvens happy-path ([69947](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/69947d9eea8109d) Ulf Slunga)  
+
 ## 0.2.2 (2025-12-23)
 
 ### Bug Fixes
