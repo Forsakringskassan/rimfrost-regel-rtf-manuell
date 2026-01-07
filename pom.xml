@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>se.fk.maven</groupId>
-    <artifactId>fk-maven-quarkus-parent</artifactId>
-    <version>1.11.1</version>
+    <groupId>se.fk.rimfrost.maven</groupId>
+    <artifactId>rimfrost-maven-regel-parent</artifactId>
+    <version>1.6.4-SNAPSHOT</version>
   </parent>
 
   <groupId>se.fk.rimfrost</groupId>
@@ -18,44 +18,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-messaging-kafka</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>kafka</artifactId>
-      <version>1.21.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>1.21.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers</artifactId>
-      <version>1.21.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.wiremock</groupId>
-      <artifactId>wiremock</artifactId>
-      <version>3.13.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>se.fk.github.jaxrsclientfactory</groupId>
-      <artifactId>jaxrs-client-factory</artifactId>
-      <version>1.3.0</version>
-    </dependency>
     <dependency>
       <groupId>se.fk.rimfrost</groupId>
       <artifactId>rimfrost-service-oul-asyncapi</artifactId>
