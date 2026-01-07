@@ -91,6 +91,11 @@
       <artifactId>rimfrost-service-kundbehovsflode-openapi-jaxrs-spec</artifactId>
       <version>1.3.2</version>
     </dependency>
+    <dependency>
+      <groupId>se.fk.rimfrost.kogito</groupId>
+      <artifactId>kogito-dto</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <repositories>

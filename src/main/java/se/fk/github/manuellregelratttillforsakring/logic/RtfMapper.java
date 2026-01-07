@@ -2,6 +2,7 @@ package se.fk.github.manuellregelratttillforsakring.logic;
 
 import java.util.ArrayList;
 import jakarta.enterprise.context.ApplicationScoped;
+import se.fk.github.kogito.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableRtfManuellResponseRequest;
@@ -17,7 +18,6 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfData
 import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
