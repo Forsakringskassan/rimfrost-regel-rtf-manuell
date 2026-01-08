@@ -21,8 +21,10 @@ public class FolkbokfordAdapter
    @Inject
    FolkbokfordMapper mapper;
 
+   @SuppressWarnings("unused")
    private FolkbokforingControllerApi folkbokfordClient;
 
+   @SuppressWarnings("unused")
    @PostConstruct
    void init()
    {

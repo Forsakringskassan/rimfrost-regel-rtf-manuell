@@ -6,11 +6,14 @@ import java.util.Map;
 import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.runtime.Startup;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ImmutableArbetsgivareRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.config.RegelConfigProvider;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.FolkbokfordAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.ImmutableFolkbokfordRequest;
@@ -18,6 +21,7 @@ import se.fk.github.manuellregelratttillforsakring.integration.kafka.RtfManuellK
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableOulMessageRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.config.RegelConfig;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableCloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
@@ -35,8 +39,12 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateRtfDataReques
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
 
 @ApplicationScoped
+@Startup
 public class RtfService
 {
+
+   @Inject
+   RegelConfigProvider regelConfigProvider;
 
    @Inject
    ObjectMapper objectMapper;
@@ -56,8 +64,17 @@ public class RtfService
    @Inject
    KundbehovsflodeAdapter kundbehovsflodeAdapter;
 
+   private RegelConfig regelConfig;
+
    Map<UUID, CloudEventData> cloudevents = new HashMap<UUID, CloudEventData>();
    Map<UUID, RtfData> rtfDatas = new HashMap<UUID, RtfData>();
+
+   @SuppressWarnings("unused")
+   @PostConstruct
+   void init()
+   {
+      this.regelConfig = regelConfigProvider.getConfig();
+   }
 
    public GetRtfDataResponse getData(GetRtfDataRequest request) throws JsonProcessingException
    {
@@ -125,11 +142,11 @@ public class RtfService
       var oulMessageRequest = ImmutableOulMessageRequest.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
             .kundbehov("Vård av husdjur")
-            .regel("Har kunden rätt till försäkring")
-            .beskrivning("Kontrollera om personen har varit frånvarande från sitt arbete.")
-            .verksamhetslogik("C")
-            .roll("Handläggare")
-            .url("http://localhost:8888/regel/rtf-manuell/" + request.kundbehovsflodeId().toString())
+            .regel(regelConfig.getUppgift().getNamn())
+            .beskrivning(regelConfig.getUppgift().getBeskrivning())
+            .verksamhetslogik(regelConfig.getUppgift().getVerksamhetslogik())
+            .roll(regelConfig.getUppgift().getRoll())
+            .url("http://localhost:8888" + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
             .build();
       kafkaProducer.sendOulRequest(oulMessageRequest);
    }
