@@ -2,12 +2,11 @@
 
 En regel som körs med quarkus.
 
-Build it with `./mvnw -s settings.xml clean verify`.
+Bygg och testa:  `./mvnw -s settings.xml clean verify`.
 
-## Build docker image locally for testing
+## Bygg docker image lokalt 
 
 `./mvnw -s settings.xml clean package`
-
 
 ## Github workflow
 
@@ -20,3 +19,11 @@ docker run -d \
 ```
 
 See also: [fk-maven](https://github.com/Forsakringskassan/fk-maven).
+
+## Konfiguration av regel via yaml
+
+`src/main/resources/config.yaml` <br>
+innehåller konfiguration av regel-attribut som t.ex. namn, uppgiftsbeskrivning.
+
+Environment-variabel `REGEL_CONFIG_PATH` kan användas för att peka ut custom config-fil.
+`src/main/resources/config.yaml` kommer att paketeras i docker imagen och användas by default.

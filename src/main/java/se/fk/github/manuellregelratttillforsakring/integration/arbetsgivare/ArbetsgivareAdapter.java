@@ -21,8 +21,10 @@ public class ArbetsgivareAdapter
    @Inject
    ArbetsgivareMapper mapper;
 
+   @SuppressWarnings("unused")
    private ArbetsgivareControllerApi arbetsgivareClient;
 
+   @SuppressWarnings("unused")
    @PostConstruct
    void init()
    {
