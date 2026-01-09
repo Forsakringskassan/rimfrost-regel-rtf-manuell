@@ -2,12 +2,12 @@ package se.fk.github.manuellregelratttillforsakring.integration.kafka;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.UUID;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
+
+import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.OulMessageRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
 import se.fk.rimfrost.OperativtUppgiftslagerRequestMessage;
 import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
@@ -35,11 +35,9 @@ public class RtfManuellKafkaProducer
    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1024)
    Emitter<RtfManuellResponseMessagePayload> rtfManuellResponseEmitter;
 
-   public void sendOulRequest(UUID kundbehovsflodeId)
+   public void sendOulRequest(OulMessageRequest messageRequest)
    {
-      var request = new OperativtUppgiftslagerRequestMessage();
-      request.setRegeltyp("rtf-manuell");
-      request.setKundbehovsflodeId(kundbehovsflodeId.toString());
+      var request = mapper.toOulRequestMessage(messageRequest);
       oulRequestEmitter.send(request);
    }
 

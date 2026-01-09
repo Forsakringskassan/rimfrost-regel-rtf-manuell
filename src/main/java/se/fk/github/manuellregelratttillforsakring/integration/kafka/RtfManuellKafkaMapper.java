@@ -1,7 +1,9 @@
 package se.fk.github.manuellregelratttillforsakring.integration.kafka;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.OulMessageRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
+import se.fk.rimfrost.OperativtUppgiftslagerRequestMessage;
 import se.fk.rimfrost.regel.rtf.manuell.KogitoProcType;
 import se.fk.rimfrost.regel.rtf.manuell.RattTillForsakring;
 import se.fk.rimfrost.regel.rtf.manuell.RtfManuellResponseMessageData;
@@ -35,5 +37,18 @@ public class RtfManuellKafkaMapper
       response.setData(data);
 
       return response;
+   }
+
+   public OperativtUppgiftslagerRequestMessage toOulRequestMessage(OulMessageRequest messageRequest)
+   {
+      var request = new OperativtUppgiftslagerRequestMessage();
+      request.setKundbehovsflodeId(messageRequest.kundbehovsflodeId().toString());
+      request.setKundbehov(messageRequest.kundbehov());
+      request.setRegel(messageRequest.regel());
+      request.setRoll(messageRequest.roll());
+      request.setBeskrivning(messageRequest.beskrivning());
+      request.setVerksamhetslogik(messageRequest.verksamhetslogik());
+      request.setUrl(messageRequest.url());
+      return request;
    }
 }
