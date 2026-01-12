@@ -53,6 +53,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -168,10 +170,15 @@ public class RtfManuellContainerSmokeIT
          throw new RuntimeException("Failed to load test.properties", e);
       }
 
+      String containerConfigPath = "/deployments/test-config.yaml";
       //noinspection resource
       rtfManuell = new GenericContainer<>(DockerImageName.parse(rtfManuellImage))
             .withNetwork(network)
             .withExposedPorts(8080)
+            .withEnv("REGEL_CONFIG_PATH", containerConfigPath)
+            .withCopyFileToContainer(
+                  MountableFile.forClasspathResource("config-test.yaml"),
+                  containerConfigPath)
             .withEnv("MP_MESSAGING_CONNECTOR_SMALLRYE_KAFKA_BOOTSTRAP_SERVERS", smallryeKafkaBootstrapServers)
             .withEnv("QUARKUS_PROFILE", "test") // force test profile
             .withEnv("FOLKBOKFORD_API_BASE_URL", wiremockUrl)
@@ -475,6 +482,12 @@ public class RtfManuellContainerSmokeIT
       OperativtUppgiftslagerRequestMessage oulRequestMessage = mapper.readValue(kafkaMessage,
             OperativtUppgiftslagerRequestMessage.class);
       assertEquals(kundbehovsflodeId, oulRequestMessage.getKundbehovsflodeId());
+      assertEquals("TestUppgiftBeskrivning", oulRequestMessage.getBeskrivning());
+      assertEquals("TestUppgiftNamn", oulRequestMessage.getRegel());
+      assertEquals("TestUppgiftVerksamhetslogik", oulRequestMessage.getVerksamhetslogik());
+      assertEquals("TestUppgiftRoll", oulRequestMessage.getRoll());
+      assertTrue(oulRequestMessage.getUrl().contains("/regel/rtf-manuell"));
+
       //
       // Verify PUT kundbehovsflöde requested
       //
