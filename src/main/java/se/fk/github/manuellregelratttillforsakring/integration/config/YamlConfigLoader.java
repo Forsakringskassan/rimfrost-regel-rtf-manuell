@@ -39,8 +39,7 @@ public final class YamlConfigLoader
 
    public static <T> T loadFromClasspath(String resource, Class<T> type)
    {
-      try (InputStream is =
-         Thread.currentThread().getContextClassLoader().getResourceAsStream(resource))
+      try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource))
       {
          if (is == null)
          {

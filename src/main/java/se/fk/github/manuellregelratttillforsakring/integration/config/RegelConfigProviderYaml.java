@@ -26,10 +26,11 @@ public class RegelConfigProviderYaml implements RegelConfigProvider
       if (configPath == null || configPath.isBlank())
       {
          this.config = YamlConfigLoader.loadFromClasspath(
-            "config.yaml",
-            RegelConfig.class
-         );
-      } else {
+               "config.yaml",
+               RegelConfig.class);
+      }
+      else
+      {
          this.config = YamlConfigLoader.loadFromFile(Path.of(configPath), RegelConfig.class);
       }
    }
