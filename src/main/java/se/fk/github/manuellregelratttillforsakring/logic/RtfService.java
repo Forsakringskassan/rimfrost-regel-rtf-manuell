@@ -15,6 +15,7 @@ import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.Folkb
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.ImmutableFolkbokfordRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.RtfManuellKafkaProducer;
+import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableOulMessageRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
@@ -121,7 +122,16 @@ public class RtfService
       cloudevents.put(cloudeventData.id(), cloudeventData);
       rtfDatas.put(rtfData.kundbehovsflodeId(), rtfData);
 
-      kafkaProducer.sendOulRequest(request.kundbehovsflodeId());
+      var oulMessageRequest = ImmutableOulMessageRequest.builder()
+            .kundbehovsflodeId(request.kundbehovsflodeId())
+            .kundbehov("Vård av husdjur")
+            .regel("Har kunden rätt till försäkring")
+            .beskrivning("Kontrollera om personen har varit frånvarande från sitt arbete.")
+            .verksamhetslogik("C")
+            .roll("Handläggare")
+            .url("http://localhost:8888/regel/rtf-manuell/" + request.kundbehovsflodeId().toString())
+            .build();
+      kafkaProducer.sendOulRequest(oulMessageRequest);
    }
 
    public void updateRtfData(UpdateRtfDataRequest updateRequest)
