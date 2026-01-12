@@ -4,6 +4,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.LoaderOptions;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +34,23 @@ public final class YamlConfigLoader
       catch (Exception e)
       {
          throw new RuntimeException("Failed to load YAML config: " + path, e);
+      }
+   }
+
+   public static <T> T loadFromClasspath(String resource, Class<T> type)
+   {
+      try (InputStream is =
+         Thread.currentThread().getContextClassLoader().getResourceAsStream(resource))
+      {
+         if (is == null)
+         {
+            throw new IllegalStateException("YAML config not found on classpath: " + resource);
+         }
+         return new Yaml().loadAs(is, type);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException("Failed to load YAML config: " + resource, e);
       }
    }
 }
