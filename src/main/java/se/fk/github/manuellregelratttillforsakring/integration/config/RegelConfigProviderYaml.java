@@ -25,10 +25,14 @@ public class RegelConfigProviderYaml implements RegelConfigProvider
       String configPath = System.getenv(ENV_CONFIG_PATH);
       if (configPath == null || configPath.isBlank())
       {
-         configPath = DEFAULT_CONFIG_PATH;
+         this.config = YamlConfigLoader.loadFromClasspath(
+               "config.yaml",
+               RegelConfig.class);
       }
-
-      this.config = YamlConfigLoader.loadFromFile(Path.of(configPath), RegelConfig.class);
+      else
+      {
+         this.config = YamlConfigLoader.loadFromFile(Path.of(configPath), RegelConfig.class);
+      }
    }
 
    @SuppressFBWarnings("EI_EXPOSE_REP")
