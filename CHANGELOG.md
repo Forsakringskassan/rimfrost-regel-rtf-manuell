@@ -2,6 +2,19 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.3.0 (2026-01-15)
+
+### Features
+
+-  add healthcheck (#28) ([34673](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/346739b4844a3b3) NilsElveros)  
+-  use new version of oul async api 0.4.0 (#24) ([d2a27](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/d2a27b07c3d3427) NilsElveros)  
+
+### Bug Fixes
+
+-  **deps**  update dependency org.yaml:snakeyaml to v2.5 ([0c448](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/0c448ad889665fb) renovate[bot])  
+-  config loaded from classpath (#27) ([1255b](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/1255b3f88449acf) NilsElveros)  
+-  Läser regel-information från config.yaml (#25) ([276d3](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/276d34db3132120) Ulf Slunga)  
+
 ## 0.2.3 (2026-01-05)
 
 ### Bug Fixes
