@@ -10,6 +10,8 @@ import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import se.fk.github.common.regel.logic.dto.CreateRegelDataRequest;
+import se.fk.github.common.regel.presentation.kafka.RegelRequestHandlerInterface;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ImmutableArbetsgivareRequest;
@@ -40,7 +42,7 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest
 
 @ApplicationScoped
 @Startup
-public class RtfService
+public class RtfService implements RegelRequestHandlerInterface
 {
 
    @Inject
@@ -100,7 +102,8 @@ public class RtfService
       return mapper.toRtfResponse(kundbehovflodesResponse, folkbokfordResponse, arbetsgivareResponse, rtfData);
    }
 
-   public void createRtfData(CreateRtfDataRequest request)
+   @Override
+   public void createRegel(CreateRegelDataRequest request)
    {
       var kundbehovsflodeRequest = ImmutableKundbehovsflodeRequest.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())

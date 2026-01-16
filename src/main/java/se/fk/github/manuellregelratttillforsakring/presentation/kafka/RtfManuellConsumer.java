@@ -25,18 +25,6 @@ public class RtfManuellConsumer
    @Inject
    RtfManuellKafkaMapper mapper;
 
-   @Incoming("rtf-manuell-requests")
-   @Blocking
-   public void onRtfManuellRequest(RtfManuellRequestMessagePayload rtfRequest)
-   {
-      MDC.put(MDCKeys.PROCESSID.name(), rtfRequest.getData().getKundbehovsflodeId());
-      LOGGER.info(
-            "RtfManuellRequestMessagePayload received with KundbehovsflodeId: " + rtfRequest.getData().getKundbehovsflodeId());
-
-      var request = mapper.toCreateRtfDataRequest(rtfRequest);
-      rtfService.createRtfData(request);
-   }
-
    @Incoming("operativt-uppgiftslager-responses")
    @Blocking
    public void onOulResponse(OperativtUppgiftslagerResponseMessage oulResponse)
