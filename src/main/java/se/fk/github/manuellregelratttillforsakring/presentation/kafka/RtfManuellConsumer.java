@@ -8,7 +8,6 @@ import se.fk.github.logging.callerinfo.model.MDCKeys;
 import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.rimfrost.OperativtUppgiftslagerResponseMessage;
 import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
-import se.fk.rimfrost.regel.rtf.manuell.RtfManuellRequestMessagePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -24,18 +23,6 @@ public class RtfManuellConsumer
 
    @Inject
    RtfManuellKafkaMapper mapper;
-
-   @Incoming("rtf-manuell-requests")
-   @Blocking
-   public void onRtfManuellRequest(RtfManuellRequestMessagePayload rtfRequest)
-   {
-      MDC.put(MDCKeys.PROCESSID.name(), rtfRequest.getData().getKundbehovsflodeId());
-      LOGGER.info(
-            "RtfManuellRequestMessagePayload received with KundbehovsflodeId: " + rtfRequest.getData().getKundbehovsflodeId());
-
-      var request = mapper.toCreateRtfDataRequest(rtfRequest);
-      rtfService.createRtfData(request);
-   }
 
    @Incoming("operativt-uppgiftslager-responses")
    @Blocking

@@ -31,16 +31,17 @@ import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.Status;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.CreateRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.rimfrost.regel.common.logic.dto.RegelDataRequest;
+import se.fk.rimfrost.regel.common.presentation.kafka.RegelRequestHandlerInterface;
 
 @ApplicationScoped
 @Startup
-public class RtfService
+public class RtfService implements RegelRequestHandlerInterface
 {
 
    @Inject
@@ -100,7 +101,8 @@ public class RtfService
       return mapper.toRtfResponse(kundbehovflodesResponse, folkbokfordResponse, arbetsgivareResponse, rtfData);
    }
 
-   public void createRtfData(CreateRtfDataRequest request)
+   @Override
+   public void handle(RegelDataRequest request)
    {
       var kundbehovsflodeRequest = ImmutableKundbehovsflodeRequest.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
