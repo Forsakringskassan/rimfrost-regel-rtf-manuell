@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
-import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableRtfManuellResponseRequest;
-import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeUnderlag;
@@ -17,7 +15,6 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfData
 import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
@@ -81,22 +78,6 @@ public class RtfMapper
                .organisationsnummer(arbetsgivareResponse.organisationsnummer());
       }
       return builder.build();
-   }
-
-   public RtfManuellResponseRequest toRtfResponseRequest(RtfData rtfData, CloudEventData cloudevent, boolean rattTillForsakring)
-   {
-      return ImmutableRtfManuellResponseRequest.builder()
-            .id(cloudevent.id())
-            .kundbehovsflodeId(rtfData.kundbehovsflodeId())
-            .kogitoparentprociid(cloudevent.kogitoparentprociid())
-            .kogitorootprociid(cloudevent.kogitorootprociid())
-            .kogitoprocid(cloudevent.kogitoprocid())
-            .kogitorootprocid(cloudevent.kogitorootprocid())
-            .kogitoprocinstanceid(cloudevent.kogitoprocinstanceid())
-            .kogitoprocist(cloudevent.kogitoprocist())
-            .kogitoprocversion(cloudevent.kogitoprocversion())
-            .rattTillForsakring(rattTillForsakring)
-            .build();
    }
 
    public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData)

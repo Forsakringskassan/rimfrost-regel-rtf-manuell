@@ -35,8 +35,8 @@ import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
 import se.fk.rimfrost.Status;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.PutKundbehovsflodeRequest;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.UppgiftStatus;
-import se.fk.rimfrost.regel.common.RegelRequestMessageData;
 import se.fk.rimfrost.regel.common.RegelRequestMessagePayload;
+import se.fk.rimfrost.regel.common.RegelRequestMessagePayloadData;
 import se.fk.rimfrost.regel.rtf.manuell.*;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
@@ -55,7 +55,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -241,7 +240,7 @@ public class RtfManuellContainerSmokeIT
    private void sendRtfManuellRequest(String kundbehovsflodeId) throws Exception
    {
       RegelRequestMessagePayload payload = new RegelRequestMessagePayload();
-      RegelRequestMessageData data = new RegelRequestMessageData();
+      RegelRequestMessagePayloadData data = new RegelRequestMessagePayloadData();
       data.setKundbehovsflodeId(kundbehovsflodeId);
       payload.setSpecversion(se.fk.rimfrost.regel.common.SpecVersion.NUMBER_1_DOT_0);
       payload.setId("99994567-89ab-4cde-9012-3456789abcde");

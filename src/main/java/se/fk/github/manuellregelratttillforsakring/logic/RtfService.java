@@ -10,6 +10,7 @@ import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ImmutableArbetsgivareRequest;
@@ -22,21 +23,18 @@ import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.Immutab
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.config.RegelConfig;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableCloudEventData;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.*;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableUnderlag;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.Status;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateRtfDataRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.rimfrost.regel.common.integration.kafka.RegelKafkaProducer;
+import se.fk.rimfrost.regel.common.logic.RegelMapper;
 import se.fk.rimfrost.regel.common.logic.dto.RegelDataRequest;
+import se.fk.rimfrost.regel.common.logic.entity.CloudEventData;
+import se.fk.rimfrost.regel.common.logic.entity.ImmutableCloudEventData;
 import se.fk.rimfrost.regel.common.presentation.kafka.RegelRequestHandlerInterface;
 
 @ApplicationScoped
@@ -51,10 +49,16 @@ public class RtfService implements RegelRequestHandlerInterface
    ObjectMapper objectMapper;
 
    @Inject
-   RtfManuellKafkaProducer kafkaProducer;
+   RtfManuellKafkaProducer rtfManuellKafkaProducer;
+
+   @Inject
+   RegelKafkaProducer regelKafkaProducer;
 
    @Inject
    RtfMapper mapper;
+
+   @Inject
+   RegelMapper regelMapper;
 
    @Inject
    FolkbokfordAdapter folkbokfordAdapter;
@@ -69,6 +73,9 @@ public class RtfService implements RegelRequestHandlerInterface
 
    Map<UUID, CloudEventData> cloudevents = new HashMap<UUID, CloudEventData>();
    Map<UUID, RtfData> rtfDatas = new HashMap<UUID, RtfData>();
+
+   @ConfigProperty(name = "kafka.source")
+   String kafkaSource;
 
    @SuppressWarnings("unused")
    @PostConstruct
@@ -150,7 +157,7 @@ public class RtfService implements RegelRequestHandlerInterface
             .roll(regelConfig.getUppgift().getRoll())
             .url("http://localhost:8888" + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
             .build();
-      kafkaProducer.sendOulRequest(oulMessageRequest);
+      rtfManuellKafkaProducer.sendOulRequest(oulMessageRequest);
    }
 
    public void updateRtfData(UpdateRtfDataRequest updateRequest)
@@ -196,9 +203,9 @@ public class RtfService implements RegelRequestHandlerInterface
       {
          var rattTillForsakring = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA);
          var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
-         var rtfResponse = mapper.toRtfResponseRequest(updatedRtfData, cloudevent, rattTillForsakring);
-         kafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
-         kafkaProducer.sendRtfManuellResponse(rtfResponse);
+         var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, rattTillForsakring);
+         rtfManuellKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
+         regelKafkaProducer.sendRegelResponse(rtfResponse, kafkaSource);
       }
    }
 
