@@ -6,12 +6,9 @@ import java.util.UUID;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.OnOverflow;
-
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.OulMessageRequest;
-import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.RtfManuellResponseRequest;
 import se.fk.rimfrost.OperativtUppgiftslagerRequestMessage;
 import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
-import se.fk.rimfrost.regel.rtf.manuell.RtfManuellResponseMessagePayload;
 import se.fk.rimfrost.Status;
 
 @ApplicationScoped
@@ -30,11 +27,6 @@ public class RtfManuellKafkaProducer
    @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1024)
    Emitter<OperativtUppgiftslagerStatusMessage> oulStatusEmitter;
 
-   @Inject
-   @Channel("rtf-manuell-responses")
-   @OnOverflow(value = OnOverflow.Strategy.BUFFER, bufferSize = 1024)
-   Emitter<RtfManuellResponseMessagePayload> rtfManuellResponseEmitter;
-
    public void sendOulRequest(OulMessageRequest messageRequest)
    {
       var request = mapper.toOulRequestMessage(messageRequest);
@@ -49,9 +41,4 @@ public class RtfManuellKafkaProducer
       oulStatusEmitter.send(message);
    }
 
-   public void sendRtfManuellResponse(RtfManuellResponseRequest rtfResponseRequest)
-   {
-      var response = mapper.toRtfManuellResponse(rtfResponseRequest);
-      rtfManuellResponseEmitter.send(response);
-   }
 }
