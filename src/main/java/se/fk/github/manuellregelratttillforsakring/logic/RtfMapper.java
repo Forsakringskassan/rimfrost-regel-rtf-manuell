@@ -12,12 +12,12 @@ import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.d
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeUnderlag;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
+import se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall;
 
 @ApplicationScoped
 public class RtfMapper
@@ -111,8 +111,7 @@ public class RtfMapper
       return requestBuilder.build();
    }
 
-   private BeslutsutfallEnum mapBeslutsutfall(
-         Beslutsutfall beslutsutfall)
+   private BeslutsutfallEnum mapBeslutsutfall(Beslutsutfall beslutsutfall)
    {
       if (beslutsutfall == null)
       {

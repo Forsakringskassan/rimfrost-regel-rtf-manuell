@@ -75,7 +75,7 @@ public class RtfManuellRestMapper
             .build();
    }
 
-   private Beslutsutfall mapBeslutsutfall(se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall beslututfall)
+   private Beslutsutfall mapBeslutsutfall(se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall beslututfall)
    {
       switch (beslututfall)
       {
@@ -90,16 +90,16 @@ public class RtfManuellRestMapper
       }
    }
 
-   private se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall mapBeslutsutfall(Beslutsutfall beslututfall)
+   private se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall mapBeslutsutfall(Beslutsutfall beslututfall)
    {
       switch (beslututfall)
       {
          case JA:
-            return se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall.JA;
+            return se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall.JA;
          case NEJ:
-            return se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall.NEJ;
+            return se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall.NEJ;
          case FU:
-            return se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall.FU;
+            return se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall.FU;
          default:
             return null;
       }
