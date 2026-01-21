@@ -1,13 +1,15 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.runtime.Startup;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
@@ -21,14 +23,15 @@ import se.fk.github.manuellregelratttillforsakring.integration.kafka.RtfManuellK
 import se.fk.github.manuellregelratttillforsakring.integration.kafka.dto.ImmutableOulMessageRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.config.RegelConfig;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableCloudEventData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData.Builder;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableUnderlag;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.Status;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.FSSAinformation;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.Beslutsutfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.CreateRtfDataRequest;
@@ -37,11 +40,14 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.UppgiftStatus;
 
 @ApplicationScoped
-@Startup
 public class RtfService
 {
+
+   @ConfigProperty(name = "application.base-url")
+   String applicationBaseUrl;
 
    @Inject
    RegelConfigProvider regelConfigProvider;
@@ -64,17 +70,8 @@ public class RtfService
    @Inject
    KundbehovsflodeAdapter kundbehovsflodeAdapter;
 
-   private RegelConfig regelConfig;
-
    Map<UUID, CloudEventData> cloudevents = new HashMap<UUID, CloudEventData>();
    Map<UUID, RtfData> rtfDatas = new HashMap<UUID, RtfData>();
-
-   @SuppressWarnings("unused")
-   @PostConstruct
-   void init()
-   {
-      this.regelConfig = regelConfigProvider.getConfig();
-   }
 
    public GetRtfDataResponse getData(GetRtfDataRequest request) throws JsonProcessingException
    {
@@ -130,23 +127,29 @@ public class RtfService
 
       var rtfData = ImmutableRtfData.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
-            .uppgiftId(UUID.randomUUID())
             .cloudeventId(cloudeventData.id())
             .ersattningar(ersattninglist)
+            .skapadTs(OffsetDateTime.now())
+            .planeradTs(OffsetDateTime.now())
+            .uppgiftStatus(UppgiftStatus.PLANERAD)
+            .fssaInformation(FSSAinformation.HANDLAGGNING_PAGAR)
             .underlag(new ArrayList<>())
             .build();
 
       cloudevents.put(cloudeventData.id(), cloudeventData);
       rtfDatas.put(rtfData.kundbehovsflodeId(), rtfData);
 
+      var regelConfig = regelConfigProvider.getConfig();
+
       var oulMessageRequest = ImmutableOulMessageRequest.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
-            .kundbehov("Vård av husdjur")
-            .regel(regelConfig.getUppgift().getNamn())
-            .beskrivning(regelConfig.getUppgift().getBeskrivning())
-            .verksamhetslogik(regelConfig.getUppgift().getVerksamhetslogik())
-            .roll(regelConfig.getUppgift().getRoll())
-            .url("http://localhost:8888" + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
+            .version(regelConfig.getUppgift().getVersion())
+            .kundbehov(kundbehovflodesResponse.formanstyp())
+            .regel(regelConfig.getSpecifikation().getNamn())
+            .beskrivning(regelConfig.getSpecifikation().getUppgiftbeskrivning())
+            .verksamhetslogik(regelConfig.getSpecifikation().getVerksamhetslogik())
+            .roll(regelConfig.getSpecifikation().getRoll())
+            .url(applicationBaseUrl + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
             .build();
       kafkaProducer.sendOulRequest(oulMessageRequest);
    }
@@ -207,7 +210,26 @@ public class RtfService
             .filter(r -> r.uppgiftId().equals(request.uppgiftId()))
             .findFirst()
             .orElse(rtfDatas.get(request.kundbehovsflodeId()));
-      updateKundbehovsflodeInfo(rtfData);
+
+      Builder rtfBuilder = ImmutableRtfData.builder()
+            .from(rtfData);
+
+      if (request.utforarId() != null)
+      {
+         rtfBuilder
+               .utforarId(request.utforarId())
+               .uppgiftStatus(UppgiftStatus.TILLDELAD);
+      }
+      else
+      {
+         rtfBuilder
+               .utforarId(null)
+               .uppgiftStatus(UppgiftStatus.PLANERAD);
+      }
+
+      var updatedRtfData = rtfBuilder.build();
+      rtfDatas.put(rtfData.kundbehovsflodeId(), updatedRtfData);
+      updateKundbehovsflodeInfo(updatedRtfData);
    }
 
    private void updateRtfDataUnderlag(RtfData rtfData, FolkbokfordResponse folkbokfordResponse,
@@ -240,7 +262,7 @@ public class RtfService
 
    private void updateKundbehovsflodeInfo(RtfData rtfData)
    {
-      var request = mapper.toUpdateKundbehovsflodeRequest(rtfData);
+      var request = mapper.toUpdateKundbehovsflodeRequest(rtfData, regelConfigProvider.getConfig());
       kundbehovsflodeAdapter.updateKundbehovsflodeInfo(request);
    }
 }

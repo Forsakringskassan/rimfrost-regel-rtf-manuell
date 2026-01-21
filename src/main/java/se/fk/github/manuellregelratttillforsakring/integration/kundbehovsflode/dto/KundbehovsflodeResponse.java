@@ -16,6 +16,8 @@ public interface KundbehovsflodeResponse
 
    String personnummer();
 
+   String formanstyp();
+
    List<Ersattning> ersattning();
 
    @Value.Immutable

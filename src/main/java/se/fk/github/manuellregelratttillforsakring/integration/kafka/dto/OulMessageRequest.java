@@ -10,6 +10,8 @@ public interface OulMessageRequest
 
    UUID kundbehovsflodeId();
 
+   String version();
+
    String kundbehov();
 
    String regel();

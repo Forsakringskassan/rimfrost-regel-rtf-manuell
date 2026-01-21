@@ -46,6 +46,7 @@ public class RtfManuellKafkaMapper
 
       return ImmutableUpdateStatusRequest.builder()
             .kundbehovsflodeId(UUID.fromString(statusMessage.getKundbehovsflodeId()))
+            .utforarId(UUID.fromString(statusMessage.getUtforarId()))
             .uppgiftId(UUID.fromString(statusMessage.getUppgiftId()))
             .uppgiftStatus(mapStatus(statusMessage.getStatus()))
             .build();
@@ -53,11 +54,10 @@ public class RtfManuellKafkaMapper
 
    private UppgiftStatus mapStatus(Status status)
    {
-
       switch (status)
       {
          case NY:
-            return UppgiftStatus.NY;
+            return UppgiftStatus.PLANERAD;
          case TILLDELAD:
             return UppgiftStatus.TILLDELAD;
          case AVSLUTAD:

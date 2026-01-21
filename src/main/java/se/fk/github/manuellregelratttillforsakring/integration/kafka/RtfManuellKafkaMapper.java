@@ -42,7 +42,7 @@ public class RtfManuellKafkaMapper
    public OperativtUppgiftslagerRequestMessage toOulRequestMessage(OulMessageRequest messageRequest)
    {
       var request = new OperativtUppgiftslagerRequestMessage();
-      request.setVersion("1.0");
+      request.setVersion(messageRequest.version());
       request.setKundbehovsflodeId(messageRequest.kundbehovsflodeId().toString());
       request.setKundbehov(messageRequest.kundbehov());
       request.setRegel(messageRequest.regel());
