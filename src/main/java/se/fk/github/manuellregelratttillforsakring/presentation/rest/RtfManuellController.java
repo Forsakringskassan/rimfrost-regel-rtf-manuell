@@ -1,7 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.presentation.rest;
 
 import java.util.UUID;
-
 import jakarta.ws.rs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
