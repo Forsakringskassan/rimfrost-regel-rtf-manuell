@@ -37,7 +37,8 @@ import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.PutKundbehovsf
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.UppgiftStatus;
 import se.fk.rimfrost.regel.common.RegelRequestMessagePayload;
 import se.fk.rimfrost.regel.common.RegelRequestMessagePayloadData;
-import se.fk.rimfrost.regel.rtf.manuell.*;
+import se.fk.rimfrost.regel.common.RegelResponseMessagePayload;
+import se.fk.rimfrost.regel.common.Utfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchDataRequest;
@@ -485,8 +486,8 @@ public class RtfManuellContainerSmokeIT
       assertEquals(kundbehovsflodeId, oulRequestMessage.getKundbehovsflodeId());
       assertEquals("TestUppgiftBeskrivning", oulRequestMessage.getBeskrivning());
       assertEquals("TestUppgiftNamn", oulRequestMessage.getRegel());
-      assertEquals("TestUppgiftVerksamhetslogik", oulRequestMessage.getVerksamhetslogik());
-      assertEquals("TestUppgiftRoll", oulRequestMessage.getRoll());
+      assertEquals("C", oulRequestMessage.getVerksamhetslogik());
+      assertEquals("ANSVARIG_HANDLAGGARE", oulRequestMessage.getRoll());
       assertTrue(oulRequestMessage.getUrl().contains("/regel/rtf-manuell"));
 
       //
@@ -498,7 +499,7 @@ public class RtfManuellContainerSmokeIT
       var sentJson = putRequests.getLast().getBodyAsString();
       var sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
-      assertEquals(UppgiftStatus.AVSLUTAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus()); // TODO borde ej vara AVSLUTAD nu ??
+      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       // TODO Add more checks above
       //
       // mock status update from OUL
@@ -517,7 +518,7 @@ public class RtfManuellContainerSmokeIT
       sentJson = putRequests.getLast().getBodyAsString();
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
-      assertEquals(UppgiftStatus.AVSLUTAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
+      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       //
       // mock GET operation requested from portal FE
       //
@@ -537,13 +538,12 @@ public class RtfManuellContainerSmokeIT
       sentJson = putRequests.getLast().getBodyAsString();
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
-      assertEquals(UppgiftStatus.AVSLUTAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
+      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       //
       // mock PATCH operation from portal FE
       //
       PatchDataRequest patchDataRequest = new PatchDataRequest();
       patchDataRequest.setErsattningId(UUID.fromString("67c5ded8-7697-41fd-b943-c58a1be15c93"));
-      patchDataRequest.setAvslagsanledning("");
       patchDataRequest.setSignera(true);
       patchDataRequest.setBeslutsutfall(Beslutsutfall.JA);
       httpResponse = sendPatchRtfManuell(httpClient, kundbehovsflodeId, patchDataRequest);
@@ -553,6 +553,9 @@ public class RtfManuellContainerSmokeIT
       kundbehovsflodeRequests = waitForWireMockRequest(wiremockClient, kundbehovsflodeEndpoint + kundbehovsflodeId, 10);
       putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
       assertEquals(4, putRequests.size());
+      sentJson = putRequests.getLast().getBodyAsString();
+      sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
+      assertEquals(UppgiftStatus.AVSLUTAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       //
       // verify kafka status message sent to oul
       //
@@ -565,9 +568,9 @@ public class RtfManuellContainerSmokeIT
       // verify kafka manuell response message sent to VAH
       //
       var kafkaRtfManuellResponseMessage = readKafkaMessage(rtfManuellResponsesTopic);
-      RtfManuellResponseMessagePayload rtfManuellResponseMessagePayload = mapper.readValue(kafkaRtfManuellResponseMessage,
-            RtfManuellResponseMessagePayload.class);
+      RegelResponseMessagePayload rtfManuellResponseMessagePayload = mapper.readValue(kafkaRtfManuellResponseMessage,
+            RegelResponseMessagePayload.class);
       assertEquals(kundbehovsflodeId, rtfManuellResponseMessagePayload.getData().getKundbehovsflodeId());
-      assertEquals(RattTillForsakring.JA, rtfManuellResponseMessagePayload.getData().getRattTillForsakring());
+      assertEquals(Utfall.JA, rtfManuellResponseMessagePayload.getData().getUtfall());
    }
 }

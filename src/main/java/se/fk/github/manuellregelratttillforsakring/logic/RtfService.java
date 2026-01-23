@@ -1,16 +1,17 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.runtime.Startup;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ImmutableArbetsgivareRequest;
@@ -19,31 +20,42 @@ import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.F
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.ImmutableFolkbokfordRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.KundbehovsflodeAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.*;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableRtfData.Builder;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableUnderlag;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.Status;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.FSSAinformation;
 import se.fk.rimfrost.regel.common.integration.config.RegelConfigProvider;
 import se.fk.rimfrost.regel.common.integration.kafka.RegelKafkaProducer;
 import se.fk.rimfrost.regel.common.integration.kafka.dto.ImmutableOulMessageRequest;
 import se.fk.rimfrost.regel.common.logic.RegelMapper;
-import se.fk.rimfrost.regel.common.logic.config.RegelConfig;
 import se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall;
 import se.fk.rimfrost.regel.common.logic.dto.OulResponse;
 import se.fk.rimfrost.regel.common.logic.dto.OulStatus;
 import se.fk.rimfrost.regel.common.logic.dto.RegelDataRequest;
 import se.fk.rimfrost.regel.common.logic.entity.CloudEventData;
 import se.fk.rimfrost.regel.common.logic.entity.ImmutableCloudEventData;
+import se.fk.rimfrost.regel.common.Utfall;
 import se.fk.rimfrost.regel.common.presentation.kafka.OulHandlerInterface;
 import se.fk.rimfrost.regel.common.presentation.kafka.RegelRequestHandlerInterface;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.github.manuellregelratttillforsakring.logic.dto.UppgiftStatus;
 
 @ApplicationScoped
-@Startup
 public class RtfService implements RegelRequestHandlerInterface, OulHandlerInterface
 {
+
+   @ConfigProperty(name = "application.base-url")
+   String applicationBaseUrl;
+
+   @ConfigProperty(name = "kafka.source")
+   String kafkaSource;
 
    @Inject
    RegelConfigProvider regelConfigProvider;
@@ -69,20 +81,8 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
    @Inject
    KundbehovsflodeAdapter kundbehovsflodeAdapter;
 
-   private RegelConfig regelConfig;
-
    Map<UUID, CloudEventData> cloudevents = new HashMap<UUID, CloudEventData>();
    Map<UUID, RtfData> rtfDatas = new HashMap<UUID, RtfData>();
-
-   @ConfigProperty(name = "kafka.source")
-   String kafkaSource;
-
-   @SuppressWarnings("unused")
-   @PostConstruct
-   void init()
-   {
-      this.regelConfig = regelConfigProvider.getConfig();
-   }
 
    public GetRtfDataResponse getData(GetRtfDataRequest request) throws JsonProcessingException
    {
@@ -139,23 +139,28 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
 
       var rtfData = ImmutableRtfData.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
-            .uppgiftId(UUID.randomUUID())
             .cloudeventId(cloudeventData.id())
             .ersattningar(ersattninglist)
+            .skapadTs(OffsetDateTime.now())
+            .planeradTs(OffsetDateTime.now())
+            .uppgiftStatus(UppgiftStatus.PLANERAD)
+            .fssaInformation(FSSAinformation.HANDLAGGNING_PAGAR)
             .underlag(new ArrayList<>())
             .build();
 
       cloudevents.put(cloudeventData.id(), cloudeventData);
       rtfDatas.put(rtfData.kundbehovsflodeId(), rtfData);
 
+      var regelConfig = regelConfigProvider.getConfig();
+
       var oulMessageRequest = ImmutableOulMessageRequest.builder()
             .kundbehovsflodeId(request.kundbehovsflodeId())
-            .kundbehov("Vård av husdjur")
-            .regel(regelConfig.getUppgift().getNamn())
-            .beskrivning(regelConfig.getUppgift().getBeskrivning())
-            .verksamhetslogik(regelConfig.getUppgift().getVerksamhetslogik())
-            .roll(regelConfig.getUppgift().getRoll())
-            .url("http://localhost:8888" + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
+            .kundbehov(kundbehovflodesResponse.formanstyp())
+            .regel(regelConfig.getSpecifikation().getNamn())
+            .beskrivning(regelConfig.getSpecifikation().getUppgiftbeskrivning())
+            .verksamhetslogik(regelConfig.getSpecifikation().getVerksamhetslogik())
+            .roll(regelConfig.getSpecifikation().getRoll())
+            .url(applicationBaseUrl + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
             .build();
       regelKafkaProducer.sendOulRequest(oulMessageRequest);
    }
@@ -179,23 +184,57 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
             .map(e -> e.id().equals(updateRequest.ersattningId()) ? updatedErsattning : e)
             .toList();
 
-      var updatedRtfData = ImmutableRtfData.builder()
+      var updatedRtfDataBuilder = ImmutableRtfData.builder()
             .from(rtfData)
-            .ersattningar(updatedList)
-            .build();
-
-      rtfDatas.put(updateRequest.kundbehovsflodeId(), updatedRtfData);
-
-      updateKundbehovsflodeInfo(updatedRtfData);
+            .ersattningar(updatedList);
 
       if (updateRequest.signernad())
       {
-         var rattTillForsakring = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA);
+         updatedRtfDataBuilder.uppgiftStatus(UppgiftStatus.AVSLUTAD);
+      }
+
+      var updatedRtfData = updatedRtfDataBuilder.build();
+      rtfDatas.put(updateRequest.kundbehovsflodeId(), updatedRtfData);
+
+      if (updateRequest.signernad())
+      {
+         var utfall = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
          var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
-         var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, rattTillForsakring);
+         var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, utfall);
          regelKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
          regelKafkaProducer.sendRegelResponse(rtfResponse, kafkaSource);
       }
+
+      updateKundbehovsflodeInfo(updatedRtfData);
+
+   }
+
+   public void updateStatus(UpdateStatusRequest request)
+   {
+      RtfData rtfData = rtfDatas.values()
+            .stream()
+            .filter(r -> r.uppgiftId().equals(request.uppgiftId()))
+            .findFirst()
+            .orElse(rtfDatas.get(request.kundbehovsflodeId()));
+
+      Builder rtfBuilder = ImmutableRtfData.builder()
+            .from(rtfData);
+
+      if (request.utforarId() != null)
+      {
+         rtfBuilder
+               .utforarId(request.utforarId())
+               .uppgiftStatus(UppgiftStatus.TILLDELAD);
+      }
+      else
+      {
+         rtfBuilder
+               .uppgiftStatus(UppgiftStatus.PLANERAD);
+      }
+
+      var updatedRtfData = rtfBuilder.build();
+      rtfDatas.put(rtfData.kundbehovsflodeId(), updatedRtfData);
+      updateKundbehovsflodeInfo(updatedRtfData);
    }
 
    private void updateRtfDataUnderlag(RtfData rtfData, FolkbokfordResponse folkbokfordResponse,
@@ -228,7 +267,7 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
 
    private void updateKundbehovsflodeInfo(RtfData rtfData)
    {
-      var request = mapper.toUpdateKundbehovsflodeRequest(rtfData);
+      var request = mapper.toUpdateKundbehovsflodeRequest(rtfData, regelConfigProvider.getConfig());
       kundbehovsflodeAdapter.updateKundbehovsflodeInfo(request);
    }
 

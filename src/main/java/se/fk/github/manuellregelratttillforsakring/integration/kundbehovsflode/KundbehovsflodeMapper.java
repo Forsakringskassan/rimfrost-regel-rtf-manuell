@@ -1,24 +1,20 @@
 package se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableErsattning;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.FSSAinformation;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.GetKundbehovsflodeResponse;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Lagrum;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.PutKundbehovsflodeRequest;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Regel;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Roll;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Underlag;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Uppgift;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.UppgiftStatus;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Uppgiftspecifikation;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Verksamhetslogik;
 
 @ApplicationScoped
 public class KundbehovsflodeMapper
@@ -28,6 +24,7 @@ public class KundbehovsflodeMapper
    {
       var responseBuilder = ImmutableKundbehovsflodeResponse.builder()
             .personnummer(apiResponse.getKundbehovsflode().getKundbehov().getKundbehovsroll().getFirst().getIndivid().getId())
+            .formanstyp(apiResponse.getKundbehovsflode().getKundbehov().getFormanstyp())
             .kundbehovsflodeId(apiResponse.getKundbehovsflode().getId());
 
       for (var ersattning : apiResponse.getKundbehovsflode().getKundbehov().getErsattning())
@@ -47,40 +44,33 @@ public class KundbehovsflodeMapper
 
    public PutKundbehovsflodeRequest toApiRequest(UpdateKundbehovsflodeRequest request, GetKundbehovsflodeResponse apiResponse)
    {
-      var putRequest = new PutKundbehovsflodeRequest();
-      var uppgift = new Uppgift();
+      var lagrum = new Lagrum();
+      lagrum.setId(request.uppgift().specifikation().regel().lagrum().id());
+      lagrum.setVersion(request.uppgift().specifikation().regel().lagrum().version());
+      lagrum.setForfattning(request.uppgift().specifikation().regel().lagrum().forfattning());
+      lagrum.setGiltigFrom(request.uppgift().specifikation().regel().lagrum().giltigFrom());
+      lagrum.setGiltigTom(request.uppgift().specifikation().regel().lagrum().giltigTom());
+      lagrum.setKapitel(request.uppgift().specifikation().regel().lagrum().kapitel());
+      lagrum.setParagraf(request.uppgift().specifikation().regel().lagrum().paragraf());
+      lagrum.setPunkt(request.uppgift().specifikation().regel().lagrum().punkt());
+      lagrum.setStycke(request.uppgift().specifikation().regel().lagrum().stycke());
 
-      //Vart ska hämta denna uppgiftdata från?
-      uppgift.setId(request.uppgiftId());
-      uppgift.setFsSAinformation(FSSAinformation.HANDLAGGNING_PAGAR);
-      uppgift.setSkapadTs(OffsetDateTime.now());
-      uppgift.setUtfordTs(OffsetDateTime.now());
-      uppgift.setUppgiftStatus(UppgiftStatus.AVSLUTAD);
-      uppgift.setUtforarId(UUID.randomUUID());//TODO bör komma från OUL
-      uppgift.setVersion("1.0");
+      var regel = new Regel();
+      regel.setId(request.uppgift().specifikation().regel().id());
+      regel.setVersion(request.uppgift().specifikation().regel().version());
+      regel.setLagrum(lagrum);
 
       var uppgiftspecifikation = new Uppgiftspecifikation();
-      uppgiftspecifikation.setId(UUID.randomUUID());
-      uppgiftspecifikation.setApplikationsId("rtf-manuell");
-      uppgiftspecifikation.setApplikationsVersion("1.0");
-      uppgiftspecifikation.setNamn("Rätt till försäkring - manuell kontroll");
-      uppgiftspecifikation.setRoll(Roll.ANSVARIG_HANDLAGGARE);
-      uppgiftspecifikation.setUppgiftbeskrivning("Kontrollera om personen varit på jobbet");
-      uppgiftspecifikation.setUppgiftsGui("rtf-manuell/" + request.kundbehovsflodeId().toString());
-      uppgiftspecifikation.setVerksamhetslogik(Verksamhetslogik.A);
-      uppgiftspecifikation.setVersion("1.0");
-      uppgiftspecifikation.setRegel(new ArrayList<Regel>());
-      uppgift.setUppgiftspecifikation(uppgiftspecifikation);
-
-      var kundbehovflode = apiResponse.getKundbehovsflode();
-      var ersattningar = apiResponse.getKundbehovsflode().getKundbehov().getErsattning();
-
-      for (var ersattning : request.ersattningar())
-      {
-         var ersattningItem = ersattningar.stream().filter(e -> e.getId().equals(ersattning.id())).findFirst().get();
-         ersattningItem.setAvslagsanledning(ersattning.avslagsanledning() == null ? "" : ersattning.avslagsanledning());
-         ersattningItem.setBeslutsutfall(ersattning.beslutsutfall());
-      }
+      uppgiftspecifikation.setId(request.uppgift().specifikation().id());
+      uppgiftspecifikation.setApplikationsId(request.uppgift().specifikation().applikationsId());
+      uppgiftspecifikation.setApplikationsVersion(request.uppgift().specifikation().applikationsversion());
+      uppgiftspecifikation.setNamn(request.uppgift().specifikation().namn());
+      uppgiftspecifikation.setRoll(request.uppgift().specifikation().roll());
+      uppgiftspecifikation.setUppgiftbeskrivning(request.uppgift().specifikation().uppgiftsbeskrivning());
+      uppgiftspecifikation.setUppgiftsGui(request.uppgift().specifikation().url());
+      uppgiftspecifikation.setVerksamhetslogik(request.uppgift().specifikation().verksamhetslogik());
+      uppgiftspecifikation.setVersion(request.uppgift().specifikation().version());
+      uppgiftspecifikation.setRegel(regel);
 
       var underlagList = new ArrayList<Underlag>();
       for (var underlag : request.underlag())
@@ -92,13 +82,50 @@ public class KundbehovsflodeMapper
          underlagList.add(underlagitem);
       }
 
+      var uppgift = new Uppgift();
+      uppgift.setId(request.uppgift().id());
+      uppgift.setFsSAinformation(request.uppgift().fsSAinformation());
+      uppgift.setSkapadTs(request.uppgift().skapadTs());
+      uppgift.setUtfordTs(request.uppgift().utfordTs());
+      uppgift.setUppgiftStatus(mapUppgiftStatus(request.uppgift().uppgiftStatus()));
+      uppgift.setUtforarId(request.uppgift().utforarId());
+      uppgift.setVersion(request.uppgift().version());
+      uppgift.setUppgiftspecifikation(uppgiftspecifikation);
       uppgift.setUnderlag(underlagList);
 
+      var ersattningar = apiResponse.getKundbehovsflode().getKundbehov().getErsattning();
+
+      for (var ersattning : request.ersattningar())
+      {
+         var ersattningItem = ersattningar.stream().filter(e -> e.getId().equals(ersattning.id())).findFirst().get();
+         ersattningItem.setAvslagsanledning(ersattning.avslagsanledning());
+         ersattningItem.setBeslutsutfall(ersattning.beslutsutfall());
+      }
+
+      var kundbehovflode = apiResponse.getKundbehovsflode();
       var kundbehov = kundbehovflode.getKundbehov();
       kundbehov.setErsattning(ersattningar);
       kundbehovflode.setKundbehov(kundbehov);
       uppgift.setKundbehovsflode(kundbehovflode);
+
+      var putRequest = new PutKundbehovsflodeRequest();
       putRequest.setUppgift(uppgift);
       return putRequest;
+   }
+
+   private UppgiftStatus mapUppgiftStatus(
+         se.fk.github.manuellregelratttillforsakring.logic.dto.UppgiftStatus uppgiftStatus)
+   {
+      switch (uppgiftStatus)
+      {
+         case TILLDELAD:
+            return UppgiftStatus.TILLDELAD;
+         case AVSLUTAD:
+            return UppgiftStatus.AVSLUTAD;
+         case PLANERAD:
+            return UppgiftStatus.PLANERAD;
+         default:
+            throw new InternalError("Could not map UppgiftStatus: " + uppgiftStatus);
+      }
    }
 }

@@ -1,12 +1,18 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeLagrum;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRegel;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeSpecifikation;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeUnderlag;
+import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeUppgift;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.UpdateKundbehovsflodeUnderlag;
@@ -17,6 +23,9 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Roll;
+import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Verksamhetslogik;
+import se.fk.rimfrost.regel.common.logic.config.RegelConfig;
 import se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall;
 
 @ApplicationScoped
@@ -80,13 +89,58 @@ public class RtfMapper
       return builder.build();
    }
 
-   public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData)
+   public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData, RegelConfig regelConfig)
    {
+
+      var lagrum = ImmutableUpdateKundbehovsflodeLagrum.builder()
+            .id(regelConfig.getLagrum().getId())
+            .version(regelConfig.getLagrum().getVersion())
+            .forfattning(regelConfig.getLagrum().getForfattning())
+            .giltigFrom(regelConfig.getLagrum().getGiltigFom().toInstant().atOffset(ZoneOffset.UTC))
+            .kapitel(regelConfig.getLagrum().getKapitel())
+            .paragraf(regelConfig.getLagrum().getParagraf())
+            .stycke(regelConfig.getLagrum().getStycke())
+            .punkt(regelConfig.getLagrum().getPunkt())
+            .build();
+
+      var regel = ImmutableUpdateKundbehovsflodeRegel.builder()
+            .id(regelConfig.getRegel().getId())
+            .beskrivning(regelConfig.getRegel().getBeskrivning())
+            .namn(regelConfig.getRegel().getNamn())
+            .version(regelConfig.getRegel().getVersion())
+            .lagrum(lagrum)
+            .build();
+
+      var specifikation = ImmutableUpdateKundbehovsflodeSpecifikation.builder()
+            .id(regelConfig.getSpecifikation().getId())
+            .version(regelConfig.getSpecifikation().getVersion())
+            .namn(regelConfig.getSpecifikation().getNamn())
+            .uppgiftsbeskrivning(regelConfig.getSpecifikation().getUppgiftbeskrivning())
+            .verksamhetslogik(Verksamhetslogik.fromString(regelConfig.getSpecifikation().getVerksamhetslogik()))
+            .roll(Roll.fromString(regelConfig.getSpecifikation().getRoll()))
+            .applikationsId(regelConfig.getSpecifikation().getApplikationsId())
+            .applikationsversion(regelConfig.getSpecifikation().getApplikationsversion())
+            .url(regelConfig.getUppgift().getPath())
+            .regel(regel)
+            .build();
+
+      var uppgift = ImmutableUpdateKundbehovsflodeUppgift.builder()
+            .id(rtfData.uppgiftId())
+            .version(regelConfig.getUppgift().getVersion())
+            .skapadTs(rtfData.skapadTs())
+            .utfordTs(rtfData.utfordTs())
+            .planeradTs(rtfData.planeradTs())
+            .utforarId(rtfData.utforarId())
+            .uppgiftStatus(rtfData.uppgiftStatus())
+            .aktivitet(regelConfig.getUppgift().getAktivitet())
+            .fsSAinformation(rtfData.fssaInformation())
+            .specifikation(specifikation)
+            .build();
 
       var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
             .kundbehovsflodeId(rtfData.kundbehovsflodeId())
-            .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>())
-            .uppgiftId(rtfData.uppgiftId());
+            .uppgift(uppgift)
+            .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>());
 
       for (ErsattningData rtfErsattning : rtfData.ersattningar())
       {

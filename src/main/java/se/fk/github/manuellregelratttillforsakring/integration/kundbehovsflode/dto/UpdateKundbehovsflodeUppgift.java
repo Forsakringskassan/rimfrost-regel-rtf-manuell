@@ -1,26 +1,20 @@
-package se.fk.github.manuellregelratttillforsakring.logic.entity;
+package se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
+
 import org.immutables.value.Value;
+
 import jakarta.annotation.Nullable;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UppgiftStatus;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.FSSAinformation;
 
 @Value.Immutable
-public interface RtfData
+public interface UpdateKundbehovsflodeUppgift
 {
+   UUID id();
 
-   UUID kundbehovsflodeId();
-
-   UUID cloudeventId();
-
-   @Nullable
-   UUID uppgiftId();
-
-   @Nullable
-   UUID utforarId();
+   String version();
 
    OffsetDateTime skapadTs();
 
@@ -30,12 +24,14 @@ public interface RtfData
    @Nullable
    OffsetDateTime planeradTs();
 
+   @Nullable
+   UUID utforarId();
+
    UppgiftStatus uppgiftStatus();
 
-   FSSAinformation fssaInformation();
+   String aktivitet();
 
-   List<ErsattningData> ersattningar();
+   FSSAinformation fsSAinformation();
 
-   List<Underlag> underlag();
-
+   UpdateKundbehovsflodeSpecifikation specifikation();
 }
