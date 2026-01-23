@@ -223,7 +223,6 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
       else
       {
          rtfBuilder
-               .utforarId(null)
                .uppgiftStatus(UppgiftStatus.PLANERAD);
       }
 
