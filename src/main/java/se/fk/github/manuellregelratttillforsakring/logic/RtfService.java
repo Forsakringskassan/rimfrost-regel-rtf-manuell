@@ -195,7 +195,7 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
 
       if (updateRequest.signernad())
       {
-         var utfall = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ ;
+         var utfall = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
          var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
          var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, utfall);
          regelKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
