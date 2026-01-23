@@ -184,14 +184,17 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
             .map(e -> e.id().equals(updateRequest.ersattningId()) ? updatedErsattning : e)
             .toList();
 
-      var updatedRtfData = ImmutableRtfData.builder()
+      var updatedRtfDataBuilder = ImmutableRtfData.builder()
             .from(rtfData)
-            .ersattningar(updatedList)
-            .build();
+            .ersattningar(updatedList);
 
+      if (updateRequest.signernad())
+      {
+         updatedRtfDataBuilder.uppgiftStatus(UppgiftStatus.AVSLUTAD);
+      }
+
+      var updatedRtfData = updatedRtfDataBuilder.build();
       rtfDatas.put(updateRequest.kundbehovsflodeId(), updatedRtfData);
-
-      updateKundbehovsflodeInfo(updatedRtfData);
 
       if (updateRequest.signernad())
       {
@@ -201,6 +204,9 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
          regelKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
          regelKafkaProducer.sendRegelResponse(rtfResponse, kafkaSource);
       }
+
+      updateKundbehovsflodeInfo(updatedRtfData);
+
    }
 
    public void updateStatus(UpdateStatusRequest request)
