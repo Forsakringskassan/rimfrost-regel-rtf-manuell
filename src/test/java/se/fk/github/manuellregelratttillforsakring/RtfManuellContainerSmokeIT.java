@@ -41,7 +41,7 @@ import se.fk.rimfrost.regel.common.RegelResponseMessagePayload;
 import se.fk.rimfrost.regel.common.Utfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchDataRequest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -439,15 +439,31 @@ public class RtfManuellContainerSmokeIT
    }
 
    public HttpResponse<String> sendPatchRtfManuell(HttpClient httpClient, String kundbehovsflodeId,
-         PatchDataRequest patchDataRequest) throws IOException, InterruptedException
+         String ersattningId, PatchErsattningRequest patchDataRequest) throws IOException, InterruptedException
    {
       var url = "http://" + rtfManuell.getHost() + ":" + rtfManuell.getMappedPort(8080) + "/regel/rtf-manuell/"
-            + kundbehovsflodeId;
+            + kundbehovsflodeId + "/ersattning/" + ersattningId;
       var json = mapper.writeValueAsString(patchDataRequest);
       System.out.printf("Sending PATCH rtf manuell to: %s%n", url);
       HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
             .method("PATCH", HttpRequest.BodyPublishers.ofString(json))
+            .header("Content-Type", "application/json")
+            .build();
+      HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      assertEquals(204, response.statusCode());
+      return response;
+   }
+
+   public HttpResponse<String> sendPostRtfManuell(HttpClient httpClient, String kundbehovsflodeId)
+         throws IOException, InterruptedException
+   {
+      var url = "http://" + rtfManuell.getHost() + ":" + rtfManuell.getMappedPort(8080) + "/regel/rtf-manuell/"
+            + kundbehovsflodeId + "/done";
+      System.out.printf("Sending POST rtf manuell to: %s%n", url);
+      HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .method("POST", HttpRequest.BodyPublishers.ofString(""))
             .header("Content-Type", "application/json")
             .build();
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -542,17 +558,20 @@ public class RtfManuellContainerSmokeIT
       //
       // mock PATCH operation from portal FE
       //
-      PatchDataRequest patchDataRequest = new PatchDataRequest();
-      patchDataRequest.setErsattningId(UUID.fromString("67c5ded8-7697-41fd-b943-c58a1be15c93"));
-      patchDataRequest.setSignera(true);
-      patchDataRequest.setBeslutsutfall(Beslutsutfall.JA);
-      httpResponse = sendPatchRtfManuell(httpClient, kundbehovsflodeId, patchDataRequest);
+      PatchErsattningRequest patchErsattningRequest = new PatchErsattningRequest();
+      patchErsattningRequest.setBeslutsutfall(Beslutsutfall.JA);
+      httpResponse = sendPatchRtfManuell(httpClient, kundbehovsflodeId, "67c5ded8-7697-41fd-b943-c58a1be15c93",
+            patchErsattningRequest);
+      //
+      // mock POST operation from portal FE
+      //
+      httpResponse = sendPostRtfManuell(httpClient, kundbehovsflodeId);
       //
       // verify that rule performed requests to kundbehovsflode
       //
       kundbehovsflodeRequests = waitForWireMockRequest(wiremockClient, kundbehovsflodeEndpoint + kundbehovsflodeId, 10);
       putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
-      assertEquals(4, putRequests.size());
+      assertEquals(5, putRequests.size());
       sentJson = putRequests.getLast().getBodyAsString();
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(UppgiftStatus.AVSLUTAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());

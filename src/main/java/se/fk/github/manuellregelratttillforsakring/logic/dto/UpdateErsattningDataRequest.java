@@ -20,6 +20,4 @@ public interface UpdateErsattningDataRequest
    @Nullable
    String avslagsanledning();
 
-   boolean signernad();
-
 }
