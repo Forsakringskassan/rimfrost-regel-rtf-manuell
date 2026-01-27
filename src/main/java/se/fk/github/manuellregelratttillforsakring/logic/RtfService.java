@@ -188,25 +188,32 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
             .from(rtfData)
             .ersattningar(updatedList);
 
-      if (updateRequest.signernad())
-      {
-         updatedRtfDataBuilder.uppgiftStatus(UppgiftStatus.AVSLUTAD);
-      }
-
       var updatedRtfData = updatedRtfDataBuilder.build();
       rtfDatas.put(updateRequest.kundbehovsflodeId(), updatedRtfData);
 
-      if (updateRequest.signernad())
-      {
-         var utfall = updatedList.stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
-         var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
-         var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, utfall);
-         regelKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
-         regelKafkaProducer.sendRegelResponse(rtfResponse, kafkaSource);
-      }
-
       updateKundbehovsflodeInfo(updatedRtfData);
 
+   }
+
+   public void setUppgiftDone(UUID kundbehovsflodeId)
+   {
+      var rtfData = rtfDatas.get(kundbehovsflodeId);
+
+      var updatedRtfDataBuilder = ImmutableRtfData.builder()
+            .from(rtfData);
+
+      updatedRtfDataBuilder.uppgiftStatus(UppgiftStatus.AVSLUTAD);
+
+      var updatedRtfData = updatedRtfDataBuilder.build();
+      rtfDatas.put(kundbehovsflodeId, updatedRtfData);
+
+      var utfall = rtfData.ersattningar().stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
+      var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
+      var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, utfall);
+      regelKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
+      regelKafkaProducer.sendRegelResponse(rtfResponse, kafkaSource);
+
+      updateKundbehovsflodeInfo(updatedRtfData);
    }
 
    public void updateStatus(UpdateStatusRequest request)

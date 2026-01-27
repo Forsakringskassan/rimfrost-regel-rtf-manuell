@@ -13,13 +13,14 @@ import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataRequest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.RtfManuellControllerApi;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchDataRequest;
+import se.fk.rimfrost.regel.common.jaxrsspec.controllers.generatedsource.RtfDoneControllerApi;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 
 @Produces("application/json")
 @Consumes("application/json")
 @ApplicationScoped
-@Path("/regel")
-public class RtfManuellController implements RtfManuellControllerApi
+@Path("/regel/rtf-manuell")
+public class RtfManuellController implements RtfManuellControllerApi, RtfDoneControllerApi
 {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(RtfManuellController.class);
@@ -31,7 +32,7 @@ public class RtfManuellController implements RtfManuellControllerApi
    RtfManuellRestMapper mapper;
 
    @GET
-   @Path("/rtf-manuell/{kundbehovsflodeId}")
+   @Path("/{kundbehovsflodeId}")
    @Override
    public GetDataResponse getData(
          @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId)
@@ -52,14 +53,24 @@ public class RtfManuellController implements RtfManuellControllerApi
    }
 
    @PATCH
-   @Path("/rtf-manuell/{kundbehovsflodeId}")
+   @Path("/{kundbehovsflodeId}/ersattning/{ersattningId}")
    @Override
-   public void updateData(
+   public void updateErsattning(
          @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId,
-         @Valid @NotNull PatchDataRequest patchRequest)
+         @PathParam("ersattningId") UUID ersattningId,
+         @Valid @NotNull PatchErsattningRequest patchRequest)
    {
 
-      var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, patchRequest);
+      var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, ersattningId, patchRequest);
       rtfService.updateErsattningData(request);
+   }
+
+   @POST
+   @Path("/{kundbehovsflodeId}/done")
+   @Override
+   public void markDone(
+         @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId)
+   {
+      rtfService.setUppgiftDone(kundbehovsflodeId);
    }
 }

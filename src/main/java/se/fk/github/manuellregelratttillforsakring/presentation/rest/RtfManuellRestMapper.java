@@ -12,7 +12,7 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Lon;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchDataRequest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund.KonEnum;
 
 @ApplicationScoped
@@ -64,14 +64,14 @@ public class RtfManuellRestMapper
       return response;
    }
 
-   public UpdateErsattningDataRequest toUpdateErsattningDataRequest(UUID kundbehovsflodeId, PatchDataRequest patchRequest)
+   public UpdateErsattningDataRequest toUpdateErsattningDataRequest(UUID kundbehovsflodeId, UUID ersattningId,
+         PatchErsattningRequest patchRequest)
    {
       return ImmutableUpdateErsattningDataRequest.builder()
             .kundbehovsflodeId(kundbehovsflodeId)
             .beslutsutfall(mapBeslutsutfall(patchRequest.getBeslutsutfall()))
-            .ersattningId(patchRequest.getErsattningId())
+            .ersattningId(ersattningId)
             .avslagsanledning(patchRequest.getAvslagsanledning())
-            .signernad(patchRequest.getSignera())
             .build();
    }
 
