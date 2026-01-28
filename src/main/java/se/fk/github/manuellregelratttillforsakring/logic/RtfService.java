@@ -57,7 +57,7 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
    @ConfigProperty(name = "kafka.source")
    String kafkaSource;
 
-   @ConfigProperty(name = "mp.messaging.outgoing.rtf-manuell-responses.topic")
+   @ConfigProperty(name = "mp.messaging.outgoing.regel-responses.topic")
    String responseTopic;
 
    @Inject
