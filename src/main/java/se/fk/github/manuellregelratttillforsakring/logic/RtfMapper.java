@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import se.fk.github.kogito.CloudEventData;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;

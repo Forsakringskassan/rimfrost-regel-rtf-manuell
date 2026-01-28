@@ -105,6 +105,11 @@
       <artifactId>rimfrost-common</artifactId>
       <version>0.1.5</version>
     </dependency>
+    <dependency>
+      <groupId>se.fk.rimfrost.common</groupId>
+      <artifactId>rimfrost-common</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
