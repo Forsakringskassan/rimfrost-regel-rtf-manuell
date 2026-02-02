@@ -6,8 +6,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableUpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
+import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Ersattning;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund;
@@ -75,7 +75,7 @@ public class RtfManuellRestMapper
             .build();
    }
 
-   private Beslutsutfall mapBeslutsutfall(se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall beslututfall)
+   private Beslutsutfall mapBeslutsutfall(se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall beslututfall)
    {
       switch (beslututfall)
       {
@@ -90,16 +90,16 @@ public class RtfManuellRestMapper
       }
    }
 
-   private se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall mapBeslutsutfall(Beslutsutfall beslututfall)
+      private se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall mapBeslutsutfall(Beslutsutfall beslututfall)
    {
       switch (beslututfall)
       {
          case JA:
-            return se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall.JA;
+            return se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.JA;
          case NEJ:
-            return se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall.NEJ;
+            return se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.NEJ;
          case FU:
-            return se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall.FU;
+            return se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.FU;
          default:
             return null;
       }

@@ -22,11 +22,11 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
+import se.fk.rimfrost.framework.regel.logic.config.RegelConfig;
+import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Roll;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Verksamhetslogik;
-import se.fk.rimfrost.regel.common.logic.config.RegelConfig;
-import se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall;
 
 @ApplicationScoped
 public class RtfMapper
