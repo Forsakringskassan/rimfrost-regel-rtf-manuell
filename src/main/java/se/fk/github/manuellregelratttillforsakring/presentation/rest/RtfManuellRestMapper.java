@@ -75,7 +75,8 @@ public class RtfManuellRestMapper
             .build();
    }
 
-   private Beslutsutfall mapBeslutsutfall(se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall beslututfall)
+   private Beslutsutfall mapBeslutsutfall(
+         se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall beslututfall)
    {
       switch (beslututfall)
       {
@@ -90,7 +91,8 @@ public class RtfManuellRestMapper
       }
    }
 
-      private se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall mapBeslutsutfall(Beslutsutfall beslututfall)
+   private se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall mapBeslutsutfall(
+         Beslutsutfall beslututfall)
    {
       switch (beslututfall)
       {
