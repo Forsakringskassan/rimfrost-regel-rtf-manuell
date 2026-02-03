@@ -524,6 +524,7 @@ public class RtfManuellContainerSmokeIT
       statusMessage.setStatus(Status.NY);
       statusMessage.setUppgiftId(oulCorrelation.uppgiftId);
       statusMessage.setKundbehovsflodeId(oulCorrelation.kundbehovsflodeId);
+      statusMessage.setUtforarId(UUID.randomUUID().toString());
       sendOulStatus(oulCorrelation.kafkaKey, oulStatusNotificationTopic, statusMessage);
       //
       // verify expected actions from rtf manual as result of new status reported

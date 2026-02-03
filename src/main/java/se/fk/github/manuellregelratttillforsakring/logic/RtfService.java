@@ -27,19 +27,20 @@ import se.fk.github.manuellregelratttillforsakring.logic.entity.ImmutableUnderla
 import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
 import se.fk.rimfrost.Status;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.FSSAinformation;
-import se.fk.rimfrost.regel.common.integration.config.RegelConfigProvider;
-import se.fk.rimfrost.regel.common.integration.kafka.RegelKafkaProducer;
-import se.fk.rimfrost.regel.common.integration.kafka.dto.ImmutableOulMessageRequest;
-import se.fk.rimfrost.regel.common.logic.RegelMapper;
-import se.fk.rimfrost.regel.common.logic.dto.Beslutsutfall;
-import se.fk.rimfrost.regel.common.logic.dto.OulResponse;
-import se.fk.rimfrost.regel.common.logic.dto.OulStatus;
-import se.fk.rimfrost.regel.common.logic.dto.RegelDataRequest;
-import se.fk.rimfrost.regel.common.logic.entity.CloudEventData;
-import se.fk.rimfrost.regel.common.logic.entity.ImmutableCloudEventData;
-import se.fk.rimfrost.regel.common.Utfall;
-import se.fk.rimfrost.regel.common.presentation.kafka.OulHandlerInterface;
-import se.fk.rimfrost.regel.common.presentation.kafka.RegelRequestHandlerInterface;
+import se.fk.rimfrost.framework.regel.integration.config.RegelConfigProvider;
+import se.fk.rimfrost.framework.regel.integration.kafka.RegelKafkaProducer;
+import se.fk.rimfrost.framework.regel.logic.RegelMapper;
+import se.fk.rimfrost.framework.regel.Utfall;
+import se.fk.rimfrost.framework.regel.logic.dto.RegelDataRequest;
+import se.fk.rimfrost.framework.regel.logic.entity.CloudEventData;
+import se.fk.rimfrost.framework.regel.logic.entity.ImmutableCloudEventData;
+import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
+import se.fk.rimfrost.framework.oul.integration.kafka.OulKafkaProducer;
+import se.fk.rimfrost.framework.oul.integration.kafka.dto.ImmutableOulMessageRequest;
+import se.fk.rimfrost.framework.oul.logic.dto.OulResponse;
+import se.fk.rimfrost.framework.oul.logic.dto.OulStatus;
+import se.fk.rimfrost.framework.oul.presentation.kafka.OulHandlerInterface;
+import se.fk.rimfrost.framework.regel.presentation.kafka.RegelRequestHandlerInterface;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
@@ -68,6 +69,9 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
 
    @Inject
    RegelKafkaProducer regelKafkaProducer;
+
+   @Inject
+   OulKafkaProducer oulKafkaProducer;
 
    @Inject
    RtfMapper mapper;
@@ -165,9 +169,9 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
             .beskrivning(regelConfig.getSpecifikation().getUppgiftbeskrivning())
             .verksamhetslogik(regelConfig.getSpecifikation().getVerksamhetslogik())
             .roll(regelConfig.getSpecifikation().getRoll())
-            .url(applicationBaseUrl + regelConfig.getUppgift().getPath() + "/" + request.kundbehovsflodeId().toString())
+            .url(regelConfig.getUppgift().getPath())
             .build();
-      regelKafkaProducer.sendOulRequest(oulMessageRequest);
+      oulKafkaProducer.sendOulRequest(oulMessageRequest);
    }
 
    public void updateErsattningData(UpdateErsattningDataRequest updateRequest)
@@ -215,7 +219,7 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
       var utfall = rtfData.ersattningar().stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
       var cloudevent = cloudevents.get(updatedRtfData.cloudeventId());
       var rtfResponse = regelMapper.toRegelResponse(updatedRtfData.kundbehovsflodeId(), cloudevent, utfall);
-      regelKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
+      oulKafkaProducer.sendOulStatusUpdate(updatedRtfData.uppgiftId(), Status.AVSLUTAD);
       regelKafkaProducer.sendRegelResponse(rtfResponse);
 
       updateKundbehovsflodeInfo(updatedRtfData);
