@@ -35,10 +35,10 @@ import se.fk.rimfrost.OperativtUppgiftslagerStatusMessage;
 import se.fk.rimfrost.Status;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.PutKundbehovsflodeRequest;
 import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.UppgiftStatus;
-import se.fk.rimfrost.regel.common.RegelRequestMessagePayload;
-import se.fk.rimfrost.regel.common.RegelRequestMessagePayloadData;
-import se.fk.rimfrost.regel.common.RegelResponseMessagePayload;
-import se.fk.rimfrost.regel.common.Utfall;
+import se.fk.rimfrost.framework.regel.RegelRequestMessagePayload;
+import se.fk.rimfrost.framework.regel.RegelRequestMessagePayloadData;
+import se.fk.rimfrost.framework.regel.RegelResponseMessagePayload;
+import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
@@ -243,7 +243,7 @@ public class RtfManuellContainerSmokeIT
       RegelRequestMessagePayload payload = new RegelRequestMessagePayload();
       RegelRequestMessagePayloadData data = new RegelRequestMessagePayloadData();
       data.setKundbehovsflodeId(kundbehovsflodeId);
-      payload.setSpecversion(se.fk.rimfrost.regel.common.SpecVersion.NUMBER_1_DOT_0);
+      payload.setSpecversion(se.fk.rimfrost.framework.regel.SpecVersion.NUMBER_1_DOT_0);
       payload.setId("99994567-89ab-4cde-9012-3456789abcde");
       payload.setSource("TestSource-001");
       payload.setType(rtfManuellRequestsTopic);
@@ -254,7 +254,7 @@ public class RtfManuellContainerSmokeIT
       payload.setKogitoprocinstanceid("66664567-89ab-4cde-9012-3456789abcde");
       payload.setKogitoprocist("345678");
       payload.setKogitoprocversion("111");
-      payload.setKogitoproctype(se.fk.rimfrost.regel.common.KogitoProcType.BPMN);
+      payload.setKogitoproctype(se.fk.rimfrost.framework.regel.KogitoProcType.BPMN);
       payload.setKogitoprocrefid("56789");
       payload.setData(data);
       // Serialize entire payload to JSON
