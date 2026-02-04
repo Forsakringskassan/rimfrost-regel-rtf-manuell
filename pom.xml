@@ -108,7 +108,7 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel</groupId>
       <artifactId>rimfrost-framework-regel</artifactId>
-      <version>0.0.5</version>
+      <version>0.1.1</version>
     </dependency>
   </dependencies>
   <repositories>
