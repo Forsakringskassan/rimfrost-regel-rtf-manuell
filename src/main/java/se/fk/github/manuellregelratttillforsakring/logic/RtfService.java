@@ -40,6 +40,7 @@ import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableK
 import se.fk.rimfrost.framework.oul.logic.dto.OulResponse;
 import se.fk.rimfrost.framework.oul.logic.dto.OulStatus;
 import se.fk.rimfrost.framework.oul.presentation.kafka.OulHandlerInterface;
+import se.fk.rimfrost.framework.oul.presentation.rest.OulUppgiftDoneHandler;
 import se.fk.rimfrost.framework.regel.presentation.kafka.RegelRequestHandlerInterface;
 import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
@@ -49,7 +50,7 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest
 import se.fk.rimfrost.framework.regel.logic.dto.UppgiftStatus;
 
 @ApplicationScoped
-public class RtfService implements RegelRequestHandlerInterface, OulHandlerInterface
+public class RtfService implements RegelRequestHandlerInterface, OulHandlerInterface, OulUppgiftDoneHandler
 {
 
    @ConfigProperty(name = "application.base-url")
@@ -204,7 +205,8 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
 
    }
 
-   public void setUppgiftDone(UUID kundbehovsflodeId)
+   @Override
+   public void handleUppgiftDone(UUID kundbehovsflodeId)
    {
       var rtfData = rtfDatas.get(kundbehovsflodeId);
 
