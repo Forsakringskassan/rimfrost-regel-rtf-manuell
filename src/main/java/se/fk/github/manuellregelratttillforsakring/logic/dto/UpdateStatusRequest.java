@@ -6,6 +6,8 @@ import org.immutables.value.Value;
 
 import jakarta.annotation.Nullable;
 
+import se.fk.rimfrost.framework.regel.logic.dto.UppgiftStatus;
+
 @Value.Immutable
 public interface UpdateStatusRequest
 {
