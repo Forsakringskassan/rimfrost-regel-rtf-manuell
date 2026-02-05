@@ -66,16 +66,6 @@
       <version>0.0.0</version>
     </dependency>
     <dependency>
-      <groupId>se.fk.rimfrost.framework.oul</groupId>
-      <artifactId>rimfrost-framework-oul-openapi</artifactId>
-      <version>0.1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>se.fk.rimfrost.framework.oul</groupId>
-      <artifactId>rimfrost-framework-oul-openapi-jaxrs-spec</artifactId>
-      <version>0.1.0</version>
-    </dependency>
-    <dependency>
       <groupId>se.fk.rimfrost.regel.rtf.manuell</groupId>
       <artifactId>rimfrost-regel-rtf-manuell-openapi-spec</artifactId>
       <version>0.2.1</version>
@@ -103,7 +93,7 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.oul</groupId>
       <artifactId>rimfrost-framework-oul</artifactId>
-      <version>0.0.4</version>
+      <version>0.0.5</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel</groupId>

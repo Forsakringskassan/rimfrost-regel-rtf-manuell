@@ -13,14 +13,14 @@ import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataRequest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.RtfManuellControllerApi;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
-import se.fk.rimfrost.framework.oul.jaxrsspec.controllers.generatedsource.OulDoneControllerApi;
+import se.fk.rimfrost.framework.oul.presentation.rest.OulController;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 
 @Produces("application/json")
 @Consumes("application/json")
 @ApplicationScoped
 @Path("/regel/rtf-manuell")
-public class RtfManuellController implements RtfManuellControllerApi, OulDoneControllerApi
+public class RtfManuellController extends OulController implements RtfManuellControllerApi
 {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(RtfManuellController.class);
@@ -63,14 +63,5 @@ public class RtfManuellController implements RtfManuellControllerApi, OulDoneCon
 
       var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, ersattningId, patchRequest);
       rtfService.updateErsattningData(request);
-   }
-
-   @POST
-   @Path("/{kundbehovsflodeId}/done")
-   @Override
-   public void markDone(
-         @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId)
-   {
-      rtfService.setUppgiftDone(kundbehovsflodeId);
    }
 }
