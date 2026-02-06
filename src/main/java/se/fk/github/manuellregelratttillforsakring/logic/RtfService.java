@@ -62,6 +62,9 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
    @ConfigProperty(name = "mp.messaging.outgoing.regel-responses.topic")
    String responseTopic;
 
+   @ConfigProperty(name = "kafka.subtopic")
+   String subTopic;
+
    @Inject
    RegelConfigProvider regelConfigProvider;
 
@@ -171,6 +174,7 @@ public class RtfService implements RegelRequestHandlerInterface, OulHandlerInter
             .verksamhetslogik(regelConfig.getSpecifikation().getVerksamhetslogik())
             .roll(regelConfig.getSpecifikation().getRoll())
             .url(regelConfig.getUppgift().getPath())
+            .replyToTopic(subTopic)
             .build();
       oulKafkaProducer.sendOulRequest(oulMessageRequest);
    }
