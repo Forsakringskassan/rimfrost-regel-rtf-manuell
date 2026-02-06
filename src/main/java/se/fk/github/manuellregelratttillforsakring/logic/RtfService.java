@@ -52,10 +52,6 @@ import se.fk.rimfrost.framework.regel.logic.dto.UppgiftStatus;
 @ApplicationScoped
 public class RtfService implements RegelRequestHandlerInterface, OulHandlerInterface, OulUppgiftDoneHandler
 {
-
-   @ConfigProperty(name = "application.base-url")
-   String applicationBaseUrl;
-
    @ConfigProperty(name = "kafka.source")
    String kafkaSource;
 
