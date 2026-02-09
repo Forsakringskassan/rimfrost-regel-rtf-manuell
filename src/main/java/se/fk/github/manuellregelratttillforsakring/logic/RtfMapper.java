@@ -1,6 +1,5 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,36 +9,24 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.RtfData;
-import se.fk.rimfrost.framework.regel.logic.config.RegelConfig;
-import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
+
+import se.fk.rimfrost.framework.regel.logic.entity.RegelData;
+import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellMapper;
+import se.fk.rimfrost.framework.regel.logic.entity.ErsattningData;
 import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.UpdateKundbehovsflodeRequest;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeErsattning;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeLagrum;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRegel;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeRequest;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeSpecifikation;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeUnderlag;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableUpdateKundbehovsflodeUppgift;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.UpdateKundbehovsflodeUnderlag;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Ersattning.BeslutsutfallEnum;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Roll;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Verksamhetslogik;
 
 @ApplicationScoped
-public class RtfMapper
+public class RtfMapper extends RegelManuellMapper
 {
 
    public GetRtfDataResponse toRtfResponse(KundbehovsflodeResponse kundbehovflodesResponse,
-         FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RtfData rtfData)
+         FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RegelData regelData)
    {
       var ersattningsList = new ArrayList<Ersattning>();
 
       for (var kundbehovErsattning : kundbehovflodesResponse.ersattning())
       {
-         ErsattningData rtfErsattning = rtfData.ersattningar().stream()
+         ErsattningData rtfErsattning = regelData.ersattningar().stream()
                .filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
                .findFirst()
                .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
@@ -87,100 +74,5 @@ public class RtfMapper
                .organisationsnummer(arbetsgivareResponse.organisationsnummer());
       }
       return builder.build();
-   }
-
-   public UpdateKundbehovsflodeRequest toUpdateKundbehovsflodeRequest(RtfData rtfData, RegelConfig regelConfig)
-   {
-
-      var lagrum = ImmutableUpdateKundbehovsflodeLagrum.builder()
-            .id(regelConfig.getLagrum().getId())
-            .version(regelConfig.getLagrum().getVersion())
-            .forfattning(regelConfig.getLagrum().getForfattning())
-            .giltigFrom(regelConfig.getLagrum().getGiltigFom().toInstant().atOffset(ZoneOffset.UTC))
-            .kapitel(regelConfig.getLagrum().getKapitel())
-            .paragraf(regelConfig.getLagrum().getParagraf())
-            .stycke(regelConfig.getLagrum().getStycke())
-            .punkt(regelConfig.getLagrum().getPunkt())
-            .build();
-
-      var regel = ImmutableUpdateKundbehovsflodeRegel.builder()
-            .id(regelConfig.getRegel().getId())
-            .beskrivning(regelConfig.getRegel().getBeskrivning())
-            .namn(regelConfig.getRegel().getNamn())
-            .version(regelConfig.getRegel().getVersion())
-            .lagrum(lagrum)
-            .build();
-
-      var specifikation = ImmutableUpdateKundbehovsflodeSpecifikation.builder()
-            .id(regelConfig.getSpecifikation().getId())
-            .version(regelConfig.getSpecifikation().getVersion())
-            .namn(regelConfig.getSpecifikation().getNamn())
-            .uppgiftsbeskrivning(regelConfig.getSpecifikation().getUppgiftbeskrivning())
-            .verksamhetslogik(Verksamhetslogik.fromString(regelConfig.getSpecifikation().getVerksamhetslogik()))
-            .roll(Roll.fromString(regelConfig.getSpecifikation().getRoll()))
-            .applikationsId(regelConfig.getSpecifikation().getApplikationsId())
-            .applikationsversion(regelConfig.getSpecifikation().getApplikationsversion())
-            .url(regelConfig.getUppgift().getPath())
-            .regel(regel)
-            .build();
-
-      var uppgift = ImmutableUpdateKundbehovsflodeUppgift.builder()
-            .id(rtfData.uppgiftId())
-            .version(regelConfig.getUppgift().getVersion())
-            .skapadTs(rtfData.skapadTs())
-            .utfordTs(rtfData.utfordTs())
-            .planeradTs(rtfData.planeradTs())
-            .utforarId(rtfData.utforarId())
-            .uppgiftStatus(rtfData.uppgiftStatus())
-            .aktivitet(regelConfig.getUppgift().getAktivitet())
-            .fsSAinformation(rtfData.fssaInformation())
-            .specifikation(specifikation)
-            .build();
-
-      var requestBuilder = ImmutableUpdateKundbehovsflodeRequest.builder()
-            .kundbehovsflodeId(rtfData.kundbehovsflodeId())
-            .uppgift(uppgift)
-            .underlag(new ArrayList<UpdateKundbehovsflodeUnderlag>());
-
-      for (ErsattningData rtfErsattning : rtfData.ersattningar())
-      {
-         var ersattning = ImmutableUpdateKundbehovsflodeErsattning.builder()
-               .beslutsutfall(mapBeslutsutfall(rtfErsattning.beslutsutfall()))
-               .id(rtfErsattning.id())
-               .avslagsanledning(rtfErsattning.avslagsanledning())
-               .build();
-         requestBuilder.addErsattningar(ersattning);
-      }
-
-      for (var rtfUnderlag : rtfData.underlag())
-      {
-         var underlag = ImmutableUpdateKundbehovsflodeUnderlag.builder()
-               .typ(rtfUnderlag.typ())
-               .version(rtfUnderlag.version())
-               .data(rtfUnderlag.data())
-               .build();
-         requestBuilder.addUnderlag(underlag);
-      }
-
-      return requestBuilder.build();
-   }
-
-   private BeslutsutfallEnum mapBeslutsutfall(Beslutsutfall beslutsutfall)
-   {
-      if (beslutsutfall == null)
-      {
-         return BeslutsutfallEnum.FU;
-      }
-
-      switch (beslutsutfall)
-      {
-         case JA:
-            return BeslutsutfallEnum.JA;
-         case NEJ:
-            return BeslutsutfallEnum.NEJ;
-         case FU:
-         default:
-            return BeslutsutfallEnum.FU;
-      }
    }
 }

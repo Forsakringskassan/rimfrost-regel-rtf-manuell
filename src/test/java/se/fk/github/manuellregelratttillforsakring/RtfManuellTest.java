@@ -270,7 +270,7 @@ public class RtfManuellTest
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
       assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
+      assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
       // TODO: Add more checks of sentPutKundbehovsflodeRequest content
 
       // Clear previous requests
@@ -300,7 +300,7 @@ public class RtfManuellTest
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
       assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
+      assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
       // TODO: Add more checks of sentPutKundbehovsflodeRequest content
 
       // Clear previous requests
@@ -329,7 +329,7 @@ public class RtfManuellTest
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
       assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
       assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
+      assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
 
       var ersattningar = sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getKundbehov().getErsattning();
       var ersattning = ersattningar.stream().filter(e -> e.getId().equals(UUID.fromString(ersattningsId))).findFirst()
