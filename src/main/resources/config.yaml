@@ -7,7 +7,7 @@ specifikation:
   id: a42ffaed-2f20-47e8-8499-f2f79ae2f45f
   version: 1.0
   namn: "Har kunden rätt till VAH?"
-  uppgiftbeskrivning: "Konrollerar om kunden har varit frånvarande från sitt arbete"
+  uppgiftbeskrivning: "Kontrollerar om kunden har varit frånvarande från sitt arbete"
   verksamhetslogik: C
   roll: ANSVARIG_HANDLAGGARE
   applikationsId: 3.5.1
