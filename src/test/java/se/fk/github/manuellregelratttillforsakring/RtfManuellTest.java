@@ -211,8 +211,8 @@ public class RtfManuellTest
       var oulRequestMessage = (OperativtUppgiftslagerRequestMessage) message;
       assertEquals(kundbehovsflodeId, oulRequestMessage.getKundbehovsflodeId());
       assertEquals("VAH", oulRequestMessage.getKundbehov());
-      assertEquals("Kontrollerar om kunden har varit frånvarande från sitt arbete", oulRequestMessage.getBeskrivning());
-      assertEquals("Har kunden rätt till VAH?", oulRequestMessage.getRegel());
+      assertEquals("TestUppgiftBeskrivning", oulRequestMessage.getBeskrivning());
+      assertEquals("TestUppgiftNamn", oulRequestMessage.getRegel());
       assertEquals("C", oulRequestMessage.getVerksamhetslogik());
       assertEquals("ANSVARIG_HANDLAGGARE", oulRequestMessage.getRoll());
       assertTrue(oulRequestMessage.getUrl().contains("/regel/rtf-manuell"));

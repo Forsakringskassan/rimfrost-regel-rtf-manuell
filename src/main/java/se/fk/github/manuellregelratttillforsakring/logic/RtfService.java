@@ -2,7 +2,6 @@ package se.fk.github.manuellregelratttillforsakring.logic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -12,18 +11,19 @@ import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.FolkbokfordAdapter;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.ImmutableFolkbokfordRequest;
-import se.fk.rimfrost.framework.regel.logic.entity.ImmutableErsattningData;
-import se.fk.rimfrost.framework.regel.logic.entity.ImmutableRegelData;
-import se.fk.rimfrost.framework.regel.logic.entity.ImmutableUnderlag;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.KundbehovsflodeAdapter;
-import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
+import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.ImmutableKundbehovsflodeRequest;
+import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
 import se.fk.rimfrost.framework.regel.logic.dto.UppgiftStatus;
-import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellService;
+import se.fk.rimfrost.framework.regel.logic.entity.ImmutableErsattningData;
+import se.fk.rimfrost.framework.regel.logic.entity.ImmutableRegelData;
+import se.fk.rimfrost.framework.regel.logic.entity.ImmutableUnderlag;
 import se.fk.rimfrost.framework.regel.logic.entity.RegelData;
+import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellService;
 
 @ApplicationScoped
 @Startup
@@ -149,5 +149,11 @@ public class RtfService extends RegelManuellService
       }
 
       regelDatas.put(regelData.kundbehovsflodeId(), regelDataBuilder.build());
+   }
+
+   @Override
+   protected Utfall decideUtfall(RegelData regelData)
+   {
+      return regelData.ersattningar().stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
    }
 }
