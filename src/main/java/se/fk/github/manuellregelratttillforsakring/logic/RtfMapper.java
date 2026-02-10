@@ -1,7 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
 import java.util.ArrayList;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import se.fk.github.manuellregelratttillforsakring.integration.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.github.manuellregelratttillforsakring.integration.folkbokford.dto.FolkbokfordResponse;
@@ -9,14 +8,12 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
-
 import se.fk.rimfrost.framework.regel.logic.entity.RegelData;
-import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellMapper;
 import se.fk.rimfrost.framework.regel.logic.entity.ErsattningData;
 import se.fk.rimfrost.framework.regel.integration.kundbehovsflode.dto.KundbehovsflodeResponse;
 
 @ApplicationScoped
-public class RtfMapper extends RegelManuellMapper
+public class RtfMapper
 {
 
    public GetRtfDataResponse toRtfResponse(KundbehovsflodeResponse kundbehovflodesResponse,
