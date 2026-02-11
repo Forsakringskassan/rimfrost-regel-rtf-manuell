@@ -11,16 +11,16 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataRequest;
+import se.fk.rimfrost.framework.regel.manuell.presentation.rest.RegelManuellController;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.RtfManuellControllerApi;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
-import se.fk.rimfrost.framework.oul.presentation.rest.OulController;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 
 @Produces("application/json")
 @Consumes("application/json")
 @ApplicationScoped
 @Path("/regel/rtf-manuell")
-public class RtfManuellController extends OulController implements RtfManuellControllerApi
+public class RtfManuellController extends RegelManuellController implements RtfManuellControllerApi
 {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(RtfManuellController.class);
