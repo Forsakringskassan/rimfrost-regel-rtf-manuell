@@ -3,12 +3,19 @@ package se.fk.github.manuellregelratttillforsakring.logic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.runtime.Startup;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.eclipse.store.storage.types.StorageManager;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
+import se.fk.github.manuellregelratttillforsakring.storage.StorageManagerProvider;
+import se.fk.github.manuellregelratttillforsakring.storage.TestDataStorage;
+import se.fk.github.manuellregelratttillforsakring.storage.TestDataStorageProvider;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.ArbetsgivareAdapter;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ImmutableArbetsgivareRequest;
@@ -29,6 +36,8 @@ import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellService;
 @Startup
 public class RtfService extends RegelManuellService
 {
+   Logger logger = LoggerFactory.getLogger(RtfService.class);
+
    @Inject
    ObjectMapper objectMapper;
 
@@ -40,6 +49,30 @@ public class RtfService extends RegelManuellService
 
    @Inject
    ArbetsgivareAdapter arbetsgivareAdapter;
+
+   @Inject
+   StorageManagerProvider storageManagerProvider;
+
+   @Inject
+   TestDataStorageProvider testDataStorageProvider;
+
+   @PostConstruct
+   public void init()
+   {
+      TestDataStorage storage = testDataStorageProvider.getDataStorage();
+      StorageManager storageManager = storageManagerProvider.getStorageManager();
+
+      logger.info("text: {}", storage.getText());
+      storage.setText("bar");
+
+      logger.info("count: {}", storage.getCount());
+      storage.setCount(storage.getCount() + 1);
+      storageManager.store(storage);
+
+      logger.info("list.size(): {}", storage.getList().size());
+      storage.getList().add(new Object());
+      storageManager.store(storage.getList());
+   }
 
    public GetRtfDataResponse getData(GetRtfDataRequest request) throws JsonProcessingException
    {
