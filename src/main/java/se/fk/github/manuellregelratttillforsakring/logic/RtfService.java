@@ -8,7 +8,6 @@ import jakarta.inject.Inject;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateStatusRequest;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.ArbetsgivareAdapter;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ImmutableArbetsgivareRequest;
@@ -18,7 +17,6 @@ import se.fk.rimfrost.framework.folkbokford.adapter.dto.ImmutableFolkbokfordRequ
 import se.fk.rimfrost.framework.kundbehovsflode.adapter.dto.ImmutableKundbehovsflodeRequest;
 import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
-import se.fk.rimfrost.framework.regel.logic.dto.UppgiftStatus;
 import se.fk.rimfrost.framework.regel.logic.entity.ImmutableErsattningData;
 import se.fk.rimfrost.framework.regel.logic.entity.ImmutableRegelData;
 import se.fk.rimfrost.framework.regel.logic.entity.ImmutableUnderlag;
@@ -56,18 +54,28 @@ public class RtfService extends RegelManuellService
             .build();
       var arbetsgivareResponse = arbetsgivareAdapter.getArbetsgivareInfo(arbetsgivareRequest);
 
-      var regelData = regelDatas.get(request.kundbehovsflodeId());
+      RegelData regelData;
+      synchronized (commonRegelData.getLock())
+      {
+         var regelDatas = commonRegelData.getRegelDatas();
+         regelData = regelDatas.get(request.kundbehovsflodeId());
+      }
 
       updateRtfDataUnderlag(regelData, folkbokfordResponse, arbetsgivareResponse);
 
-      updateKundbehovsflodeInfo(regelData);
+      updateKundbehovsFlode(regelData);
 
       return mapper.toRtfResponse(kundbehovflodesResponse, folkbokfordResponse, arbetsgivareResponse, regelData);
    }
 
    public void updateErsattningData(UpdateErsattningDataRequest updateRequest)
    {
-      var regelData = regelDatas.get(updateRequest.kundbehovsflodeId());
+      RegelData regelData;
+      synchronized (commonRegelData.getLock())
+      {
+         var regelDatas = commonRegelData.getRegelDatas();
+         regelData = regelDatas.get(updateRequest.kundbehovsflodeId());
+      }
 
       var existingErsattning = regelData.ersattningar().stream()
             .filter(e -> e.id().equals(updateRequest.ersattningId()))
@@ -89,38 +97,15 @@ public class RtfService extends RegelManuellService
             .ersattningar(updatedList)
             .build();
 
-      regelDatas.put(updateRequest.kundbehovsflodeId(), updatedRegelData);
-
-      updateKundbehovsflodeInfo(updatedRegelData);
-
-   }
-
-   public void updateStatus(UpdateStatusRequest request)
-   {
-      RegelData regelData = regelDatas.values()
-            .stream()
-            .filter(r -> r.uppgiftId().equals(request.uppgiftId()))
-            .findFirst()
-            .orElse(regelDatas.get(request.kundbehovsflodeId()));
-
-      var regelDataBuilder = ImmutableRegelData.builder()
-            .from(regelData);
-
-      if (request.utforarId() != null)
+      synchronized (commonRegelData.getLock())
       {
-         regelDataBuilder
-               .utforarId(request.utforarId())
-               .uppgiftStatus(UppgiftStatus.TILLDELAD);
-      }
-      else
-      {
-         regelDataBuilder
-               .uppgiftStatus(UppgiftStatus.PLANERAD);
+         var regelDatas = commonRegelData.getRegelDatas();
+         regelDatas.put(updateRequest.kundbehovsflodeId(), updatedRegelData);
+         storageManager.store(regelDatas);
       }
 
-      var updatedRtfData = regelDataBuilder.build();
-      regelDatas.put(regelData.kundbehovsflodeId(), updatedRtfData);
-      updateKundbehovsflodeInfo(updatedRtfData);
+      updateKundbehovsFlode(updatedRegelData);
+
    }
 
    private void updateRtfDataUnderlag(RegelData regelData, FolkbokfordResponse folkbokfordResponse,
@@ -148,7 +133,12 @@ public class RtfService extends RegelManuellService
          regelDataBuilder.addUnderlag(arbetsgivareUnderlag);
       }
 
-      regelDatas.put(regelData.kundbehovsflodeId(), regelDataBuilder.build());
+      synchronized (commonRegelData.getLock())
+      {
+         var regelDatas = commonRegelData.getRegelDatas();
+         regelDatas.put(regelData.kundbehovsflodeId(), regelDataBuilder.build());
+         storageManager.store(regelDatas);
+      }
    }
 
    @Override
