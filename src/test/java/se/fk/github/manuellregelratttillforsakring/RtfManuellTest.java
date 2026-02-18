@@ -11,6 +11,13 @@ import io.restassured.http.ContentType;
 import io.smallrye.reactive.messaging.memory.InMemoryConnector;
 import io.quarkus.test.common.QuarkusTestResource;
 import jakarta.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.eclipse.microprofile.reactive.messaging.spi.Connector;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,13 +36,6 @@ import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static io.restassured.RestAssured.given;
@@ -47,7 +47,8 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @QuarkusTest
 @QuarkusTestResource.List(
 {
-      @QuarkusTestResource(se.fk.github.manuellregelratttillforsakring.WireMockTestResource.class)
+      @QuarkusTestResource(se.fk.github.manuellregelratttillforsakring.WireMockTestResource.class),
+      @QuarkusTestResource(StorageDataTestResource.class)
 })
 public class RtfManuellTest
 {
