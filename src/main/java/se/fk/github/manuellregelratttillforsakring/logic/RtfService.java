@@ -3,29 +3,39 @@ package se.fk.github.manuellregelratttillforsakring.logic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.runtime.Startup;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.util.UUID;
+import org.eclipse.store.storage.types.StorageManager;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataRequest;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.UpdateErsattningDataRequest;
+import se.fk.github.manuellregelratttillforsakring.storage.RtfManuellDataStorageProvider;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.ArbetsgivareAdapter;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ImmutableArbetsgivareRequest;
 import se.fk.rimfrost.framework.folkbokford.adapter.FolkbokfordAdapter;
 import se.fk.rimfrost.framework.folkbokford.adapter.dto.FolkbokfordResponse;
 import se.fk.rimfrost.framework.folkbokford.adapter.dto.ImmutableFolkbokfordRequest;
+import se.fk.rimfrost.framework.kundbehovsflode.adapter.KundbehovsflodeAdapter;
 import se.fk.rimfrost.framework.kundbehovsflode.adapter.dto.ImmutableKundbehovsflodeRequest;
 import se.fk.rimfrost.framework.regel.Utfall;
+import se.fk.rimfrost.framework.regel.integration.config.RegelConfigProvider;
+import se.fk.rimfrost.framework.regel.logic.RegelMapper;
+import se.fk.rimfrost.framework.regel.logic.config.RegelConfig;
 import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
 import se.fk.rimfrost.framework.regel.logic.entity.ImmutableErsattningData;
-import se.fk.rimfrost.framework.regel.logic.entity.ImmutableRegelData;
 import se.fk.rimfrost.framework.regel.logic.entity.ImmutableUnderlag;
-import se.fk.rimfrost.framework.regel.logic.entity.RegelData;
-import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellService;
+import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceInterface;
+import se.fk.rimfrost.framework.regel.manuell.logic.entity.ImmutableRegelData;
+import se.fk.rimfrost.framework.regel.manuell.logic.entity.RegelData;
+import se.fk.rimfrost.framework.regel.manuell.storage.entity.CommonRegelData;
+import se.fk.rimfrost.framework.storage.StorageManagerProvider;
 
 @ApplicationScoped
 @Startup
-public class RtfService extends RegelManuellService
+public class RtfService implements RegelManuellServiceInterface
 {
    @Inject
    ObjectMapper objectMapper;
@@ -34,10 +44,42 @@ public class RtfService extends RegelManuellService
    RtfMapper mapper;
 
    @Inject
+   RegelMapper regelMapper;
+
+   @Inject
+   RegelConfigProvider regelConfigProvider;
+
+   @Inject
    FolkbokfordAdapter folkbokfordAdapter;
 
    @Inject
    ArbetsgivareAdapter arbetsgivareAdapter;
+
+   @Inject
+   KundbehovsflodeAdapter kundbehovsflodeAdapter;
+
+   @Inject
+   RtfManuellDataStorageProvider dataStorageProvider;
+
+   @Inject
+   StorageManagerProvider storageManagerProvider;
+
+   StorageManager storageManager;
+
+   CommonRegelData commonRegelData;
+
+   RegelConfig regelConfig;
+
+   @PostConstruct
+   public void init()
+   {
+      regelConfig = regelConfigProvider.getConfig();
+
+      var dataStorage = dataStorageProvider.getDataStorage();
+      commonRegelData = dataStorage.getCommonRegelData();
+
+      storageManager = storageManagerProvider.getStorageManager();
+   }
 
    public GetRtfDataResponse getData(GetRtfDataRequest request) throws JsonProcessingException
    {
@@ -56,12 +98,14 @@ public class RtfService extends RegelManuellService
 
       RegelData regelData = commonRegelData.getRegelData(request.kundbehovsflodeId());
 
-      updateRtfDataUnderlag(regelData, folkbokfordResponse, arbetsgivareResponse);
+      updateRtfDataUnderlag(request.kundbehovsflodeId(), regelData, folkbokfordResponse, arbetsgivareResponse);
 
       // Read RegelData again to obtain updated version
       regelData = commonRegelData.getRegelData(request.kundbehovsflodeId());
 
-      updateKundbehovsFlode(regelData);
+      var putKundbehovsflodeRequest = regelMapper.toPutKundbehovsflodeRequest(request.kundbehovsflodeId(),
+            regelData.uppgiftData(), regelData.underlag(), regelConfig);
+      kundbehovsflodeAdapter.putKundbehovsflode(putKundbehovsflodeRequest);
 
       return mapper.toRtfResponse(kundbehovflodesResponse, folkbokfordResponse, arbetsgivareResponse, regelData);
    }
@@ -97,11 +141,12 @@ public class RtfService extends RegelManuellService
          storageManager.store(regelDatas);
       }
 
-      updateKundbehovsFlode(updatedRegelData);
-
+      var patchKundbehovsflodeRequest = regelMapper.toPatchKundbehovsflodeRequest(updateRequest.kundbehovsflodeId(),
+            updatedRegelData.ersattningar());
+      kundbehovsflodeAdapter.patchKundbehovsflode(patchKundbehovsflodeRequest);
    }
 
-   private void updateRtfDataUnderlag(RegelData regelData, FolkbokfordResponse folkbokfordResponse,
+   private void updateRtfDataUnderlag(UUID kundbehovsflodeId, RegelData regelData, FolkbokfordResponse folkbokfordResponse,
          ArbetsgivareResponse arbetsgivareResponse) throws JsonProcessingException
    {
       var regelDataBuilder = ImmutableRegelData.builder().from(regelData);
@@ -129,14 +174,20 @@ public class RtfService extends RegelManuellService
       synchronized (commonRegelData.getLock())
       {
          var regelDatas = commonRegelData.getRegelDatas();
-         regelDatas.put(regelData.kundbehovsflodeId(), regelDataBuilder.build());
+         regelDatas.put(kundbehovsflodeId, regelDataBuilder.build());
          storageManager.store(regelDatas);
       }
    }
 
    @Override
-   protected Utfall decideUtfall(RegelData regelData)
+   public Utfall decideUtfall(RegelData regelData)
    {
       return regelData.ersattningar().stream().allMatch(e -> e.beslutsutfall() == Beslutsutfall.JA) ? Utfall.JA : Utfall.NEJ;
+   }
+
+   @Override
+   public void handleRegelDone(UUID kundbehovsflodeId)
+   {
+      // Empty since no rule specific data is currently being used
    }
 }
