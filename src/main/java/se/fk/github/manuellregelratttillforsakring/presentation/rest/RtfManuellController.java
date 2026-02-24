@@ -60,7 +60,6 @@ public class RtfManuellController extends RegelManuellController implements RtfM
          @PathParam("ersattningId") UUID ersattningId,
          @Valid @NotNull PatchErsattningRequest patchRequest)
    {
-
       var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, ersattningId, patchRequest);
       rtfService.updateErsattningData(request);
    }

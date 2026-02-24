@@ -1,5 +1,6 @@
 package se.fk.github.manuellregelratttillforsakring;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -232,15 +233,15 @@ public class RtfManuellTest
       //
       // Verify PUT kundbehovsflöde requested
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 2);
+      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
       var putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
+      assertEquals(1, kundbehovsflodeRequests.size());
       assertEquals(1, putRequests.size());
 
       var sentJson = putRequests.getFirst().getBodyAsString();
       var sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
+      assertEquals(UUID.fromString(kundbehovsflodeId), sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflodeId());
       assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       assertNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
       // TODO: Add more checks of sentPutKundbehovsflodeRequest content
@@ -261,15 +262,15 @@ public class RtfManuellTest
       //
       // verify expected actions from rtf manual as result of new status reported
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 2);
+      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
       putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
+      assertEquals(1, kundbehovsflodeRequests.size());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getFirst().getBodyAsString();
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
+      assertEquals(UUID.fromString(kundbehovsflodeId), sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflodeId());
       assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
       // TODO: Add more checks of sentPutKundbehovsflodeRequest content
@@ -286,20 +287,21 @@ public class RtfManuellTest
       // Verify GET operation response
       //
       // TODO more assertions of getDataResponse content
-      assertEquals(kundbehovsflodeId, getDataResponse.getKundbehovsflodeId().toString());
+      assertEquals(UUID.fromString(kundbehovsflodeId), getDataResponse.getKundbehovsflodeId());
 
       //
       // verify that rule performed requests to kundbehovsflode
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 3);
+      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 2);
       putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(2, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
+      assertEquals(2, kundbehovsflodeRequests.size());
+      assertEquals(1, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getLast().getBodyAsString();
       sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
+      assertEquals(UUID.fromString(kundbehovsflodeId), sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflodeId());
       assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
       assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
       // TODO: Add more checks of sentPutKundbehovsflodeRequest content
@@ -320,24 +322,22 @@ public class RtfManuellTest
       //
       // verify that rule performed requests to kundbehovsflode
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 2);
-      putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
+      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer,
+            kundbehovsflodeEndpoint + kundbehovsflodeId + "/ersattning", 1);
+      var patchRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PATCH)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
-      assertEquals(1, putRequests.size());
+      assertEquals(1, kundbehovsflodeRequests.size());
+      assertEquals(1, patchRequests.size());
 
-      sentJson = putRequests.getLast().getBodyAsString();
-      sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(kundbehovsflodeId, sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getId().toString());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
-
-      var ersattningar = sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflode().getKundbehov().getErsattning();
-      var ersattning = ersattningar.stream().filter(e -> e.getId().equals(UUID.fromString(ersattningsId))).findFirst()
-            .orElseThrow();
-      assertEquals(Ersattning.BeslutsutfallEnum.JA, ersattning.getBeslutsutfall());
-      assertEquals(avslagsanledning, ersattning.getAvslagsanledning());
-      // TODO: Add more checks of sentPutKundbehovsflodeRequest content
+      sentJson = patchRequests.getLast().getBodyAsString();
+      var updatedErsattningar = mapper.readValue(sentJson, new TypeReference<List<UpdateErsattning>>()
+      {
+      });
+      assertEquals(1, updatedErsattningar.size());
+      assertEquals(UUID.fromString(ersattningsId), updatedErsattningar.getFirst().getErsattningId());
+      assertEquals(se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.JA,
+            updatedErsattningar.getFirst().getBeslutsutfall());
+      assertEquals(avslagsanledning, updatedErsattningar.getFirst().getAvslagsanledning());
 
       // Clear previous requests
       wiremockServer.resetRequests();
@@ -350,10 +350,10 @@ public class RtfManuellTest
       //
       // verify that rule performed requests to kundbehovsflode
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 2);
+      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
       putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
+      assertEquals(1, kundbehovsflodeRequests.size());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getLast().getBodyAsString();
