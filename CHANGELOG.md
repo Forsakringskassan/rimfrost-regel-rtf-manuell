@@ -2,6 +2,12 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.1 (2026-02-25)
+
+### Bug Fixes
+
+-  Bump rimfrost-framework-regel-manuell version to include upstream bugfix ([6c352](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/6c352ae8c8e574b) Lars Persson)  
+
 ## 0.4.0 (2026-02-24)
 
 ### Features
