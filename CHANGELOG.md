@@ -2,6 +2,58 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.0 (2026-02-24)
+
+### Features
+
+-  use framework.regel.manuell (#43) ([9e36e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/9e36e8753f64330) NilsElveros)  
+-  send reply to header in kafkamessage to OUL (#41) ([d4f2c](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/d4f2c11d36f12ad) NilsElveros)  
+-  add more data to kundebehovsflode PUT (#33) ([71489](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/71489c0e953b02c) NilsElveros)  
+
+### Bug Fixes
+
+-  Bump rimfrost-framework-regel-manuell version ([1f364](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/1f36432a13fb35f) Lars Persson)  
+-  Bump rimfrost-framework-regel-manuell version ([ec891](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ec8911b39c16dff) Lars Persson)  
+-  **deps**  update dependency se.fk.rimfrost.framework.arbetsgivare:rimfrost-framework-arbetsgivare-adapter to v0.1.0 ([46bbb](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/46bbbad4bf3bcb4) renovate[bot])  
+-  Use getRegelData method from CommonRegelData ([fbf01](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/fbf0170873ad481) Lars Persson)  
+-  Use rimfrost-framework-storage ([680b7](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/680b78e3984b1f0) Lars Persson)  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel.manuell:rimfrost-framework-regel-manuell to v0.1.10 (#48) ([1a455](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/1a455a3f1728b18) renovate[bot])  
+-  Use correct kubernetes urls for services ([524cb](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/524cb715c15b607) Lars Persson)  
+-  Bump rimfrost-framework-regel-manuell version ([be3ee](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/be3ee1743e59339) Lars Persson)  
+-  Use adapters from framework ([4cfe7](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/4cfe73a1f6d9dbb) Lars Persson)  
+-  Re-add missing folkbokford and arbetsgivare api base-url ([395d3](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/395d3aff59d483e) Lars Persson)  
+-  lägger till decideUtfall och anpassning mot nytt framework ([84a11](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/84a1162336bc0d4) Ulf Slunga)  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel to v0.1.3 ([1c644](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/1c6444690bd234d) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel to v0.1.2 ([79405](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/794050b2b3645ea) renovate[bot])  
+-  Refactor test to use smallrye in-memory and test resources ([35d17](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/35d179eebb5737a) Lars Persson)  
+-  Use OulController from framework-oul ([01b9a](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/01b9a9bb0645228) Lars Persson)  
+-  Remove dependencies on common ([c8292](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c829231a29927a2) Lars Persson)  
+-  Use kundbehovsflode api from framework ([08f74](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/08f743187386b9c) Lars Persson)  
+-  RegelResponse type and source is now correct (#36) ([ca1ae](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ca1ae1ad16d0c9b) NilsElveros)  
+-  add type to RegelResponse (#35) ([94f78](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/94f78324b2e986b) NilsElveros)  
+-  Refactor PATCH endpoint into two separate endpoints ([93611](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/9361134ba22a041) Lars Persson)  
+-  **deps**  update dependency se.fk.rimfrost:rimfrost-service-oul-asyncapi to v0.4.1 ([80478](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/80478b0b8e36210) renovate[bot])  
+-  använder OUL från rimfrost-common ([f782d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/f782d0c30687256) Ulf Slunga)  
+-  använd producer för regel-responses från rimfrost-common ([bb75f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/bb75fa5bb712d12) Ulf Slunga)  
+-  Flytta RegelRequestDeserializer till common ([2cec9](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/2cec991ef4f9336) Ulf Slunga)  
+-  använd regel message dto från rimfrost-common ([f22c2](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/f22c20d4aa1c9a3) Ulf Slunga)  
+
+### Other changes
+
+**Feat/use regel and oul framework (#37)**
+
+* feat: use oul and regel framework instead of common 
+* spotless 
+* fix: smoketest 
+
+[c4591](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c4591c8be22cb4c) NilsElveros *2026-02-03 07:40:18*
+
+**bumpar version av rimfrost-common**
+
+
+[0acaa](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/0acaaa2d32d56f9) Ulf Slunga *2026-01-21 13:12:19*
+
+
 ## 0.3.0 (2026-01-15)
 
 ### Features
