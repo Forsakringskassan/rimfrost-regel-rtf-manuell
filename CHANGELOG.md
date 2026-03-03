@@ -2,6 +2,13 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.2 (2026-03-03)
+
+### Bug Fixes
+
+-  Bump to trigger release flow ([0be1e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/0be1eb23ae51909) Lars Persson)  
+-  framework bump ([d597d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/d597daed1a889b5) Ulf Slunga)  
+
 ## 0.4.1 (2026-02-25)
 
 ### Bug Fixes
