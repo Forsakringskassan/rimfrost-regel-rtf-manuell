@@ -8,6 +8,6 @@ import org.immutables.value.Value;
 public interface GetRtfDataRequest
 {
 
-   UUID kundbehovsflodeId();
+   UUID handlaggningId();
 
 }
