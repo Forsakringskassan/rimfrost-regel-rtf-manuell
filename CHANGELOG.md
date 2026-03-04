@@ -2,6 +2,13 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.3 (2026-03-04)
+
+### Bug Fixes
+
+-  Rename mapping files to handlaggning ([eac58](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/eac5871573a77cc) Lars Persson)  
+-  Rename kundbehovsflode to handlaggning ([c037c](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c037cfd85ac2ef8) Lars Persson)  
+
 ## 0.4.2 (2026-03-03)
 
 ### Bug Fixes
