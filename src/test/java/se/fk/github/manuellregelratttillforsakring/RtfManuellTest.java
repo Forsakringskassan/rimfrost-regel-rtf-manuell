@@ -61,7 +61,7 @@ public class RtfManuellTest
    private static final String regelResponsesChannel = "regel-responses";
    private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-   private static final String kundbehovsflodeEndpoint = "/kundbehovsflode/";
+   private static final String handlaggningEndpoint = "/handlaggning/";
    private static WireMockServer wiremockServer;
 
    @Inject
@@ -125,30 +125,30 @@ public class RtfManuellTest
       return requests;
    }
 
-   private GetDataResponse sendGetRtfManuell(String kundbehovsflodeId)
+   private GetDataResponse sendGetRtfManuell(String handlaggningId)
    {
-      return given().when().get("/regel/rtf-manuell/{kundbehovsflodeId}", kundbehovsflodeId).then().statusCode(200).extract()
+      return given().when().get("/regel/rtf-manuell/{handlaggningId}", handlaggningId).then().statusCode(200).extract()
             .as(GetDataResponse.class);
    }
 
-   private void sendPatchRtfManuell(String kundbehovsflodeId, String ersattningId, PatchErsattningRequest patchErsattningRequest)
+   private void sendPatchRtfManuell(String handlaggningId, String ersattningId, PatchErsattningRequest patchErsattningRequest)
    {
       given().contentType(ContentType.JSON).body(patchErsattningRequest).when()
-            .patch("/regel/rtf-manuell/{kundbehovsflodeId}/ersattning/{ersattningId}", kundbehovsflodeId,
+            .patch("/regel/rtf-manuell/{handlaggningId}/ersattning/{ersattningId}", handlaggningId,
                   ersattningId)
             .then().statusCode(204);
    }
 
-   private void sendPostRtfManuell(String kundbehovsflodeId)
+   private void sendPostRtfManuell(String handlaggningId)
    {
-      given().when().post("/regel/rtf-manuell/{kundbehovsflodeId}/done", kundbehovsflodeId).then().statusCode(204);
+      given().when().post("/regel/rtf-manuell/{handlaggningId}/done", handlaggningId).then().statusCode(204);
    }
 
-   private void sendRegelRequest(String kundbehovsflodeId) throws Exception
+   private void sendRegelRequest(String handlaggningId) throws Exception
    {
       RegelRequestMessagePayload payload = new RegelRequestMessagePayload();
       RegelRequestMessagePayloadData data = new RegelRequestMessagePayloadData();
-      data.setKundbehovsflodeId(kundbehovsflodeId);
+      data.setHandlaggningId(handlaggningId);
       payload.setSpecversion(se.fk.rimfrost.framework.regel.SpecVersion.NUMBER_1_DOT_0);
       payload.setId("99994567-89ab-4cde-9012-3456789abcde");
       payload.setSource("TestSource-001");
@@ -187,19 +187,19 @@ public class RtfManuellTest
    {
          "5367f6b8-cc4a-11f0-8de9-199901011234"
    })
-   void TestRtfManuellSmoke(String kundbehovsflodeId) throws Exception
+   void TestRtfManuellSmoke(String handlaggningId) throws Exception
    {
-      System.out.printf("Starting TestRtfManuellSmoke. %S%n", kundbehovsflodeId);
+      System.out.printf("Starting TestRtfManuellSmoke. %S%n", handlaggningId);
 
       // Send regel request to start workflow
-      sendRegelRequest(kundbehovsflodeId);
+      sendRegelRequest(handlaggningId);
 
       //
-      // Verify GET kundbehovsflöde requested
+      // Verify GET handläggning requested
       //
-      var kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer,
-            kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
-      assertEquals(1, kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.GET)).count());
+      var handlaggningRequests = waitForWireMockRequest(wiremockServer,
+            handlaggningEndpoint + handlaggningId, 1);
+      assertEquals(1, handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.GET)).count());
 
       //
       // Verify oul message produced
@@ -211,8 +211,8 @@ public class RtfManuellTest
       assertInstanceOf(OperativtUppgiftslagerRequestMessage.class, message);
 
       var oulRequestMessage = (OperativtUppgiftslagerRequestMessage) message;
-      assertEquals(kundbehovsflodeId, oulRequestMessage.getKundbehovsflodeId());
-      assertEquals("VAH", oulRequestMessage.getKundbehov());
+      assertEquals(handlaggningId, oulRequestMessage.getHandlaggningId());
+      assertEquals("VAH", oulRequestMessage.getYrkande());
       assertEquals("TestUppgiftBeskrivning", oulRequestMessage.getBeskrivning());
       assertEquals("TestUppgiftNamn", oulRequestMessage.getRegel());
       assertEquals("C", oulRequestMessage.getVerksamhetslogik());
@@ -226,25 +226,25 @@ public class RtfManuellTest
       // Send mocked OUL response
       //
       OperativtUppgiftslagerResponseMessage oulResponseMessage = new OperativtUppgiftslagerResponseMessage();
-      oulResponseMessage.setKundbehovsflodeId(kundbehovsflodeId);
+      oulResponseMessage.setHandlaggningId(handlaggningId);
       oulResponseMessage.setUppgiftId("11e53b18-e9ac-4707-825b-a1cb80689c29");
       inMemoryConnector.source(oulResponsesChannel).send(oulResponseMessage);
 
       //
-      // Verify PUT kundbehovsflöde requested
+      // Verify PUT handläggning requested
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
-      var putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
+      handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 1);
+      var putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.size());
+      assertEquals(1, handlaggningRequests.size());
       assertEquals(1, putRequests.size());
 
       var sentJson = putRequests.getFirst().getBodyAsString();
-      var sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(UUID.fromString(kundbehovsflodeId), sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflodeId());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
-      // TODO: Add more checks of sentPutKundbehovsflodeRequest content
+      var sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
+      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getUppgift().getHandlaggningId());
+      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
+      assertNull(sentPutHandlaggningRequest.getUppgift().getUtforarId());
+      // TODO: Add more checks of sentPutHandlaggningRequest content
 
       // Clear previous requests
       wiremockServer.resetRequests();
@@ -255,25 +255,25 @@ public class RtfManuellTest
       OperativtUppgiftslagerStatusMessage oulStatusMessage = new OperativtUppgiftslagerStatusMessage();
       oulStatusMessage.setStatus(Status.NY);
       oulStatusMessage.setUppgiftId(oulResponseMessage.getUppgiftId());
-      oulStatusMessage.setKundbehovsflodeId(kundbehovsflodeId);
+      oulStatusMessage.setHandlaggningId(handlaggningId);
       oulStatusMessage.setUtforarId("383cc515-4c55-479b-a96b-244734ef1336");
       inMemoryConnector.source(oulStatusNotificationChannel).send(oulStatusMessage);
 
       //
       // verify expected actions from rtf manual as result of new status reported
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
-      putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
+      handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 1);
+      putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.size());
+      assertEquals(1, handlaggningRequests.size());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getFirst().getBodyAsString();
-      sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(UUID.fromString(kundbehovsflodeId), sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflodeId());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
-      // TODO: Add more checks of sentPutKundbehovsflodeRequest content
+      sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
+      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getUppgift().getHandlaggningId());
+      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
+      assertNotNull(sentPutHandlaggningRequest.getUppgift().getUtforarId());
+      // TODO: Add more checks of sentPutHandlaggningRequest content
 
       // Clear previous requests
       wiremockServer.resetRequests();
@@ -281,30 +281,30 @@ public class RtfManuellTest
       //
       // mock GET operation requested from portal FE
       //
-      var getDataResponse = sendGetRtfManuell(kundbehovsflodeId);
+      var getDataResponse = sendGetRtfManuell(handlaggningId);
 
       //
       // Verify GET operation response
       //
       // TODO more assertions of getDataResponse content
-      assertEquals(UUID.fromString(kundbehovsflodeId), getDataResponse.getKundbehovsflodeId());
+      assertEquals(UUID.fromString(handlaggningId), getDataResponse.getHandlaggningId());
 
       //
-      // verify that rule performed requests to kundbehovsflode
+      // verify that rule performed requests to handlaggning
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 2);
-      putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
+      handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 2);
+      putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(2, kundbehovsflodeRequests.size());
-      assertEquals(1, kundbehovsflodeRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
+      assertEquals(2, handlaggningRequests.size());
+      assertEquals(1, handlaggningRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getLast().getBodyAsString();
-      sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(UUID.fromString(kundbehovsflodeId), sentPutKundbehovsflodeRequest.getUppgift().getKundbehovsflodeId());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
-      assertNotNull(sentPutKundbehovsflodeRequest.getUppgift().getUtforarId());
-      // TODO: Add more checks of sentPutKundbehovsflodeRequest content
+      sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
+      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getUppgift().getHandlaggningId());
+      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
+      assertNotNull(sentPutHandlaggningRequest.getUppgift().getUtforarId());
+      // TODO: Add more checks of sentPutHandlaggningRequest content
 
       // Clear previous requests
       wiremockServer.resetRequests();
@@ -317,16 +317,16 @@ public class RtfManuellTest
       PatchErsattningRequest patchDataRequest = new PatchErsattningRequest();
       patchDataRequest.setAvslagsanledning(avslagsanledning);
       patchDataRequest.setBeslutsutfall(Beslutsutfall.JA);
-      sendPatchRtfManuell(kundbehovsflodeId, ersattningsId, patchDataRequest);
+      sendPatchRtfManuell(handlaggningId, ersattningsId, patchDataRequest);
 
       //
-      // verify that rule performed requests to kundbehovsflode
+      // verify that rule performed requests to handlaggning
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer,
-            kundbehovsflodeEndpoint + kundbehovsflodeId + "/ersattning", 1);
-      var patchRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PATCH)).toList();
+      handlaggningRequests = waitForWireMockRequest(wiremockServer,
+            handlaggningEndpoint + handlaggningId + "/ersattning", 1);
+      var patchRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PATCH)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.size());
+      assertEquals(1, handlaggningRequests.size());
       assertEquals(1, patchRequests.size());
 
       sentJson = patchRequests.getLast().getBodyAsString();
@@ -345,20 +345,20 @@ public class RtfManuellTest
       //
       // mock POST operation from portal FE
       //
-      sendPostRtfManuell(kundbehovsflodeId);
+      sendPostRtfManuell(handlaggningId);
 
       //
-      // verify that rule performed requests to kundbehovsflode
+      // verify that rule performed requests to handlaggning
       //
-      kundbehovsflodeRequests = waitForWireMockRequest(wiremockServer, kundbehovsflodeEndpoint + kundbehovsflodeId, 1);
-      putRequests = kundbehovsflodeRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
+      handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 1);
+      putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, kundbehovsflodeRequests.size());
+      assertEquals(1, handlaggningRequests.size());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getLast().getBodyAsString();
-      sentPutKundbehovsflodeRequest = mapper.readValue(sentJson, PutKundbehovsflodeRequest.class);
-      assertEquals(UppgiftStatus.AVSLUTAD, sentPutKundbehovsflodeRequest.getUppgift().getUppgiftStatus());
+      sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
+      assertEquals(UppgiftStatus.AVSLUTAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
 
       //
       // verify kafka status message sent to oul
@@ -383,7 +383,7 @@ public class RtfManuellTest
       assertInstanceOf(RegelResponseMessagePayload.class, message);
 
       var rtfManuellResponseMessagePayload = (RegelResponseMessagePayload) message;
-      assertEquals(kundbehovsflodeId, rtfManuellResponseMessagePayload.getData().getKundbehovsflodeId());
+      assertEquals(handlaggningId, rtfManuellResponseMessagePayload.getData().getHandlaggningId());
       assertEquals(Utfall.JA, rtfManuellResponseMessagePayload.getData().getUtfall());
    }
 }

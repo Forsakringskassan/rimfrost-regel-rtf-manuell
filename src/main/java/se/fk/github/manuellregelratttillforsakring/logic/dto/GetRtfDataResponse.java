@@ -13,7 +13,7 @@ import se.fk.rimfrost.framework.regel.logic.dto.Beslutsutfall;
 public interface GetRtfDataResponse
 {
 
-   UUID kundbehovsflodeId();
+   UUID handlaggningId();
 
    @Nullable
    String fornamn();

@@ -10,34 +10,34 @@ import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
 import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.framework.folkbokford.adapter.dto.FolkbokfordResponse;
-import se.fk.rimfrost.framework.kundbehovsflode.adapter.dto.KundbehovsflodeResponse;
+import se.fk.rimfrost.framework.handlaggning.adapter.dto.HandlaggningResponse;
 import se.fk.rimfrost.framework.regel.logic.entity.ErsattningData;
 import se.fk.rimfrost.framework.regel.manuell.logic.entity.RegelData;
 
 @ApplicationScoped
 public class RtfMapper
 {
-   public GetRtfDataResponse toRtfResponse(KundbehovsflodeResponse kundbehovflodesResponse,
+   public GetRtfDataResponse toRtfResponse(HandlaggningResponse handlaggningResponse,
          FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RegelData regelData)
    {
       var ersattningsList = new ArrayList<Ersattning>();
 
-      for (var kundbehovErsattning : kundbehovflodesResponse.ersattning())
+      for (var yrkandeErsattning : handlaggningResponse.ersattning())
       {
          ErsattningData rtfErsattning = regelData.ersattningar().stream()
-               .filter(e -> e.id().equals(kundbehovErsattning.ersattningsId()))
+               .filter(e -> e.id().equals(yrkandeErsattning.ersattningsId()))
                .findFirst()
                .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
 
          var ersattning = ImmutableErsattning.builder()
-               .belopp(kundbehovErsattning.belopp())
-               .berakningsgrund(kundbehovErsattning.berakningsgrund())
-               .ersattningsId(kundbehovErsattning.ersattningsId())
-               .ersattningsTyp(kundbehovErsattning.ersattningsTyp())
-               .from(kundbehovErsattning.franOchMed())
-               .tom(kundbehovErsattning.tillOchMed())
+               .belopp(yrkandeErsattning.belopp())
+               .berakningsgrund(yrkandeErsattning.berakningsgrund())
+               .ersattningsId(yrkandeErsattning.ersattningsId())
+               .ersattningsTyp(yrkandeErsattning.ersattningsTyp())
+               .from(yrkandeErsattning.franOchMed())
+               .tom(yrkandeErsattning.tillOchMed())
                .avslagsanledning(rtfErsattning.avslagsanledning())
-               .omfattningsProcent(kundbehovErsattning.omfattningsProcent());
+               .omfattningsProcent(yrkandeErsattning.omfattningsProcent());
 
          if (rtfErsattning.beslutsutfall() != null)
          {
@@ -48,7 +48,7 @@ public class RtfMapper
       }
 
       var builder = ImmutableGetRtfDataResponse.builder()
-            .kundbehovsflodeId(kundbehovflodesResponse.kundbehovsflodeId())
+            .handlaggningId(handlaggningResponse.handlaggningId())
             .ersattning(ersattningsList);
 
       if (folkbokfordResponse != null)

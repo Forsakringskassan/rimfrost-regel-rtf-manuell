@@ -32,16 +32,16 @@ public class RtfManuellController extends RegelManuellController implements RtfM
    RtfManuellRestMapper mapper;
 
    @GET
-   @Path("/{kundbehovsflodeId}")
+   @Path("/{handlaggningId}")
    @Override
    public GetDataResponse getData(
-         @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId)
+         @PathParam("handlaggningId") UUID handlaggningId)
    {
 
       try
       {
          var request = ImmutableGetRtfDataRequest.builder()
-               .kundbehovsflodeId(kundbehovsflodeId)
+               .handlaggningId(handlaggningId)
                .build();
          var response = rtfService.getData(request);
          return mapper.toGetDataResponse(response);
@@ -53,14 +53,14 @@ public class RtfManuellController extends RegelManuellController implements RtfM
    }
 
    @PATCH
-   @Path("/{kundbehovsflodeId}/ersattning/{ersattningId}")
+   @Path("/{handlaggningId}/ersattning/{ersattningId}")
    @Override
    public void updateErsattning(
-         @PathParam("kundbehovsflodeId") UUID kundbehovsflodeId,
+         @PathParam("handlaggningId") UUID handlaggningId,
          @PathParam("ersattningId") UUID ersattningId,
          @Valid @NotNull PatchErsattningRequest patchRequest)
    {
-      var request = mapper.toUpdateErsattningDataRequest(kundbehovsflodeId, ersattningId, patchRequest);
+      var request = mapper.toUpdateErsattningDataRequest(handlaggningId, ersattningId, patchRequest);
       rtfService.updateErsattningData(request);
    }
 }

@@ -42,7 +42,7 @@ public class RtfManuellRestMapper
 
       var response = new GetDataResponse();
       response.setKund(kund);
-      response.kundbehovsflodeId(rtfResponse.kundbehovsflodeId());
+      response.handlaggningId(rtfResponse.handlaggningId());
 
       for (var rtfErsattning : rtfResponse.ersattning())
       {
@@ -64,11 +64,11 @@ public class RtfManuellRestMapper
       return response;
    }
 
-   public UpdateErsattningDataRequest toUpdateErsattningDataRequest(UUID kundbehovsflodeId, UUID ersattningId,
+   public UpdateErsattningDataRequest toUpdateErsattningDataRequest(UUID handlaggningId, UUID ersattningId,
          PatchErsattningRequest patchRequest)
    {
       return ImmutableUpdateErsattningDataRequest.builder()
-            .kundbehovsflodeId(kundbehovsflodeId)
+            .handlaggningId(handlaggningId)
             .beslutsutfall(mapBeslutsutfall(patchRequest.getBeslutsutfall()))
             .ersattningId(ersattningId)
             .avslagsanledning(patchRequest.getAvslagsanledning())
