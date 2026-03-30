@@ -2,75 +2,87 @@ package se.fk.github.manuellregelratttillforsakring.logic;
 
 import java.util.ArrayList;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.enterprise.context.ApplicationScoped;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableErsattning;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataResponse;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.GetRtfDataResponse.Ersattning;
 import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.framework.folkbokford.adapter.dto.FolkbokfordResponse;
-import se.fk.rimfrost.framework.handlaggning.adapter.dto.HandlaggningResponse;
-import se.fk.rimfrost.framework.regel.logic.entity.ErsattningData;
-import se.fk.rimfrost.framework.regel.manuell.logic.entity.RegelData;
+import se.fk.rimfrost.framework.folkbokford.adapter.dto.FolkbokfordResponse.Kon;
+import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
+import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Ersattning;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund.KonEnum;
 
 @ApplicationScoped
 public class RtfMapper
 {
-   public GetRtfDataResponse toRtfResponse(HandlaggningResponse handlaggningResponse,
-         FolkbokfordResponse folkbokfordResponse, ArbetsgivareResponse arbetsgivareResponse, RegelData regelData)
-   {
+
+   public GetDataResponse toGetDataResponse(Handlaggning handlaggning, ArbetsgivareResponse arbetsgivareResponse, FolkbokfordResponse folkbokfordResponse, ObjectMapper objectMapper) {
+
+      var anstallning = new Anstallning();
+      anstallning.setAnstallningsdag(arbetsgivareResponse.anstallningsdag());
+      anstallning.setArbetstidProcent(arbetsgivareResponse.arbetstidProcent());
+      anstallning.setSistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag());
+      anstallning.setOrganisationsnamn(arbetsgivareResponse.organisationsnamn());
+      anstallning.setOrganisationsnummer(arbetsgivareResponse.organisationsnummer());
+
+      var kund = new Kund();
+      kund.setFornamn(folkbokfordResponse.fornamn());
+      kund.setEfternamn(folkbokfordResponse.efternamn());
+      kund.setAnstallning(anstallning);
+      kund.setKon(mapKonEnum(folkbokfordResponse.kon()));
+
       var ersattningsList = new ArrayList<Ersattning>();
+      var ersattningResult = handlaggning.yrkande().produceradeResultat().stream()
+            .filter(pr -> pr.typ().equalsIgnoreCase("ersattning")).toList();
 
-      for (var yrkandeErsattning : handlaggningResponse.ersattning())
+      for (var yrkandeErsattning : ersattningResult)
       {
-         ErsattningData rtfErsattning = regelData.ersattningar().stream()
-               .filter(e -> e.id().equals(yrkandeErsattning.ersattningsId()))
-               .findFirst()
-               .orElseThrow(() -> new IllegalArgumentException("ErsattningData not found"));
-
-         var ersattning = ImmutableErsattning.builder()
-               .belopp(yrkandeErsattning.belopp())
-               .berakningsgrund(yrkandeErsattning.berakningsgrund())
-               .ersattningsId(yrkandeErsattning.ersattningsId())
-               .ersattningsTyp(yrkandeErsattning.ersattningsTyp())
-               .from(yrkandeErsattning.franOchMed())
-               .tom(yrkandeErsattning.tillOchMed())
-               .avslagsanledning(rtfErsattning.avslagsanledning())
-               .omfattningsProcent(yrkandeErsattning.omfattningsProcent());
-
-         if (rtfErsattning.beslutsutfall() != null)
-         {
-            ersattning.beslutsutfall(rtfErsattning.beslutsutfall());
-         }
-
-         ersattningsList.add(ersattning.build());
+         ersattningsList.add(toErsattning(yrkandeErsattning, objectMapper));
       }
 
-      var builder = ImmutableGetRtfDataResponse.builder()
-            .handlaggningId(handlaggningResponse.handlaggningId())
-            .ersattning(ersattningsList);
+      var response = new GetDataResponse();
+      response.setKund(kund);
+      response.handlaggningId(handlaggning.id());
+      response.setErsattningar(ersattningsList);
 
-      if (folkbokfordResponse != null)
-      {
-         builder
-               .fornamn(folkbokfordResponse.fornamn())
-               .efternamn(folkbokfordResponse.efternamn())
-               .kon(folkbokfordResponse.kon().toString());
-      }
+      return response;
+   }
 
-      if (arbetsgivareResponse != null)
+      private KonEnum mapKonEnum(Kon kon)
       {
-         builder
-               .anstallningsdag(arbetsgivareResponse.anstallningsdag())
-               .sistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag())
-               .arbetstidProcent(arbetsgivareResponse.arbetstidProcent())
-               .loneSumma(40000) //TODO: Replace when salary is available in api response
-               .lonFrom(arbetsgivareResponse.anstallningsdag()) // TODO: Replace when salary start date is available in api response
-               .lonTom(arbetsgivareResponse.sistaAnstallningsdag()) // TODO: Replace when salary end date is available in api response
-               .organisationsnamn(arbetsgivareResponse.organisationsnamn())
-               .organisationsnummer(arbetsgivareResponse.organisationsnummer());
+      switch (kon)
+      {
+         case MAN:
+            return KonEnum.MAN;
+         case KVINNA:
+            return KonEnum.KVINNA;
+         default:
+            throw new InternalError("Could not map enum Kon");
       }
-      return builder.build();
+   }
+
+   public Ersattning toErsattning(ProduceratResultat produceratResultat, ObjectMapper objectMapper) {
+      
+      try{
+         var data = objectMapper.readValue(produceratResultat.data(), Ersattning.class);
+
+         var ersattning = new Ersattning();
+         ersattning.setErsattningstyp(data.getErsattningstyp());
+         ersattning.setOmfattningProcent(data.getOmfattningProcent());
+         ersattning.setBelopp(data.getBelopp());
+         ersattning.setBerakningsgrund(data.getBerakningsgrund());
+         ersattning.setBeslutsutfall(data.getBeslutsutfall());
+         ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
+         ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
+         ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
+         return ersattning;
+      } catch(JsonProcessingException e) {
+         throw new RuntimeException("Error while parsing ProduceratResultat.data to Ersattning: " + produceratResultat.data(), e);
+      }
    }
 }
