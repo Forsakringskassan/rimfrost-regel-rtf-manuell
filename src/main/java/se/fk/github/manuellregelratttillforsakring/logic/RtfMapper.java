@@ -21,7 +21,9 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 public class RtfMapper
 {
 
-   public GetDataResponse toGetDataResponse(Handlaggning handlaggning, ArbetsgivareResponse arbetsgivareResponse, FolkbokfordResponse folkbokfordResponse, ObjectMapper objectMapper) {
+   public GetDataResponse toGetDataResponse(Handlaggning handlaggning, ArbetsgivareResponse arbetsgivareResponse,
+         FolkbokfordResponse folkbokfordResponse, ObjectMapper objectMapper)
+   {
 
       var anstallning = new Anstallning();
       anstallning.setAnstallningsdag(arbetsgivareResponse.anstallningsdag());
@@ -53,8 +55,8 @@ public class RtfMapper
       return response;
    }
 
-      private KonEnum mapKonEnum(Kon kon)
-      {
+   private KonEnum mapKonEnum(Kon kon)
+   {
       switch (kon)
       {
          case MAN:
@@ -66,9 +68,11 @@ public class RtfMapper
       }
    }
 
-   public Ersattning toErsattning(ProduceratResultat produceratResultat, ObjectMapper objectMapper) {
-      
-      try{
+   public Ersattning toErsattning(ProduceratResultat produceratResultat, ObjectMapper objectMapper)
+   {
+
+      try
+      {
          var data = objectMapper.readValue(produceratResultat.data(), Ersattning.class);
 
          var ersattning = new Ersattning();
@@ -81,7 +85,9 @@ public class RtfMapper
          ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
          ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
          return ersattning;
-      } catch(JsonProcessingException e) {
+      }
+      catch (JsonProcessingException e)
+      {
          throw new RuntimeException("Error while parsing ProduceratResultat.data to Ersattning: " + produceratResultat.data(), e);
       }
    }

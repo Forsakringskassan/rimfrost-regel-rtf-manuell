@@ -5,8 +5,8 @@ import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellMiddlewareServic
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 
-
 @ApplicationScoped
-public class RegelManuellMiddlewareServiceImpl extends RegelManuellMiddlewareService<GetDataResponse, PatchErsattningRequest>{
-    
+public class RegelManuellMiddlewareServiceImpl extends RegelManuellMiddlewareService<GetDataResponse, PatchErsattningRequest>
+{
+
 }

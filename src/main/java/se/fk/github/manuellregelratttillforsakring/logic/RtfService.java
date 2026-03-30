@@ -31,7 +31,8 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 
 @ApplicationScoped
 @Startup
-public class RtfService extends RegelManuellServiceBase implements RegelManuellServiceInterface<GetDataResponse, PatchErsattningRequest>
+public class RtfService extends RegelManuellServiceBase
+      implements RegelManuellServiceInterface<GetDataResponse, PatchErsattningRequest>
 {
    @Inject
    RtfMapper mapper;
@@ -48,11 +49,12 @@ public class RtfService extends RegelManuellServiceBase implements RegelManuellS
    @Inject
    HandlaggningAdapter handlaggningAdapter;
 
-@Inject
+   @Inject
    ManuellRegelCommonDataStorageService dataStorage;
 
    @Override
-   public GetDataResponse readData(Handlaggning handlaggning) {
+   public GetDataResponse readData(Handlaggning handlaggning)
+   {
       var indvidyrkandeRoll = handlaggning.yrkande().individYrkandeRoller().getFirst();
 
       var individ = individAdapter.getIndivid(indvidyrkandeRoll.individId());
@@ -71,65 +73,70 @@ public class RtfService extends RegelManuellServiceBase implements RegelManuellS
    }
 
    @Override
-   public HandlaggningUpdate updateData(Handlaggning handlaggning, PatchErsattningRequest request) {
+   public HandlaggningUpdate updateData(Handlaggning handlaggning, PatchErsattningRequest request)
+   {
 
       var updatedErsattningar = new ArrayList<se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat>();
-      for(var patchErsattning : request.getErsattningar()) {
-            var produceratResultat = handlaggning.yrkande().produceradeResultat().stream().filter(e -> e.id() == patchErsattning.getErsattningId()).findFirst().orElseThrow();
-            var ersattning = getErsattning(produceratResultat);
-            ersattning.setBeslutsutfall(patchErsattning.getBeslutsutfall());
+      for (var patchErsattning : request.getErsattningar())
+      {
+         var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
+               .filter(e -> e.id() == patchErsattning.getErsattningId()).findFirst().orElseThrow();
+         var ersattning = getErsattning(produceratResultat);
+         ersattning.setBeslutsutfall(patchErsattning.getBeslutsutfall());
 
-            try{
-                  var jsonData = objectMapper.writeValueAsString(ersattning);
+         try
+         {
+            var jsonData = objectMapper.writeValueAsString(ersattning);
 
-                  var updatedErsattning = ImmutableProduceratResultat.builder()
+            var updatedErsattning = ImmutableProduceratResultat.builder()
                   .from(produceratResultat)
                   .version(produceratResultat.version() + 1)
                   .avslagsanledning(patchErsattning.getAvslagsanledning())
                   .data(jsonData)
                   .build();
-                  updatedErsattningar.add(updatedErsattning);
-            } catch(JsonProcessingException e){
-                  throw new InternalError("Error parsing to json: " + ersattning.toString(), e);
-            }
+            updatedErsattningar.add(updatedErsattning);
+         }
+         catch (JsonProcessingException e)
+         {
+            throw new InternalError("Error parsing to json: " + ersattning.toString(), e);
+         }
       }
-      
+
       var commonData = dataStorage.getManuellRegelCommonData(handlaggning.id());
 
       var updatedYrkande = ImmutableYrkande.builder()
             .from(handlaggning.yrkande())
             .addAllProduceradeResultat(updatedErsattningar)
-            .build();      
-          
-            return ImmutableHandlaggningUpdate.builder()
-                  .id(handlaggning.id())
-                  .version(handlaggning.version())
-                  .yrkande(updatedYrkande)
-                  .processInstansId(handlaggning.processInstansId())
-                  .skapadTS(handlaggning.skapadTS())
-                  .avslutadTS(handlaggning.avslutadTS())
-                  .handlaggningspecifikationId(handlaggning.handlaggningspecifikationId())
-                  .uppgift(commonData.uppgift())
-                  .build();
+            .build();
+
+      return ImmutableHandlaggningUpdate.builder()
+            .id(handlaggning.id())
+            .version(handlaggning.version())
+            .yrkande(updatedYrkande)
+            .processInstansId(handlaggning.processInstansId())
+            .skapadTS(handlaggning.skapadTS())
+            .avslutadTS(handlaggning.avslutadTS())
+            .handlaggningspecifikationId(handlaggning.handlaggningspecifikationId())
+            .uppgift(commonData.uppgift())
+            .build();
    }
-   
-      @Override
-      public void done(UUID handlaggningId) {
-            sendRegelResponse(handlaggningId, Utfall.JA);
-      }
 
+   @Override
+   public void done(UUID handlaggningId)
+   {
+      sendRegelResponse(handlaggningId, Utfall.JA);
+   }
 
-
-      private Ersattning getErsattning(se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat produceratResultat)
+   private Ersattning getErsattning(se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat produceratResultat)
+   {
+      try
       {
-            try
-            {
-            return objectMapper.readValue(produceratResultat.data(), Ersattning.class);
-            }
-            catch (JsonProcessingException e)
-            {
-            throw new InternalError("Error parsing producerat resultat to ersattning: " + produceratResultat.data(), e);
-            }
+         return objectMapper.readValue(produceratResultat.data(), Ersattning.class);
       }
+      catch (JsonProcessingException e)
+      {
+         throw new InternalError("Error parsing producerat resultat to ersattning: " + produceratResultat.data(), e);
+      }
+   }
 
 }
