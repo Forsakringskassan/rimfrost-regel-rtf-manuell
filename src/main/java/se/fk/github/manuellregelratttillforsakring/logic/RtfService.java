@@ -73,33 +73,40 @@ public class RtfService extends RegelManuellServiceBase
    @Override
    public HandlaggningUpdate updateData(Handlaggning handlaggning, PatchErsattningRequest request)
    {
-
       var updatedErsattningar = new ArrayList<se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat>();
-      for (var patchErsattning : request.getErsattningar())
+      for (var produceratResultat : handlaggning.yrkande().produceradeResultat())
       {
-         var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
-               .filter(e -> e.id().equals(patchErsattning.getErsattningId())).findFirst().orElseThrow();
-         var ersattning = getErsattning(produceratResultat);
-         ersattning.setBeslutsutfall(patchErsattning.getBeslutsutfall());
 
-         try
+         var patchRequest = request.getErsattningar().stream()
+               .filter(e -> e.getErsattningId().equals(produceratResultat.id())).findAny();
+
+         if (patchRequest.isPresent())
          {
-            var jsonData = objectMapper.writeValueAsString(ersattning);
+            var ersattning = getErsattning(produceratResultat);
+            ersattning.setBeslutsutfall(patchRequest.get().getBeslutsutfall());
+            try
+            {
 
-            var updatedErsattning = ImmutableProduceratResultat.builder()
-                  .from(produceratResultat)
-                  .version(produceratResultat.version() + 1)
-                  .avslagsanledning(patchErsattning.getAvslagsanledning())
-                  .data(jsonData)
-                  .build();
-            updatedErsattningar.add(updatedErsattning);
+               var jsonData = objectMapper.writeValueAsString(ersattning);
+
+               var updatedErsattning = ImmutableProduceratResultat.builder()
+                     .from(produceratResultat)
+                     .version(produceratResultat.version() + 1)
+                     .avslagsanledning(patchRequest.get().getAvslagsanledning())
+                     .data(jsonData)
+                     .build();
+               updatedErsattningar.add(updatedErsattning);
+            }
+            catch (JsonProcessingException e)
+            {
+               throw new InternalError("Error parsing to json: " + ersattning.toString(), e);
+            }
          }
-         catch (JsonProcessingException e)
+         else
          {
-            throw new InternalError("Error parsing to json: " + ersattning.toString(), e);
+            updatedErsattningar.add(produceratResultat);
          }
       }
-
       var commonData = dataStorage.getManuellRegelCommonData(handlaggning.id());
 
       var updatedYrkande = ImmutableYrkande.builder()
