@@ -1,18 +1,8 @@
 package se.fk.github.manuellregelratttillforsakring.presentation.rest;
 
-import java.util.UUID;
 import jakarta.ws.rs.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
-import se.fk.github.manuellregelratttillforsakring.logic.dto.ImmutableGetRtfDataRequest;
 import se.fk.rimfrost.framework.regel.manuell.presentation.rest.RegelManuellController;
-import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.RtfManuellControllerApi;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 
@@ -20,47 +10,6 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 @Consumes("application/json")
 @ApplicationScoped
 @Path("/regel/rtf-manuell")
-public class RtfManuellController extends RegelManuellController implements RtfManuellControllerApi
+public class RtfManuellController extends RegelManuellController<GetDataResponse, PatchErsattningRequest>
 {
-
-   private static final Logger LOGGER = LoggerFactory.getLogger(RtfManuellController.class);
-
-   @Inject
-   RtfService rtfService;
-
-   @Inject
-   RtfManuellRestMapper mapper;
-
-   @GET
-   @Path("/{handlaggningId}")
-   @Override
-   public GetDataResponse getData(
-         @PathParam("handlaggningId") UUID handlaggningId)
-   {
-
-      try
-      {
-         var request = ImmutableGetRtfDataRequest.builder()
-               .handlaggningId(handlaggningId)
-               .build();
-         var response = rtfService.getData(request);
-         return mapper.toGetDataResponse(response);
-      }
-      catch (JsonProcessingException e)
-      {
-         throw new InternalServerErrorException("Failed to process request");
-      }
-   }
-
-   @PATCH
-   @Path("/{handlaggningId}/ersattning/{ersattningId}")
-   @Override
-   public void updateErsattning(
-         @PathParam("handlaggningId") UUID handlaggningId,
-         @PathParam("ersattningId") UUID ersattningId,
-         @Valid @NotNull PatchErsattningRequest patchRequest)
-   {
-      var request = mapper.toUpdateErsattningDataRequest(handlaggningId, ersattningId, patchRequest);
-      rtfService.updateErsattningData(request);
-   }
 }
