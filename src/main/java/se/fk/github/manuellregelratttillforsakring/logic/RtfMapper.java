@@ -73,14 +73,7 @@ public class RtfMapper
 
       try
       {
-         var data = objectMapper.readValue(produceratResultat.data(), Ersattning.class);
-
-         var ersattning = new Ersattning();
-         ersattning.setErsattningstyp(data.getErsattningstyp());
-         ersattning.setOmfattningProcent(data.getOmfattningProcent());
-         ersattning.setBelopp(data.getBelopp());
-         ersattning.setBerakningsgrund(data.getBerakningsgrund());
-         ersattning.setBeslutsutfall(data.getBeslutsutfall());
+         var ersattning = objectMapper.readValue(produceratResultat.data(), Ersattning.class);
          ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
          ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
          ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
