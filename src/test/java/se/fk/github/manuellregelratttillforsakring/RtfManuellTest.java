@@ -37,6 +37,8 @@ import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.UpdateErsattning;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static io.restassured.RestAssured.given;
@@ -131,11 +133,10 @@ public class RtfManuellTest
             .as(GetDataResponse.class);
    }
 
-   private void sendPatchRtfManuell(String handlaggningId, String ersattningId, PatchErsattningRequest patchErsattningRequest)
+   private void sendPatchRtfManuell(String handlaggningId, PatchErsattningRequest patchErsattningRequest)
    {
       given().contentType(ContentType.JSON).body(patchErsattningRequest).when()
-            .patch("/regel/rtf-manuell/{handlaggningId}/ersattning/{ersattningId}", handlaggningId,
-                  ersattningId)
+            .patch("/regel/rtf-manuell/{handlaggningId}", handlaggningId)
             .then().statusCode(204);
    }
 
@@ -149,6 +150,7 @@ public class RtfManuellTest
       RegelRequestMessagePayload payload = new RegelRequestMessagePayload();
       RegelRequestMessagePayloadData data = new RegelRequestMessagePayloadData();
       data.setHandlaggningId(handlaggningId);
+      data.setAktivitetId("ff118fd4-a7f2-454c-90b3-7282b7c1fca8");
       payload.setSpecversion(se.fk.rimfrost.framework.regel.SpecVersion.NUMBER_1_DOT_0);
       payload.setId("99994567-89ab-4cde-9012-3456789abcde");
       payload.setSource("TestSource-001");
@@ -212,7 +214,6 @@ public class RtfManuellTest
 
       var oulRequestMessage = (OperativtUppgiftslagerRequestMessage) message;
       assertEquals(handlaggningId, oulRequestMessage.getHandlaggningId());
-      assertEquals("VAH", oulRequestMessage.getYrkande());
       assertEquals("TestUppgiftBeskrivning", oulRequestMessage.getBeskrivning());
       assertEquals("TestUppgiftNamn", oulRequestMessage.getRegel());
       assertEquals("C", oulRequestMessage.getVerksamhetslogik());
@@ -231,25 +232,6 @@ public class RtfManuellTest
       inMemoryConnector.source(oulResponsesChannel).send(oulResponseMessage);
 
       //
-      // Verify PUT handläggning requested
-      //
-      handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 1);
-      var putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
-
-      assertEquals(1, handlaggningRequests.size());
-      assertEquals(1, putRequests.size());
-
-      var sentJson = putRequests.getFirst().getBodyAsString();
-      var sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
-      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getUppgift().getHandlaggningId());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
-      assertNull(sentPutHandlaggningRequest.getUppgift().getUtforarId());
-      // TODO: Add more checks of sentPutHandlaggningRequest content
-
-      // Clear previous requests
-      wiremockServer.resetRequests();
-
-      //
       // mock status update from OUL
       //
       OperativtUppgiftslagerStatusMessage oulStatusMessage = new OperativtUppgiftslagerStatusMessage();
@@ -258,22 +240,6 @@ public class RtfManuellTest
       oulStatusMessage.setHandlaggningId(handlaggningId);
       oulStatusMessage.setUtforarId("383cc515-4c55-479b-a96b-244734ef1336");
       inMemoryConnector.source(oulStatusNotificationChannel).send(oulStatusMessage);
-
-      //
-      // verify expected actions from rtf manual as result of new status reported
-      //
-      handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 1);
-      putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
-
-      assertEquals(1, handlaggningRequests.size());
-      assertEquals(1, putRequests.size());
-
-      sentJson = putRequests.getFirst().getBodyAsString();
-      sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
-      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getUppgift().getHandlaggningId());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
-      assertNotNull(sentPutHandlaggningRequest.getUppgift().getUtforarId());
-      // TODO: Add more checks of sentPutHandlaggningRequest content
 
       // Clear previous requests
       wiremockServer.resetRequests();
@@ -293,17 +259,17 @@ public class RtfManuellTest
       // verify that rule performed requests to handlaggning
       //
       handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 2);
-      putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
+      var putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(2, handlaggningRequests.size());
-      assertEquals(1, handlaggningRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
-      assertEquals(1, putRequests.size());
+      assertEquals(4, handlaggningRequests.size());
+      assertEquals(2, handlaggningRequests.stream().filter(r -> r.getMethod().equals(RequestMethod.GET)).count());
+      assertEquals(2, putRequests.size());
 
-      sentJson = putRequests.getLast().getBodyAsString();
-      sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
-      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getUppgift().getHandlaggningId());
-      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
-      assertNotNull(sentPutHandlaggningRequest.getUppgift().getUtforarId());
+      var sentJson = putRequests.getLast().getBodyAsString();
+      var sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
+      assertEquals(UUID.fromString(handlaggningId), sentPutHandlaggningRequest.getHandlaggning().getId());
+      assertEquals(UppgiftStatus.PLANERAD, sentPutHandlaggningRequest.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertNotNull(sentPutHandlaggningRequest.getHandlaggning().getUppgift().getUtforarId());
       // TODO: Add more checks of sentPutHandlaggningRequest content
 
       // Clear previous requests
@@ -315,29 +281,31 @@ public class RtfManuellTest
       var ersattningsId = "67c5ded8-7697-41fd-b943-c58a1be15c93";
       var avslagsanledning = "TestAvslagsAnledning";
       PatchErsattningRequest patchDataRequest = new PatchErsattningRequest();
-      patchDataRequest.setAvslagsanledning(avslagsanledning);
-      patchDataRequest.setBeslutsutfall(Beslutsutfall.JA);
-      sendPatchRtfManuell(handlaggningId, ersattningsId, patchDataRequest);
+      var updateErsattning = new UpdateErsattning();
+      updateErsattning.setAvslagsanledning(avslagsanledning);
+      updateErsattning.setBeslutsutfall(Beslutsutfall.JA);
+      updateErsattning.setErsattningId(UUID.fromString(ersattningsId));
+      patchDataRequest.addErsattningarItem(updateErsattning);
+      sendPatchRtfManuell(handlaggningId, patchDataRequest);
 
       //
       // verify that rule performed requests to handlaggning
       //
       handlaggningRequests = waitForWireMockRequest(wiremockServer,
-            handlaggningEndpoint + handlaggningId + "/ersattning", 1);
-      var patchRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PATCH)).toList();
+            handlaggningEndpoint + handlaggningId, 1);
+      putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, handlaggningRequests.size());
-      assertEquals(1, patchRequests.size());
+      assertEquals(2, handlaggningRequests.size());
+      assertEquals(1, putRequests.size());
 
-      sentJson = patchRequests.getLast().getBodyAsString();
-      var updatedErsattningar = mapper.readValue(sentJson, new TypeReference<List<UpdateErsattning>>()
-      {
-      });
-      assertEquals(1, updatedErsattningar.size());
-      assertEquals(UUID.fromString(ersattningsId), updatedErsattningar.getFirst().getErsattningId());
-      assertEquals(se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.Beslutsutfall.JA,
-            updatedErsattningar.getFirst().getBeslutsutfall());
-      assertEquals(avslagsanledning, updatedErsattningar.getFirst().getAvslagsanledning());
+      sentJson = putRequests.getLast().getBodyAsString();
+      var putrequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
+      assertEquals(1, putrequest.getHandlaggning().getYrkande().getProduceradeResultat().size());
+      assertEquals(UUID.fromString(ersattningsId),
+            putrequest.getHandlaggning().getYrkande().getProduceradeResultat().getFirst().getId());
+      assertTrue(putrequest.getHandlaggning().getYrkande().getProduceradeResultat().getFirst().getData().contains("JA"));
+      assertEquals(avslagsanledning,
+            putrequest.getHandlaggning().getYrkande().getProduceradeResultat().getFirst().getAvslagsanledning());
 
       // Clear previous requests
       wiremockServer.resetRequests();
@@ -353,12 +321,12 @@ public class RtfManuellTest
       handlaggningRequests = waitForWireMockRequest(wiremockServer, handlaggningEndpoint + handlaggningId, 1);
       putRequests = handlaggningRequests.stream().filter(p -> p.getMethod().equals(RequestMethod.PUT)).toList();
 
-      assertEquals(1, handlaggningRequests.size());
+      assertEquals(2, handlaggningRequests.size());
       assertEquals(1, putRequests.size());
 
       sentJson = putRequests.getLast().getBodyAsString();
       sentPutHandlaggningRequest = mapper.readValue(sentJson, PutHandlaggningRequest.class);
-      assertEquals(UppgiftStatus.AVSLUTAD, sentPutHandlaggningRequest.getUppgift().getUppgiftStatus());
+      assertEquals(UppgiftStatus.AVSLUTAD, sentPutHandlaggningRequest.getHandlaggning().getUppgift().getUppgiftStatus());
 
       //
       // verify kafka status message sent to oul

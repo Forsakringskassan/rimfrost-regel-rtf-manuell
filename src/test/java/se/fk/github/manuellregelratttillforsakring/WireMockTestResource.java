@@ -30,7 +30,8 @@ public class WireMockTestResource implements QuarkusTestResourceLifecycleManager
             "quarkus.rest-client.handlaggning.url", server.baseUrl(),
             "folkbokford.api.base-url", server.baseUrl(),
             "arbetsgivare.api.base-url", server.baseUrl(),
-            "handlaggning.api.base-url", server.baseUrl());
+            "handlaggning.api.base-url", server.baseUrl(),
+            "individ.api.base-url", server.baseUrl());
    }
 
    @Override

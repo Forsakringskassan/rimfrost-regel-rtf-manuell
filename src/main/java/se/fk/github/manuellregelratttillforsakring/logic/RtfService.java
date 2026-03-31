@@ -6,7 +6,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 import se.fk.github.manuellregelratttillforsakring.logic.entity.Ersattning;
@@ -25,7 +24,6 @@ import se.fk.rimfrost.framework.handlaggning.model.ImmutableYrkande;
 import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceBase;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceInterface;
-import se.fk.rimfrost.jaxrsspec.controllers.generatedsource.model.ProduceratResultat;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 
@@ -80,7 +78,7 @@ public class RtfService extends RegelManuellServiceBase
       for (var patchErsattning : request.getErsattningar())
       {
          var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
-               .filter(e -> e.id() == patchErsattning.getErsattningId()).findFirst().orElseThrow();
+               .filter(e -> e.id().equals(patchErsattning.getErsattningId())).findFirst().orElseThrow();
          var ersattning = getErsattning(produceratResultat);
          ersattning.setBeslutsutfall(patchErsattning.getBeslutsutfall());
 
@@ -106,7 +104,7 @@ public class RtfService extends RegelManuellServiceBase
 
       var updatedYrkande = ImmutableYrkande.builder()
             .from(handlaggning.yrkande())
-            .addAllProduceradeResultat(updatedErsattningar)
+            .produceradeResultat(updatedErsattningar)
             .build();
 
       return ImmutableHandlaggningUpdate.builder()
