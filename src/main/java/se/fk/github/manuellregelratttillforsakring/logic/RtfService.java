@@ -21,11 +21,14 @@ import se.fk.rimfrost.framework.handlaggning.model.HandlaggningUpdate;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableHandlaggningUpdate;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableProduceratResultat;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableYrkande;
+import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
 import se.fk.rimfrost.framework.regel.Utfall;
+import se.fk.rimfrost.framework.regel.logic.RegelUtils;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceBase;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceInterface;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.UpdateErsattning;
 
 @ApplicationScoped
 @Startup
@@ -73,46 +76,12 @@ public class RtfService extends RegelManuellServiceBase
    @Override
    public HandlaggningUpdate updateData(Handlaggning handlaggning, PatchErsattningRequest request)
    {
-      var updatedErsattningar = new ArrayList<se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat>();
-      for (var produceratResultat : handlaggning.yrkande().produceradeResultat())
-      {
+      var updatedErsattningar = request.getErsattningar().stream()
+            .map(e -> createUpdatedProduceratResultat(handlaggning, e)).toList();
 
-         var patchRequest = request.getErsattningar().stream()
-               .filter(e -> e.getErsattningId().equals(produceratResultat.id())).findAny();
+      var updatedYrkande = RegelUtils.createYrkandeWithUpdatedProduceradeResultat(handlaggning.yrkande(), updatedErsattningar);
 
-         if (patchRequest.isPresent())
-         {
-            var ersattning = getErsattning(produceratResultat);
-            ersattning.setBeslutsutfall(patchRequest.get().getBeslutsutfall());
-            try
-            {
-
-               var jsonData = objectMapper.writeValueAsString(ersattning);
-
-               var updatedErsattning = ImmutableProduceratResultat.builder()
-                     .from(produceratResultat)
-                     .version(produceratResultat.version() + 1)
-                     .avslagsanledning(patchRequest.get().getAvslagsanledning())
-                     .data(jsonData)
-                     .build();
-               updatedErsattningar.add(updatedErsattning);
-            }
-            catch (JsonProcessingException e)
-            {
-               throw new InternalError("Error parsing to json: " + ersattning.toString(), e);
-            }
-         }
-         else
-         {
-            updatedErsattningar.add(produceratResultat);
-         }
-      }
       var commonData = dataStorage.getManuellRegelCommonData(handlaggning.id());
-
-      var updatedYrkande = ImmutableYrkande.builder()
-            .from(handlaggning.yrkande())
-            .produceradeResultat(updatedErsattningar)
-            .build();
 
       return ImmutableHandlaggningUpdate.builder()
             .id(handlaggning.id())
@@ -144,4 +113,19 @@ public class RtfService extends RegelManuellServiceBase
       }
    }
 
+   private ProduceratResultat createUpdatedProduceratResultat(Handlaggning handlaggning, UpdateErsattning updateErsattning)
+   {
+      var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
+            .filter(pr -> pr.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
+
+      var ersattning = getErsattning(produceratResultat);
+      ersattning.setBeslutsutfall(updateErsattning.getBeslutsutfall());
+
+      return ImmutableProduceratResultat.builder()
+            .from(produceratResultat)
+            .version(produceratResultat.version() + 1)
+            .avslagsanledning(updateErsattning.getAvslagsanledning())
+            .data(RegelUtils.createProduceratResultatData(ersattning, objectMapper))
+            .build();
+   }
 }
