@@ -6,9 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ArbetsgivareResponse;
-import se.fk.rimfrost.framework.folkbokford.adapter.dto.FolkbokfordResponse;
-import se.fk.rimfrost.framework.folkbokford.adapter.dto.FolkbokfordResponse.Kon;
+import se.fk.rimfrost.adapter.arbetsgivare.dto.ArbetsgivareResponse;
+import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse;
+import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse.Kon;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;

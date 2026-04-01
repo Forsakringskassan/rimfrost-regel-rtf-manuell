@@ -10,11 +10,11 @@ import java.util.UUID;
 
 import se.fk.github.manuellregelratttillforsakring.logic.entity.Ersattning;
 import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
-import se.fk.rimfrost.framework.arbetsgivare.adapter.ArbetsgivareAdapter;
-import se.fk.rimfrost.framework.arbetsgivare.adapter.dto.ImmutableArbetsgivareRequest;
-import se.fk.rimfrost.framework.folkbokford.adapter.FolkbokfordAdapter;
-import se.fk.rimfrost.framework.folkbokford.adapter.dto.ImmutableFolkbokfordRequest;
-import se.fk.rimfrost.framework.individ.adapter.IndividAdapter;
+import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
+import se.fk.rimfrost.adapter.arbetsgivare.dto.ImmutableArbetsgivareRequest;
+import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
+import se.fk.rimfrost.adapter.folkbokford.dto.ImmutableFolkbokfordRequest;
+import se.fk.rimfrost.adapter.individ.adapter.IndividAdapter;
 import se.fk.rimfrost.framework.handlaggning.adapter.HandlaggningAdapter;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.HandlaggningUpdate;
