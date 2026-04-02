@@ -25,18 +25,27 @@ public class RtfMapper
          FolkbokfordResponse folkbokfordResponse, ObjectMapper objectMapper)
    {
 
-      var anstallning = new Anstallning();
-      anstallning.setAnstallningsdag(arbetsgivareResponse.anstallningsdag());
-      anstallning.setArbetstidProcent(arbetsgivareResponse.arbetstidProcent());
-      anstallning.setSistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag());
-      anstallning.setOrganisationsnamn(arbetsgivareResponse.organisationsnamn());
-      anstallning.setOrganisationsnummer(arbetsgivareResponse.organisationsnummer());
-
       var kund = new Kund();
-      kund.setFornamn(folkbokfordResponse.fornamn());
-      kund.setEfternamn(folkbokfordResponse.efternamn());
+
+      if (folkbokfordResponse != null)
+      {
+         kund.setFornamn(folkbokfordResponse.fornamn());
+         kund.setEfternamn(folkbokfordResponse.efternamn());
+         kund.setKon(mapKonEnum(folkbokfordResponse.kon()));
+      }
+
+      var anstallning = new Anstallning();
+
+      if (arbetsgivareResponse != null)
+      {
+         anstallning.setAnstallningsdag(arbetsgivareResponse.anstallningsdag());
+         anstallning.setArbetstidProcent(arbetsgivareResponse.arbetstidProcent());
+         anstallning.setSistaAnstallningsdag(arbetsgivareResponse.sistaAnstallningsdag());
+         anstallning.setOrganisationsnamn(arbetsgivareResponse.organisationsnamn());
+         anstallning.setOrganisationsnummer(arbetsgivareResponse.organisationsnummer());
+      }
+
       kund.setAnstallning(anstallning);
-      kund.setKon(mapKonEnum(folkbokfordResponse.kon()));
 
       var ersattningsList = new ArrayList<Ersattning>();
       var ersattningResult = handlaggning.yrkande().produceradeResultat().stream()
@@ -74,6 +83,7 @@ public class RtfMapper
       try
       {
          var ersattning = objectMapper.readValue(produceratResultat.data(), Ersattning.class);
+         ersattning.setErsattningId(produceratResultat.id());
          ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
          ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
          ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
