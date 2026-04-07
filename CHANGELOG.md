@@ -2,6 +2,30 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.4 (2026-04-02)
+
+### Bug Fixes
+
+-  Bump rimfrost-framework-regel-manuell version ([50c57](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/50c5730f2e7e462) Lars Persson)  
+-  Bump rimfrost-framework-regel-manuell version ([7cf9f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/7cf9f9ca23e9298) Lars Persson)  
+-  Check underlag response before use ([c50a6](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c50a6f208c1af1b) Lars Persson)  
+-  Bump rimfrost-framework-regel-manuell version ([d2bac](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/d2bac2571003d34) Lars Persson)  
+-  Use non-framework version of adapters ([333b6](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/333b6e59fa82481) Lars Persson)  
+-  return all producerade results (#61) ([a980b](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a980b8aaef96de6) NilsElveros)  
+-  **deps**  update dependency se.fk.maven:fk-maven-quarkus-parent to v1.12.0 ([fb9e5](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/fb9e51c9a070dcf) renovate[bot])  
+
+### Other changes
+
+**Fix/update to new framework (#60)**
+
+* fix: update to new framework-manuell 
+* fix: spotless 
+* fix: fix test 
+* fix: use existing ersattning 
+
+[5164b](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/5164bac42ff78bb) NilsElveros *2026-03-31 11:25:35*
+
+
 ## 0.4.3 (2026-03-04)
 
 ### Bug Fixes
