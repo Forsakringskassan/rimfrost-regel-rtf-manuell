@@ -2,20 +2,20 @@ package se.fk.github.manuellregelratttillforsakring.logic.entity;
 
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 
-public class Ersattning
+public class ErsattningData
 {
 
-   private String ersattningstyp;
+   private ErsattningsTyp ersattningstyp;
    private int omfattningProcent;
    private int belopp;
    private int berakningsgrund;
    private Beslutsutfall beslutsutfall;
 
-   public Ersattning()
+   public ErsattningData()
    {
    }
 
-   public Ersattning(String ersattningstyp, int omfattningProcent, int belopp,
+   public ErsattningData(ErsattningsTyp ersattningstyp, int omfattningProcent, int belopp,
          int berakningsgrund, Beslutsutfall beslutsutfall)
    {
       this.ersattningstyp = ersattningstyp;
@@ -26,12 +26,12 @@ public class Ersattning
    }
 
    // Getters and setters
-   public String getErsattningstyp()
+   public ErsattningsTyp getErsattningstyp()
    {
       return ersattningstyp;
    }
 
-   public void setErsattningstyp(String ersattningstyp)
+   public void setErsattningstyp(ErsattningsTyp ersattningstyp)
    {
       this.ersattningstyp = ersattningstyp;
    }
@@ -79,7 +79,7 @@ public class Ersattning
    @Override
    public String toString()
    {
-      return "Ersattning{" +
+      return "ErsattningData{" +
             "ersattningstyp='" + ersattningstyp + '\'' +
             ", omfattningProcent=" + omfattningProcent +
             ", belopp=" + belopp +

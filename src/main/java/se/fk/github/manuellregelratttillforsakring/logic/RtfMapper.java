@@ -1,11 +1,10 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
 import java.util.ArrayList;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.enterprise.context.ApplicationScoped;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse;
 import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse.Kon;
@@ -66,15 +65,10 @@ public class RtfMapper
 
    private KonEnum mapKonEnum(Kon kon)
    {
-      switch (kon)
-      {
-         case MAN:
-            return KonEnum.MAN;
-         case KVINNA:
-            return KonEnum.KVINNA;
-         default:
-            throw new InternalError("Could not map enum Kon");
-      }
+       return switch (kon) {
+           case MAN -> KonEnum.MAN;
+           case KVINNA -> KonEnum.KVINNA;
+       };
    }
 
    public Ersattning toErsattning(ProduceratResultat produceratResultat, ObjectMapper objectMapper)
@@ -82,8 +76,12 @@ public class RtfMapper
 
       try
       {
-         var ersattning = objectMapper.readValue(produceratResultat.data(), Ersattning.class);
+         var ersattningData = objectMapper.readValue(produceratResultat.data(), ErsattningData.class);
+         var ersattning = new Ersattning();
          ersattning.setErsattningId(produceratResultat.id());
+         ersattning.setErsattningstyp(ersattningData.getErsattningstyp().getId());
+         ersattning.setOmfattningProcent(ersattningData.getOmfattningProcent());
+         ersattning.setBelopp(ersattningData.getBelopp());
          ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
          ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
          ersattning.setTom(produceratResultat.resultatTom().toLocalDate());

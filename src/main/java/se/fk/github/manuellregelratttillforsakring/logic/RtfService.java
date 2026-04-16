@@ -4,23 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import java.util.ArrayList;
 import java.util.UUID;
-
-import se.fk.github.manuellregelratttillforsakring.logic.entity.Ersattning;
+import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ImmutableArbetsgivareRequest;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
 import se.fk.rimfrost.adapter.folkbokford.dto.ImmutableFolkbokfordRequest;
-import se.fk.rimfrost.adapter.individ.adapter.IndividAdapter;
 import se.fk.rimfrost.framework.handlaggning.adapter.HandlaggningAdapter;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.HandlaggningUpdate;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableHandlaggningUpdate;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableProduceratResultat;
-import se.fk.rimfrost.framework.handlaggning.model.ImmutableYrkande;
 import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
 import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.framework.regel.logic.RegelUtils;
@@ -30,6 +25,7 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.UpdateErsattning;
 
+@SuppressWarnings("unused")
 @ApplicationScoped
 @Startup
 public class RtfService extends RegelManuellServiceBase
@@ -37,9 +33,6 @@ public class RtfService extends RegelManuellServiceBase
 {
    @Inject
    RtfMapper mapper;
-
-   @Inject
-   IndividAdapter individAdapter;
 
    @Inject
    FolkbokfordAdapter folkbokfordAdapter;
@@ -58,21 +51,20 @@ public class RtfService extends RegelManuellServiceBase
    {
       var indvidyrkandeRoll = handlaggning.yrkande().individYrkandeRoller().getFirst();
 
-      var individ = individAdapter.getIndivid(indvidyrkandeRoll.individId());
-
       var folkbokfordRequest = ImmutableFolkbokfordRequest.builder()
-            .personnummer(individ.varde())
+            .personnummer(indvidyrkandeRoll.individ().varde())
             .build();
       var folkbokfordResponse = folkbokfordAdapter.getFolkbokfordInfo(folkbokfordRequest);
 
       var arbetsgivareRequest = ImmutableArbetsgivareRequest.builder()
-            .personnummer(individ.varde())
+            .personnummer(indvidyrkandeRoll.individ().varde())
             .build();
       var arbetsgivareResponse = arbetsgivareAdapter.getArbetsgivareInfo(arbetsgivareRequest);
 
       return mapper.toGetDataResponse(handlaggning, arbetsgivareResponse, folkbokfordResponse, objectMapper);
    }
 
+   @SuppressWarnings("DataFlowIssue")
    @Override
    public HandlaggningUpdate updateData(Handlaggning handlaggning, PatchErsattningRequest request)
    {
@@ -101,11 +93,11 @@ public class RtfService extends RegelManuellServiceBase
       sendRegelResponse(handlaggningId, Utfall.JA);
    }
 
-   private Ersattning getErsattning(se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat produceratResultat)
+   private ErsattningData getErsattningData(se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat produceratResultat)
    {
       try
       {
-         return objectMapper.readValue(produceratResultat.data(), Ersattning.class);
+         return objectMapper.readValue(produceratResultat.data(), ErsattningData.class);
       }
       catch (JsonProcessingException e)
       {
@@ -118,7 +110,7 @@ public class RtfService extends RegelManuellServiceBase
       var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
             .filter(pr -> pr.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
 
-      var ersattning = getErsattning(produceratResultat);
+      var ersattning = getErsattningData(produceratResultat);
       ersattning.setBeslutsutfall(updateErsattning.getBeslutsutfall());
 
       return ImmutableProduceratResultat.builder()
