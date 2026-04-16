@@ -37,7 +37,7 @@
               "tom": "2025-01-10T16:15:50Z",
               "yrkandestatus": "YRKAT",
               "typ": "ersattning",
-              "data": "{\"status\":\"PLANERAT\",\"ersättningsBelopp\":40000,\"beloppstyp\":\"INKOMSTBASERAD\",\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"periodisering\":\"DAG\",\"omfattning\":100,\"beslutsutfall\":\"FU\",\"avslagsanledning\":\"\"}"
+              "data": "{\"belopp\":40000,\"berakningsgrund\":100,\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"omfattningProcent\":100,\"beslutsutfall\":\"FU\"}"
             }
           ]
         },
