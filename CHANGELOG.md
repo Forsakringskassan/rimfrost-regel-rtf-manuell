@@ -2,6 +2,14 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.5 (2026-04-16)
+
+### Bug Fixes
+
+-  korrigering av wiremock testdata för ersättningsdata ([a267b](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a267bbe2e48a397) Ulf Slunga)  
+-  bumpar framework manuell för UppgiftStatusProvider uppdatering ([ae790](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ae790cf9206bb96) Ulf Slunga)  
+-  ErsattningData och refaktorering av tester ([7b1b0](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/7b1b002631227ed) Ulf Slunga)  
+
 ## 0.4.4 (2026-04-02)
 
 ### Bug Fixes
