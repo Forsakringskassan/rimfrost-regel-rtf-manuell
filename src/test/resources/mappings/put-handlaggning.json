@@ -22,19 +22,22 @@
           "avsikt": "NY",
           "individYrkandeRoller": [
             {
-              "individId": "91234567-89ab-4cde-9012-3456789abcde",
+              "individ": {
+                "typId": "123456789",
+                "varde": "19901010-1234"
+              },
               "yrkandeRollId": "d1b6721d-a3d8-4fd1-aae8-6ba11849e9bc"
             }
           ],
           "produceradeResultat": [
             {
-              "id": "67c5ded8-7697-41fd-b943-c58a1be15c93",
+              "id": "bc6e5150-29be-4758-a2ee-e241f1d7ccf7",
               "version": 1,
               "from": "2025-01-10T16:15:50Z",
               "tom": "2025-01-10T16:15:50Z",
               "yrkandestatus": "YRKAT",
               "typ": "ersattning",
-              "data": "{\"status\":\"PLANERAT\",\"ersättningsBelopp\":40000,\"beloppstyp\":\"INKOMSTBASERAD\",\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"periodisering\":\"DAG\",\"omfattning\":100,\"beslutsutfall\":\"JA\",\"avslagsanledning\":\"\"}"
+              "data": "{\"status\":\"PLANERAT\",\"ersättningsBelopp\":40000,\"beloppstyp\":\"INKOMSTBASERAD\",\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"periodisering\":\"DAG\",\"omfattning\":100,\"beslutsutfall\":\"FU\",\"avslagsanledning\":\"\"}"
             }
           ]
         },

@@ -1,0 +1,19 @@
+package se.fk.github.manuellregelratttillforsakring;
+
+import com.github.tomakehurst.wiremock.WireMockServer;
+import se.fk.rimfrost.framework.regel.manuell.WireMockRegelManuell;
+import java.util.HashMap;
+import java.util.Map;
+
+public class WireMockRtfManuell extends WireMockRegelManuell
+{
+
+   @Override
+   protected Map<String, String> wiremockMapping(WireMockServer server)
+   {
+      Map<String, String> map = new HashMap<>(super.wiremockMapping(server));
+      map.put("folkbokford.api.base-url", server.baseUrl());
+      map.put("arbetsgivare.api.base-url", server.baseUrl());
+      return map;
+   }
+}
