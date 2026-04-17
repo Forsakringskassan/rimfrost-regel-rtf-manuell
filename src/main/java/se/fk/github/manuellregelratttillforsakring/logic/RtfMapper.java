@@ -1,13 +1,12 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
 import java.util.ArrayList;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse;
 import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse.Kon;
+import se.fk.rimfrost.ersattningdata.ErsattningData;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;
@@ -73,23 +72,15 @@ public class RtfMapper
 
    public Ersattning toErsattning(ProduceratResultat produceratResultat, ObjectMapper objectMapper)
    {
-
-      try
-      {
-         var ersattningData = objectMapper.readValue(produceratResultat.data(), ErsattningData.class);
-         var ersattning = new Ersattning();
-         ersattning.setErsattningId(produceratResultat.id());
-         ersattning.setErsattningstyp(ersattningData.getErsattningstyp().getId());
-         ersattning.setOmfattningProcent(ersattningData.getOmfattningProcent());
-         ersattning.setBelopp(ersattningData.getBelopp());
-         ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
-         ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
-         ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
-         return ersattning;
-      }
-      catch (JsonProcessingException e)
-      {
-         throw new RuntimeException("Error while parsing ProduceratResultat.data to Ersattning: " + produceratResultat.data(), e);
-      }
+      var ersattningData = ErsattningData.fromJson(produceratResultat.data(), objectMapper);
+      var ersattning = new Ersattning();
+      ersattning.setErsattningId(produceratResultat.id());
+      ersattning.setErsattningstyp(ersattningData.getErsattningstyp().id());
+      ersattning.setOmfattningProcent(ersattningData.getOmfattningProcent());
+      ersattning.setBelopp(ersattningData.getBelopp());
+      ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
+      ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
+      ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
+      return ersattning;
    }
 }

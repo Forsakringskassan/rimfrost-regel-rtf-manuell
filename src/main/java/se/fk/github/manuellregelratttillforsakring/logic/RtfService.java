@@ -5,12 +5,13 @@ import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.UUID;
-import se.fk.github.manuellregelratttillforsakring.logic.entity.ErsattningData;
 import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ImmutableArbetsgivareRequest;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
 import se.fk.rimfrost.adapter.folkbokford.dto.ImmutableFolkbokfordRequest;
+import se.fk.rimfrost.ersattningdata.ErsattningData;
+import se.fk.rimfrost.ersattningdata.Beslutsutfall;
 import se.fk.rimfrost.framework.handlaggning.adapter.HandlaggningAdapter;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.HandlaggningUpdate;
@@ -93,25 +94,13 @@ public class RtfService extends RegelManuellServiceBase
       sendRegelResponse(handlaggningId, Utfall.JA);
    }
 
-   private ErsattningData getErsattningData(se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat produceratResultat)
-   {
-      try
-      {
-         return objectMapper.readValue(produceratResultat.data(), ErsattningData.class);
-      }
-      catch (JsonProcessingException e)
-      {
-         throw new InternalError("Error parsing producerat resultat to ersattning: " + produceratResultat.data(), e);
-      }
-   }
-
    private ProduceratResultat createUpdatedProduceratResultat(Handlaggning handlaggning, UpdateErsattning updateErsattning)
    {
       var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
             .filter(pr -> pr.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
 
-      var ersattning = getErsattningData(produceratResultat);
-      ersattning.setBeslutsutfall(updateErsattning.getBeslutsutfall());
+      var ersattning = ErsattningData.fromJson(produceratResultat.data(), objectMapper);
+      ersattning.setBeslutsutfall(toBeslutsutfall(updateErsattning.getBeslutsutfall()));
 
       return ImmutableProduceratResultat.builder()
             .from(produceratResultat)
@@ -119,5 +108,15 @@ public class RtfService extends RegelManuellServiceBase
             .avslagsanledning(updateErsattning.getAvslagsanledning())
             .data(RegelUtils.createProduceratResultatData(ersattning, objectMapper))
             .build();
+   }
+
+   private Beslutsutfall toBeslutsutfall(se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall beslutsutfall)
+   {
+      return switch (beslutsutfall) {
+         case JA -> Beslutsutfall.JA;
+         case NEJ ->  Beslutsutfall.NEJ;
+         case FU ->  Beslutsutfall.FU;
+         default -> throw new IllegalStateException("Unexpected value: " + beslutsutfall);
+      };
    }
 }
