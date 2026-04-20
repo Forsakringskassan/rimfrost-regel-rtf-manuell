@@ -6,7 +6,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import se.fk.rimfrost.framework.regel.logic.UppgiftStatus;
 import se.fk.rimfrost.framework.regel.manuell.RegelManuellTestBase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendGetRtfManuell;
@@ -82,7 +81,7 @@ public class RtfManuellGetDataTest extends RegelManuellTestBase
       var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggning(handlaggningId);
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(2, handlaggningPutUpdate.getHandlaggning().getVersion());
-      assertEquals(UppgiftStatus.PLANERAD, handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertEquals("1", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getUppgift().getVersion());
    }
 

@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.Status;
 import se.fk.rimfrost.framework.oul.logic.dto.ImmutableIdtyp;
-import se.fk.rimfrost.framework.regel.logic.UppgiftStatus;
 import se.fk.rimfrost.framework.regel.manuell.RegelManuellTestBase;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,7 +64,7 @@ public class RtfManuellOulTest extends RegelManuellTestBase
       var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggning(handlaggningId);
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getVersion());
-      assertEquals(UppgiftStatus.PLANERAD, handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertEquals("1", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
       assertEquals(2, handlaggningPutUpdate.getHandlaggning().getUppgift().getVersion());
    }
 
