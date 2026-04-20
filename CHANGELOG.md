@@ -2,6 +2,15 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.6 (2026-04-19)
+
+### Bug Fixes
+
+-  Use ErsattningData from rimfrost-ersattning-data ([95092](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/950924c9eb9148c) Lars Persson)  
+
+### Dependency updates
+
+- update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel-test-base to v0.3.37 ([c190c](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c190c949f803377) renovate[bot])  
 ## 0.4.5 (2026-04-16)
 
 ### Bug Fixes
