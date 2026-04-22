@@ -73,12 +73,12 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell</artifactId>
-      <version>0.2.11</version>
+      <version>0.2.13</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell-test-base</artifactId>
-      <version>0.2.11</version>
+      <version>0.2.13</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -90,11 +90,6 @@
       <groupId>se.fk.rimfrost.adapter.folkbokford</groupId>
       <artifactId>rimfrost-adapter-folkbokford</artifactId>
       <version>0.0.3</version>
-    </dependency>
-    <dependency>
-      <groupId>se.fk.rimfrost.framework.uppgiftstatusprovider</groupId>
-      <artifactId>rimfrost-framework-uppgift-status-provider-interface</artifactId>
-      <version>0.0.2</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.uppgiftstatusprovider</groupId>
