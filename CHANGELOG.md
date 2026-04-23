@@ -2,6 +2,15 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 0.4.7 (2026-04-23)
+
+### Bug Fixes
+
+-  tar bort dependency till rimfrost-framework-uppgift-status-provider-interface ([1e628](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/1e628f66ca2d66e) Ulf Slunga)  
+-  tester uppdaterade efter refaktorering av test framework ([b1daa](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/b1daa9b30618d9e) Ulf Slunga)  
+-  some common properties moved to framework (#70) ([e694a](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/e694a0a9db85165) NilsElveros)  
+-  Bump rimfrost-framework-regel-manuell version ([2a703](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/2a7032afb760856) Lars Persson)  
+
 ## 0.4.6 (2026-04-19)
 
 ### Bug Fixes
