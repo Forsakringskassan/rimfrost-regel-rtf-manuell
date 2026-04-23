@@ -8,19 +8,19 @@ import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.Status;
 import se.fk.rimfrost.framework.oul.logic.dto.ImmutableIdtyp;
 import se.fk.rimfrost.framework.regel.Utfall;
-import se.fk.rimfrost.framework.regel.manuell.RegelManuellTestBase;
+import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.*;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.newPatchErsattningRequest;
-import static se.fk.rimfrost.framework.regel.test.WireMockHandlaggning.waitForHandlaggningRequests;
+import static se.fk.rimfrost.framework.regel.WireMockHandlaggning.waitForHandlaggningRequests;
 
 @QuarkusTest
 @QuarkusTestResource.List(
 {
       @QuarkusTestResource(WireMockRtfManuell.class)
 })
-public class RtfManuellSequenceTest extends RegelManuellTestBase
+public class RtfManuellSequenceTest extends AbstractRegelManuellTest
 {
 
    @ParameterizedTest
@@ -60,7 +60,7 @@ public class RtfManuellSequenceTest extends RegelManuellTestBase
       //
       // Verify PUT handlaggning
       //
-      var handlaggningPutRequests = WireMockRtfManuell.waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 2);
+      var handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 2);
       assertEquals(2, handlaggningPutRequests.size());
       //
       // mock GET operation requested from portal FE
@@ -69,7 +69,7 @@ public class RtfManuellSequenceTest extends RegelManuellTestBase
       //
       // Verify PUT handlaggning
       //
-      handlaggningPutRequests = WireMockRtfManuell.waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 3);
+      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 3);
       assertEquals(3, handlaggningPutRequests.size());
       //
       // mock PATCH operation from portal FE
@@ -78,7 +78,7 @@ public class RtfManuellSequenceTest extends RegelManuellTestBase
       //
       // Verify PUT handlaggning
       //
-      handlaggningPutRequests = WireMockRtfManuell.waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 4);
+      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 4);
       assertEquals(4, handlaggningPutRequests.size());
       //
       // mock POST operation from portal FE
@@ -87,7 +87,7 @@ public class RtfManuellSequenceTest extends RegelManuellTestBase
       //
       // Verify PUT handlaggning
       //
-      handlaggningPutRequests = WireMockRtfManuell.waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 5);
+      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 5);
       assertEquals(5, handlaggningPutRequests.size());
       //
       // verify kafka status message sent to oul

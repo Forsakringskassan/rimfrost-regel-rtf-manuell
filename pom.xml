@@ -73,12 +73,25 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell</artifactId>
-      <version>0.2.13</version>
+      <version>0.2.17</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
-      <artifactId>rimfrost-framework-regel-manuell-test-base</artifactId>
-      <version>0.2.13</version>
+      <artifactId>rimfrost-framework-regel-manuell</artifactId>
+      <version>0.2.17</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>se.fk.rimfrost.framework.regel</groupId>
+      <artifactId>rimfrost-framework-regel</artifactId>
+      <version>0.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>se.fk.rimfrost.framework.regel</groupId>
+      <artifactId>rimfrost-framework-regel</artifactId>
+      <version>0.4.2</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -93,6 +106,11 @@
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.uppgiftstatusprovider</groupId>
+      <artifactId>rimfrost-framework-uppgift-status-provider-interface</artifactId>
+      <version>0.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>se.fk.rimfrost.framework.uppgiftstatusprovider</groupId>
       <artifactId>rimfrost-framework-uppgift-status-provider</artifactId>
       <version>0.0.3</version>
     </dependency>
@@ -100,6 +118,17 @@
       <groupId>se.fk.rimfrost.ersattningdata</groupId>
       <artifactId>rimfrost-ersattning-data</artifactId>
       <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5-mockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.2.0</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>
