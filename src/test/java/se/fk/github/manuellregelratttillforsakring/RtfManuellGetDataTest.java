@@ -6,7 +6,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import se.fk.rimfrost.framework.regel.manuell.RegelManuellTestBase;
+import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendGetRtfManuell;
 
@@ -15,7 +15,7 @@ import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sen
 {
       @QuarkusTestResource(WireMockRtfManuell.class)
 })
-public class RtfManuellGetDataTest extends RegelManuellTestBase
+public class RtfManuellGetDataTest extends AbstractRegelManuellTest
 {
 
    @ParameterizedTest
