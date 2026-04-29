@@ -2,6 +2,19 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.0.0 (2026-04-29)
+
+### Breaking changes
+
+-  release 1.0 (#73) ([ef270](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ef27034bc19e1cb) NilsElveros)  
+
+### Features
+
+-  release 1.0 (#73) ([ef270](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ef27034bc19e1cb) NilsElveros)  
+
+### Dependency updates
+
+- update dependency org.awaitility:awaitility to v4.3.0 ([df196](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/df1966598f2aa03) renovate[bot])  
 ## 0.4.7 (2026-04-23)
 
 ### Bug Fixes
