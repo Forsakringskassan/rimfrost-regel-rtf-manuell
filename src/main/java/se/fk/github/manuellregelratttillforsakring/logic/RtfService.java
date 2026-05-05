@@ -3,6 +3,8 @@ package se.fk.github.manuellregelratttillforsakring.logic;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.ws.rs.core.Response;
 import java.util.UUID;
 import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
@@ -36,6 +38,8 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 public class RtfService extends RegelManuellServiceBase
       implements RegelManuellServiceInterface<GetDataResponse, PatchErsattningRequest>
 {
+   private static final Logger LOGGER = LoggerFactory.getLogger(RtfService.class);
+
    @Inject
    RtfMapper mapper;
 
@@ -66,6 +70,7 @@ public class RtfService extends RegelManuellServiceBase
       }
       catch (FolkbokfordException e)
       {
+         LOGGER.error("Folkbokford adapter failed for personnummer {} with {}: {}", folkbokfordRequest.personnummer(), e.getErrorType(), e.getMessage());
          throw switch (e.getErrorType())
          {
             case NOT_FOUND -> new RegelManuellException(Response.Status.NOT_FOUND, e.getMessage());
@@ -85,6 +90,7 @@ public class RtfService extends RegelManuellServiceBase
       }
       catch (ArbetsgivareException e)
       {
+         LOGGER.error("Arbetsgivare adapter failed for personnummer {} with {}: {}", arbetsgivareRequest.personnummer(), e.getErrorCode(), e.getMessage());
          throw switch (e.getErrorCode())
          {
             case NOT_FOUND -> new RegelManuellException(Response.Status.NOT_FOUND, e.getMessage());
