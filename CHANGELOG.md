@@ -2,6 +2,15 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.0.1 (2026-05-05)
+
+### Bug Fixes
+
+-  bumpar framework. justerad felkodsmappning ([37859](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/37859a46af30ef2) Ulf Slunga)  
+-  mera logging ([bd8c7](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/bd8c7fd5d28f612) Ulf Slunga)  
+-  tester av exception-hantering ([ca972](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ca97257d190698b) Ulf Slunga)  
+-  exception-hantering av adapters ([83f81](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/83f8186b5047e42) Ulf Slunga)  
+
 ## 1.0.0 (2026-04-29)
 
 ### Breaking changes
