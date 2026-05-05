@@ -1,14 +1,18 @@
 package se.fk.github.manuellregelratttillforsakring.logic;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.runtime.Startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import java.util.UUID;
 import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
+import se.fk.rimfrost.adapter.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ImmutableArbetsgivareRequest;
+import se.fk.rimfrost.adapter.arbetsgivare.exception.ArbetsgivareException;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
+import se.fk.rimfrost.adapter.folkbokford.FolkbokfordException;
+import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse;
 import se.fk.rimfrost.adapter.folkbokford.dto.ImmutableFolkbokfordRequest;
 import se.fk.rimfrost.ersattningdata.ErsattningData;
 import se.fk.rimfrost.ersattningdata.Beslutsutfall;
@@ -55,12 +59,40 @@ public class RtfService extends RegelManuellServiceBase
       var folkbokfordRequest = ImmutableFolkbokfordRequest.builder()
             .personnummer(indvidyrkandeRoll.individ().varde())
             .build();
-      var folkbokfordResponse = folkbokfordAdapter.getFolkbokfordInfo(folkbokfordRequest);
+      FolkbokfordResponse folkbokfordResponse;
+      try
+      {
+         folkbokfordResponse = folkbokfordAdapter.getFolkbokfordInfo(folkbokfordRequest);
+      }
+      catch (FolkbokfordException e)
+      {
+         throw switch (e.getErrorType())
+         {
+            case NOT_FOUND -> new RegelManuellException(Response.Status.NOT_FOUND, e.getMessage());
+            case BAD_REQUEST -> new RegelManuellException(Response.Status.BAD_REQUEST, e.getMessage());
+            case SERVICE_UNAVAILABLE -> new RegelManuellException(Response.Status.SERVICE_UNAVAILABLE, e.getMessage());
+            case UNEXPECTED_ERROR -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+         };
+      }
 
       var arbetsgivareRequest = ImmutableArbetsgivareRequest.builder()
             .personnummer(indvidyrkandeRoll.individ().varde())
             .build();
-      var arbetsgivareResponse = arbetsgivareAdapter.getArbetsgivareInfo(arbetsgivareRequest);
+      ArbetsgivareResponse arbetsgivareResponse;
+      try
+      {
+         arbetsgivareResponse = arbetsgivareAdapter.getArbetsgivareInfo(arbetsgivareRequest);
+      }
+      catch (ArbetsgivareException e)
+      {
+         throw switch (e.getErrorCode())
+         {
+            case NOT_FOUND -> new RegelManuellException(Response.Status.NOT_FOUND, e.getMessage());
+            case BAD_REQUEST -> new RegelManuellException(Response.Status.BAD_REQUEST, e.getMessage());
+            case SERVICE_UNAVAILABLE -> new RegelManuellException(Response.Status.SERVICE_UNAVAILABLE, e.getMessage());
+            case UNEXPECTED_ERROR -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+         };
+      }
 
       return mapper.toGetDataResponse(handlaggning, arbetsgivareResponse, folkbokfordResponse, objectMapper);
    }
