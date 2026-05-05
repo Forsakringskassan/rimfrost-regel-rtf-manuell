@@ -7,7 +7,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import se.fk.github.manuellregelratttillforsakring.logic.RegelManuellException;
 import se.fk.github.manuellregelratttillforsakring.logic.RtfService;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse;
@@ -16,7 +15,7 @@ import se.fk.rimfrost.adapter.arbetsgivare.exception.ArbetsgivareException;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordException;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
-
+import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +49,7 @@ class RtfServiceExceptionTest
       var exception = assertThrows(RegelManuellException.class,
             () -> rtfService.readData(handlaggningMock()));
 
-      assertEquals(expectedStatus(errorType), exception.getHttpStatus());
+      assertEquals(expectedStatus(errorType), exception.getStatus());
    }
 
    @ParameterizedTest
@@ -66,22 +65,14 @@ class RtfServiceExceptionTest
       var exception = assertThrows(RegelManuellException.class,
             () -> rtfService.readData(handlaggningMock()));
 
-      assertEquals(expectedStatus(errorCode), exception.getHttpStatus());
-   }
-
-   private static Handlaggning handlaggningMock()
-   {
-      var handlaggning = mock(Handlaggning.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
-      when(handlaggning.yrkande().individYrkandeRoller().getFirst().individ().varde())
-            .thenReturn("19901010-1234");
-      return handlaggning;
+      assertEquals(expectedStatus(errorCode), exception.getStatus());
    }
 
    private static Response.Status expectedStatus(FolkbokfordException.ErrorType errorType)
    {
       return switch (errorType)
       {
-         case NOT_FOUND -> Response.Status.NOT_FOUND;
+         case NOT_FOUND -> Response.Status.INTERNAL_SERVER_ERROR;
          case BAD_REQUEST -> Response.Status.BAD_REQUEST;
          case SERVICE_UNAVAILABLE -> Response.Status.SERVICE_UNAVAILABLE;
          case UNEXPECTED_ERROR -> Response.Status.INTERNAL_SERVER_ERROR;
@@ -92,10 +83,19 @@ class RtfServiceExceptionTest
    {
       return switch (errorCode)
       {
-         case NOT_FOUND -> Response.Status.NOT_FOUND;
+         case NOT_FOUND -> Response.Status.INTERNAL_SERVER_ERROR;
          case BAD_REQUEST -> Response.Status.BAD_REQUEST;
          case SERVICE_UNAVAILABLE -> Response.Status.SERVICE_UNAVAILABLE;
          case UNEXPECTED_ERROR -> Response.Status.INTERNAL_SERVER_ERROR;
       };
    }
+
+   private static Handlaggning handlaggningMock()
+   {
+      var handlaggning = mock(Handlaggning.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+      when(handlaggning.yrkande().individYrkandeRoller().getFirst().individ().varde())
+            .thenReturn("19901010-1234");
+      return handlaggning;
+   }
+
 }

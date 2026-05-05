@@ -26,6 +26,7 @@ import se.fk.rimfrost.framework.handlaggning.model.ImmutableProduceratResultat;
 import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
 import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.framework.regel.logic.RegelUtils;
+import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceBase;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceInterface;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
@@ -73,7 +74,7 @@ public class RtfService extends RegelManuellServiceBase
          LOGGER.error("Folkbokford adapter failed for personnummer {} with {}: {}", folkbokfordRequest.personnummer(), e.getErrorType(), e.getMessage());
          throw switch (e.getErrorType())
          {
-            case NOT_FOUND -> new RegelManuellException(Response.Status.NOT_FOUND, e.getMessage());
+            case NOT_FOUND -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
             case BAD_REQUEST -> new RegelManuellException(Response.Status.BAD_REQUEST, e.getMessage());
             case SERVICE_UNAVAILABLE -> new RegelManuellException(Response.Status.SERVICE_UNAVAILABLE, e.getMessage());
             case UNEXPECTED_ERROR -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -93,7 +94,7 @@ public class RtfService extends RegelManuellServiceBase
          LOGGER.error("Arbetsgivare adapter failed for personnummer {} with {}: {}", arbetsgivareRequest.personnummer(), e.getErrorCode(), e.getMessage());
          throw switch (e.getErrorCode())
          {
-            case NOT_FOUND -> new RegelManuellException(Response.Status.NOT_FOUND, e.getMessage());
+            case NOT_FOUND -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
             case BAD_REQUEST -> new RegelManuellException(Response.Status.BAD_REQUEST, e.getMessage());
             case SERVICE_UNAVAILABLE -> new RegelManuellException(Response.Status.SERVICE_UNAVAILABLE, e.getMessage());
             case UNEXPECTED_ERROR -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
