@@ -64,21 +64,23 @@ public class RtfService extends RegelManuellServiceBase
       var folkbokfordRequest = ImmutableFolkbokfordRequest.builder()
             .personnummer(indvidyrkandeRoll.individ().varde())
             .build();
-      FolkbokfordResponse folkbokfordResponse;
+      FolkbokfordResponse folkbokfordResponse = null;
       try
       {
          folkbokfordResponse = folkbokfordAdapter.getFolkbokfordInfo(folkbokfordRequest);
       }
       catch (FolkbokfordException e)
       {
-         LOGGER.error("Folkbokford adapter failed for personnummer {} with {}: {}", folkbokfordRequest.personnummer(), e.getErrorType(), e.getMessage());
-         throw switch (e.getErrorType())
+         if (e.getErrorType() != FolkbokfordException.ErrorType.NOT_FOUND)
          {
-            case NOT_FOUND -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            case BAD_REQUEST -> new RegelManuellException(Response.Status.BAD_REQUEST, e.getMessage());
-            case SERVICE_UNAVAILABLE -> new RegelManuellException(Response.Status.SERVICE_UNAVAILABLE, e.getMessage());
-            case UNEXPECTED_ERROR -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-         };
+            LOGGER.error("Folkbokford adapter failed for personnummer {} with {}: {}", folkbokfordRequest.personnummer(), e.getErrorType(), e.getMessage());
+            throw switch (e.getErrorType())
+            {
+               case BAD_REQUEST -> new RegelManuellException(Response.Status.BAD_REQUEST, e.getMessage());
+               case SERVICE_UNAVAILABLE -> new RegelManuellException(Response.Status.SERVICE_UNAVAILABLE, e.getMessage());
+               default -> new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            };
+         }
       }
 
       var arbetsgivareRequest = ImmutableArbetsgivareRequest.builder()

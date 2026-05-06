@@ -39,7 +39,10 @@ class RtfServiceExceptionTest
    RtfService rtfService;
 
    @ParameterizedTest
-   @EnumSource(FolkbokfordException.ErrorType.class)
+   @EnumSource(value = FolkbokfordException.ErrorType.class, names =
+   {
+         "NOT_FOUND"
+   }, mode = EnumSource.Mode.EXCLUDE)
    void folkbokford_exception_maps_to_regel_manuell_exception(FolkbokfordException.ErrorType errorType)
          throws FolkbokfordException
    {

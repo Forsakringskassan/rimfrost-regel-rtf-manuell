@@ -62,6 +62,20 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
    @ParameterizedTest
    @CsvSource(
    {
+         "5367f6b8-cc4a-11f0-8de9-199901013333"
+   })
+   void get_data_should_contain_kund_information_set_to_null_when_folkbokforing_information_not_found(String handlaggningId)
+   {
+      regelKafkaConnector.sendRegelRequest(handlaggningId);
+      var getDataResponse = sendGetRtfManuell(handlaggningId);
+      Assertions.assertNull(getDataResponse.getKund().getFornamn());
+      Assertions.assertNull(getDataResponse.getKund().getEfternamn());
+      Assertions.assertNull(getDataResponse.getKund().getKon());
+   }
+
+   @ParameterizedTest
+   @CsvSource(
+   {
          "5367f6b8-cc4a-11f0-8de9-199901011234"
    })
    void get_data_should_update_handlaggning(String handlaggningId) throws JsonProcessingException
