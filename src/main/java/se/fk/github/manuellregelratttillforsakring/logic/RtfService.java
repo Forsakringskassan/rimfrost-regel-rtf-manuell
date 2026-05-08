@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.ws.rs.core.Response;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
@@ -137,22 +138,60 @@ public class RtfService extends RegelManuellServiceBase
 
    private ProduceratResultat createUpdatedProduceratResultat(Handlaggning handlaggning, UpdateErsattning updateErsattning)
    {
-      var produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
-            .filter(pr -> pr.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
+      ProduceratResultat produceratResultat;
+      try
+      {
+         produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
+               .filter(pr -> pr.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
+      }
+      catch (NoSuchElementException e)
+      {
+         LOGGER.error("Failed to locate ProduceratResultat with id {}", updateErsattning.getErsattningId(), e);
+
+         throw new RegelManuellException(Response.Status.BAD_REQUEST,
+               "Failed to locate ersattning with id " + updateErsattning.getErsattningId());
+      }
 
       var ersattning = ErsattningData.fromJson(produceratResultat.data(), objectMapper);
-      ersattning.setBeslutsutfall(toBeslutsutfall(updateErsattning.getBeslutsutfall()));
+
+      try
+      {
+         ersattning.setBeslutsutfall(toBeslutsutfall(updateErsattning.getBeslutsutfall()));
+      }
+      catch (IllegalStateException e)
+      {
+         LOGGER.error("Failed to parse beslutsutfall {} for ersattningId {}", updateErsattning.getBeslutsutfall(),
+               updateErsattning.getErsattningId(), e);
+         throw new RegelManuellException(Response.Status.BAD_REQUEST, "Unsupported beslutsutfall value "
+               + updateErsattning.getBeslutsutfall() + " provided for ersattning with id " + updateErsattning.getErsattningId());
+      }
+
+      String updatedData;
+      try
+      {
+         updatedData = RegelUtils.createProduceratResultatData(ersattning, objectMapper);
+      }
+      catch (InternalError e)
+      {
+         LOGGER.error("Failed to serialize updated ersattning", e);
+         throw new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create updated ersattning");
+      }
 
       return ImmutableProduceratResultat.builder()
             .from(produceratResultat)
             .version(produceratResultat.version() + 1)
             .avslagsanledning(updateErsattning.getAvslagsanledning())
-            .data(RegelUtils.createProduceratResultatData(ersattning, objectMapper))
+            .data(updatedData)
             .build();
    }
 
    private Beslutsutfall toBeslutsutfall(se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall beslutsutfall)
    {
+      if (beslutsutfall == null)
+      {
+         throw new IllegalStateException("Null value not supported for beslutsutfall");
+      }
+
       return switch (beslutsutfall) {
          case JA -> Beslutsutfall.JA;
          case NEJ ->  Beslutsutfall.NEJ;
