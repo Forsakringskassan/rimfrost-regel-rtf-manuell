@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendGetRtfManuell;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.waitForRtfManuellReady;
 
 @QuarkusTest
 @QuarkusTestResource.List(
@@ -26,6 +27,7 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
    void get_data_should_contain_handlaggning_id(String handlaggningId)
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
+      waitForRtfManuellReady(handlaggningId);
       var getDataResponse = sendGetRtfManuell(handlaggningId);
       Assertions.assertEquals(handlaggningId, getDataResponse.getHandlaggningId().toString());
    }
@@ -38,6 +40,7 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
    void get_data_should_contain_ersattningar(String handlaggningId)
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
+      waitForRtfManuellReady(handlaggningId);
       var getDataResponse = sendGetRtfManuell(handlaggningId);
       Assertions.assertEquals(1, getDataResponse.getErsattningar().size());
       Assertions.assertEquals(RtfManuellTestData.PRODUCERADE_RESULTAT_ID,
@@ -54,6 +57,7 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
    void get_data_should_contain_kund(String handlaggningId)
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
+      waitForRtfManuellReady(handlaggningId);
       var getDataResponse = sendGetRtfManuell(handlaggningId);
       Assertions.assertEquals(RtfManuellTestData.KUND_FORNAMN, getDataResponse.getKund().getFornamn());
       Assertions.assertEquals(RtfManuellTestData.KUND_EFTERNAMN, getDataResponse.getKund().getEfternamn());
@@ -67,6 +71,7 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
    void get_data_should_contain_kund_information_set_to_null_when_folkbokforing_information_not_found(String handlaggningId)
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
+      waitForRtfManuellReady(handlaggningId);
       var getDataResponse = sendGetRtfManuell(handlaggningId);
       Assertions.assertNull(getDataResponse.getKund().getFornamn());
       Assertions.assertNull(getDataResponse.getKund().getEfternamn());
@@ -81,6 +86,7 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
    void get_data_should_update_handlaggning(String handlaggningId) throws JsonProcessingException
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
+      waitForRtfManuellReady(handlaggningId);
       //
       // clear wiremock requests
       //

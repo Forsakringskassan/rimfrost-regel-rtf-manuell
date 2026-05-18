@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import jakarta.ws.rs.core.Response;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import se.fk.github.manuellregelratttillforsakring.storage.ManuellRegelCommonDataStorageService;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ImmutableArbetsgivareRequest;
@@ -30,6 +29,7 @@ import se.fk.rimfrost.framework.regel.logic.RegelUtils;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceBase;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceInterface;
+import se.fk.rimfrost.framework.regel.manuell.storage.ManuellRegelCommonDataStorage;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.UpdateErsattning;
@@ -55,7 +55,7 @@ public class RtfService extends RegelManuellServiceBase
    HandlaggningAdapter handlaggningAdapter;
 
    @Inject
-   ManuellRegelCommonDataStorageService dataStorage;
+   ManuellRegelCommonDataStorage dataStorage;
 
    @Override
    public GetDataResponse readData(Handlaggning handlaggning)
