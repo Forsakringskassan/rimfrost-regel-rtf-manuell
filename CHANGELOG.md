@@ -2,6 +2,20 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.1.0 (2026-05-19)
+
+### Features
+
+-  migrate storage to framework Panache persistence ([2264e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/2264e4a57eea9e8) Ulf Slunga)  
+
+### Bug Fixes
+
+-  bump framework to 1.0.7 and use base class wait/post helpers ([5438e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/5438e1f24108a0d) Ulf Slunga)  
+-  Bump rimfrost-framework-regel-manuell version ([af446](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/af44626601db1f4) Lars Persson)  
+-  Add try-catch handling with logging at places where an exception may be thrown ([474ac](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/474acb6e84e0c63) Lars Persson)  
+-  Bump rimfrost-framework-regel-manuell version ([0efeb](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/0efeb63aa83e72c) Lars Persson)  
+-  Fix integration test issues introduced after adapter exception handling was added ([a3cc8](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a3cc85ce77880ea) Lars Persson)  
+
 ## 1.0.1 (2026-05-05)
 
 ### Bug Fixes
