@@ -83,7 +83,7 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
       //
       // mock POST operation from portal FE
       //
-      sendPostRtfManuell(handlaggningId);
+      sendPostRegelManuellHandlaggningDone(handlaggningId);
       //
       // Verify PUT handlaggning
       //

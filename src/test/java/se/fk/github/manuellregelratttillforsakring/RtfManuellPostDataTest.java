@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.Status;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendPostRtfManuell;
 
 @QuarkusTest
 @QuarkusTestResource.List(
@@ -43,7 +42,7 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
       //
       // mock POST done operation from portal FE
       //
-      sendPostRtfManuell(handlaggningId);
+      sendPostRegelManuellHandlaggningDone(handlaggningId);
       //
       // verify PUT handlaggning
       //
@@ -73,7 +72,7 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
       //
       // mock POST done operation from portal FE
       //
-      sendPostRtfManuell(handlaggningId);
+      sendPostRegelManuellHandlaggningDone(handlaggningId);
       //
       // verify kafka status message sent to oul
       //

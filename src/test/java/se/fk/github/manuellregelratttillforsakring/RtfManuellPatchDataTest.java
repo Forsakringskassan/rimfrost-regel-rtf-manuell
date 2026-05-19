@@ -9,7 +9,6 @@ import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendPatchRtfManuell;
-import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.waitForRtfManuellReady;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.*;
 
 @QuarkusTest
@@ -28,7 +27,7 @@ public class RtfManuellPatchDataTest extends AbstractRegelManuellTest
    void patch_data_should_update_handlaggning(String handlaggningId) throws JsonProcessingException
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
-      waitForRtfManuellReady(handlaggningId);
+      waitForRegelManuellReady(handlaggningId);
       //
       // clear wiremock requests
       //
