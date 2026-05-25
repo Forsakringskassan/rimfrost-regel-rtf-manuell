@@ -50,7 +50,7 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell</artifactId>
-      <version>1.0.9</version>
+      <version>1.0.10</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.oul</groupId>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell</artifactId>
-      <version>1.0.9</version>
+      <version>1.0.10</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -90,6 +90,11 @@
       <groupId>se.fk.rimfrost.ersattningdata</groupId>
       <artifactId>rimfrost-ersattning-data</artifactId>
       <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>se.fk.rimfrost.referensdata</groupId>
+      <artifactId>rimfrost-referensdata-erbjudande</artifactId>
+      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
