@@ -2,6 +2,27 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.2.0 (2026-05-25)
+
+### Features
+
+-  bump erbjudande to 0.0.2 and drop redundant adapter index entries ([87096](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/870969a2ec30fac) Ulf Slunga)  
+-  fix test assertions and stubs to match OUL status pass-through ([b7f82](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/b7f82440511f666) Ulf Slunga)  
+-  add rimfrost-adapter-referensdata dep and index entries for prod build ([6296f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/6296fad9b5665d7) Ulf Slunga)  
+-  upgrade regel-manuell to 1.0.10 and wire OUL/referensdata stubs ([dcfff](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/dcfff581a4a881e) Ulf Slunga)  
+
+### Bug Fixes
+
+-  remove redundant entries from test application.properties ([0c8d9](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/0c8d9d82bbd4225) Ulf Slunga)  
+-  bump regel-manuell to 1.0.11 and drop obsolete OUL Kafka connectors ([dce4d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/dce4db30010be59) Ulf Slunga)  
+-  add referensdata.api.base-url to prod configuration ([a1a73](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a1a7345d2de7e9e) Ulf Slunga)  
+-  correct OUL service hostname to rimfrost-k8s-uppgiftslager ([a5e68](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a5e68089e5f3ef5) Ulf Slunga)  
+-  tar bort onödiga quarkus.index-dependency.rimfrost-framework-uppgift-status-provider i test ([3f8ec](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/3f8ec5b3c8b8e12) Ulf Slunga)  
+-  update tests for OUL REST — replace Status and waitForOulStatusMessage ([5d808](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/5d8080b6474be93) Ulf Slunga)  
+-  bump rimfrost-framework-regel-manuell to 1.0.9 ([e4913](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/e4913409682efc9) Ulf Slunga)  
+-  remove obsolete Kafka OUL request/response steps from SequenceTest ([f2cc1](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/f2cc1f77a0e928a) Ulf Slunga)  
+-  switch OUL interface from Kafka to REST ([a32f8](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a32f853f74669af) Ulf Slunga)  
+
 ## 1.1.0 (2026-05-19)
 
 ### Features
