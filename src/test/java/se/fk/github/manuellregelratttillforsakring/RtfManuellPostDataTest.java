@@ -1,11 +1,11 @@
 package se.fk.github.manuellregelratttillforsakring;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.tomakehurst.wiremock.http.RequestMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import se.fk.rimfrost.Status;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,22 +23,14 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
          "5367f6b8-cc4a-11f0-8de9-199901011234, 11e53b18-e9ac-4707-825b-a1cb80689c29"
    })
    void post_data_done_should_update_handlaggning_uppgift_avslutad(String handlaggningId, String uppgiftId)
-         throws JsonProcessingException, InterruptedException
+         throws JsonProcessingException
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
-
-      //
-      // Send mocked OUL response
-      //
-      oulKafkaConnector.simulateOulResponse(handlaggningId, uppgiftId);
+      waitForRegelManuellReady(handlaggningId);
       //
       // clear wiremock requests
       //
       WireMockRtfManuell.getWireMockServer().resetRequests();
-      //
-      // Delay required to make sure regel service ready
-      //
-      Thread.sleep(1000);
       //
       // mock POST done operation from portal FE
       //
@@ -50,7 +42,7 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getVersion());
       assertEquals(2, handlaggningPutUpdate.getHandlaggning().getUppgift().getVersion());
-      assertEquals("3", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertEquals("AVSLUTAD", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
    }
 
    @ParameterizedTest
@@ -58,27 +50,19 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
    {
          "5367f6b8-cc4a-11f0-8de9-199901011234, 11e53b18-e9ac-4707-825b-a1cb80689c29"
    })
-   void post_data_done_should_update_oul_status(String handlaggningId, String uppgiftId) throws InterruptedException
+   void post_data_done_should_update_oul_status(String handlaggningId, String uppgiftId)
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId);
-      //
-      // Send mocked OUL response
-      //
-      oulKafkaConnector.simulateOulResponse(handlaggningId, uppgiftId);
-      //
-      // Delay required to make sure regel service ready
-      //
-      Thread.sleep(1000);
+      waitForRegelManuellReady(handlaggningId);
       //
       // mock POST done operation from portal FE
       //
       sendPostRegelManuellHandlaggningDone(handlaggningId);
       //
-      // verify kafka status message sent to oul
+      // verify REST call to end uppgift was made
       //
-      var oulStatusMessage = oulKafkaConnector.waitForOulStatusMessage();
-      assertEquals(uppgiftId, oulStatusMessage.getUppgiftId());
-      assertEquals(Status.AVSLUTAD, oulStatusMessage.getStatus());
+      var endRequests = WireMockRtfManuell.waitForRequest("/uppgifter/" + uppgiftId + "/end", RequestMethod.POST, 1);
+      assertEquals(1, endRequests.size());
    }
 
 }

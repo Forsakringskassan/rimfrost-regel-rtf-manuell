@@ -14,6 +14,7 @@ public class WireMockRtfManuell extends WireMockRegelManuell
       Map<String, String> map = new HashMap<>(super.wiremockMapping(server));
       map.put("folkbokford.api.base-url", server.baseUrl());
       map.put("arbetsgivare.api.base-url", server.baseUrl());
+      map.put("oul.api.base-url", server.baseUrl());
       return map;
    }
 }
