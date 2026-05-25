@@ -42,7 +42,7 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getVersion());
       assertEquals(2, handlaggningPutUpdate.getHandlaggning().getUppgift().getVersion());
-      assertEquals("3", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertEquals("AVSLUTAD", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
    }
 
    @ParameterizedTest
