@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendGetRtfManuell;
 
@@ -75,6 +76,20 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
       Assertions.assertNull(getDataResponse.getKund().getFornamn());
       Assertions.assertNull(getDataResponse.getKund().getEfternamn());
       Assertions.assertNull(getDataResponse.getKund().getKon());
+   }
+
+   @ParameterizedTest
+   @CsvSource(
+   {
+         "5367f6b8-cc4a-11f0-8de9-199901011234"
+   })
+   void get_data_should_contain_beslutsutfall(String handlaggningId)
+   {
+      regelKafkaConnector.sendRegelRequest(handlaggningId);
+      waitForRegelManuellReady(handlaggningId);
+      var getDataResponse = sendGetRtfManuell(handlaggningId);
+      Assertions.assertEquals(Beslutsutfall.FU,
+            getDataResponse.getErsattningar().getFirst().getBeslutsutfall());
    }
 
    @ParameterizedTest
