@@ -14,6 +14,7 @@ import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;
+import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Ersattning;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Kund;
@@ -94,8 +95,22 @@ public class RtfMapper
       ersattning.setOmfattningProcent(ersattningData.getOmfattningProcent());
       ersattning.setBelopp(ersattningData.getBelopp());
       ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
+      ersattning.setBeslutsutfall(toBeslutsutfall(ersattningData.getBeslutsutfall()));
       ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
       ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
       return ersattning;
+   }
+
+   private Beslutsutfall toBeslutsutfall(se.fk.rimfrost.ersattningdata.Beslutsutfall beslutsutfall)
+   {
+      if (beslutsutfall == null)
+      {
+         return null;
+      }
+      return switch (beslutsutfall) {
+         case JA -> Beslutsutfall.JA;
+         case NEJ -> Beslutsutfall.NEJ;
+         case FU -> Beslutsutfall.FU;
+      };
    }
 }
