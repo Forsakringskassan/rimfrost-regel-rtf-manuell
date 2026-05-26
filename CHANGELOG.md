@@ -2,6 +2,13 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.2.1 (2026-05-26)
+
+### Bug Fixes
+
+-  map beslutsutfall in RtfMapper and add test coverage ([31e44](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/31e44edcc9b6c4e) Ulf Slunga)  
+-  Remove unnecessary dependencies from pom.xml ([565a0](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/565a05ee5bb6ee9) Lars Persson)  
+
 ## 1.2.0 (2026-05-25)
 
 ### Features
