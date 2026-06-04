@@ -47,7 +47,7 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
             .typId(idtypTypId)
             .varde(idtypVarde)
             .build();
-      oulKafkaConnector.simulateOulStatus(handlaggningId, uppgiftId, utforarId, RegelManuellTestStatus.NY);
+      oulKafkaConnector.simulateOulStatus(handlaggningId, uppgiftId, utforarId, null, RegelManuellTestStatus.NY);
       //
       // Verify PUT handlaggning
       //
