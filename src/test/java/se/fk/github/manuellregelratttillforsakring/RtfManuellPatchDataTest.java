@@ -3,6 +3,7 @@ package se.fk.github.manuellregelratttillforsakring;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
@@ -18,6 +19,8 @@ import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.*;
 })
 public class RtfManuellPatchDataTest extends AbstractRegelManuellTest
 {
+   @ConfigProperty(name = "mp.messaging.outgoing.regel-responses.topic")
+   String responseTopic;
 
    @ParameterizedTest
    @CsvSource(
@@ -26,7 +29,7 @@ public class RtfManuellPatchDataTest extends AbstractRegelManuellTest
    })
    void patch_data_should_update_handlaggning(String handlaggningId) throws JsonProcessingException
    {
-      regelKafkaConnector.sendRegelRequest(handlaggningId);
+      regelKafkaConnector.sendRegelRequest(handlaggningId, responseTopic);
       waitForRegelManuellReady(handlaggningId);
       //
       // clear wiremock requests
