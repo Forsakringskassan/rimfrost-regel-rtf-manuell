@@ -2,6 +2,18 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.2.5 (2026-06-26)
+
+### Bug Fixes
+
+-  add config.yaml validation to CI and bump rimfrost-framework-regel to 1.2.3 ([990cb](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/990cb6c6a677762) Ulf Slunga)  
+-  **deps**  update dependency se.fk.rimfrost.adapter.folkbokford:rimfrost-adapter-folkbokford to v1.1.3 ([15aa5](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/15aa503d102e6ad) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.adapter.arbetsgivare:rimfrost-adapter-arbetsgivare to v1.1.3 ([c5d1c](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c5d1c688e981975) renovate[bot])  
+
+### Dependency updates
+
+- update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel to v1.2.1 ([7dfa7](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/7dfa7d880b4879c) renovate[bot])  
+- update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel to v1.1.4 ([d6ed4](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/d6ed4f4ccd93428) renovate[bot])  
 ## 1.2.4 (2026-06-15)
 
 ### Bug Fixes
