@@ -6,8 +6,12 @@ import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import se.fk.rimfrost.framework.regel.logic.dto.ImmutableKompletteringUnderlag;
+import se.fk.rimfrost.framework.regel.logic.dto.KompletteringUnderlag;
 import se.fk.rimfrost.adapter.arbetsgivare.ArbetsgivareAdapter;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ArbetsgivareResponse;
 import se.fk.rimfrost.adapter.arbetsgivare.dto.ImmutableArbetsgivareRequest;
@@ -29,7 +33,7 @@ import se.fk.rimfrost.framework.regel.logic.RegelUtils;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceBase;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellServiceInterface;
-import se.fk.rimfrost.framework.regel.manuell.storage.ManuellRegelCommonDataStorage;
+import se.fk.rimfrost.framework.regel.storage.RegelCommonDataStorage;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.GetDataResponse;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.PatchErsattningRequest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.UpdateErsattning;
@@ -55,7 +59,40 @@ public class RtfService extends RegelManuellServiceBase
    HandlaggningAdapter handlaggningAdapter;
 
    @Inject
-   ManuellRegelCommonDataStorage dataStorage;
+   RegelCommonDataStorage dataStorage;
+
+   /**
+    * Returns komplettering needs for the yrkande. Triggers komplettering if personnummer
+    * is missing from individYrkandeRoller or if avsikt is blank.
+    */
+   @Override
+   public List<KompletteringUnderlag> checkKomplettering(Handlaggning handlaggning)
+   {
+      var underlag = new ArrayList<KompletteringUnderlag>();
+      var yrkande = handlaggning.yrkande();
+
+      boolean harPersonnummer = yrkande.individYrkandeRoller().stream()
+            .anyMatch(r -> "personnummer".equals(r.individ().typId())
+                  && r.individ().varde() != null
+                  && !r.individ().varde().isBlank());
+      if (!harPersonnummer)
+      {
+         underlag.add(ImmutableKompletteringUnderlag.builder()
+               .underlagTyp("personnummer")
+               .beskrivning("Personnummer saknas på yrkandet")
+               .build());
+      }
+
+      if (yrkande.avsikt() == null || yrkande.avsikt().isBlank())
+      {
+         underlag.add(ImmutableKompletteringUnderlag.builder()
+               .underlagTyp("avsikt")
+               .beskrivning("Avsikt saknas på yrkandet")
+               .build());
+      }
+
+      return underlag;
+   }
 
    @Override
    public GetDataResponse readData(Handlaggning handlaggning)
@@ -116,7 +153,7 @@ public class RtfService extends RegelManuellServiceBase
 
       var updatedYrkande = RegelUtils.createYrkandeWithUpdatedProduceradeResultat(handlaggning.yrkande(), updatedErsattningar);
 
-      var commonData = dataStorage.getManuellRegelCommonData(handlaggning.id());
+      var commonData = dataStorage.getRegelCommonData(handlaggning.id());
 
       return ImmutableHandlaggningUpdate.builder()
             .id(handlaggning.id())
