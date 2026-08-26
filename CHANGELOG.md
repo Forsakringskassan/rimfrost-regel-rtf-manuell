@@ -2,6 +2,21 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.0 (2026-08-26)
+
+### Features
+
+-  Add komplettering flow — check, svar service, controller, and migration ([a59f2](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a59f22532db09c8) Ulf Slunga)  
+
+### Bug Fixes
+
+-  **deps**  update dependency se.fk.rimfrost.regel.rtf.manuell:rimfrost-regel-rtf-manuell-openapi-jaxrs-spec to v1.2.0 ([27dd6](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/27dd637c02553f6) renovate[bot])  
+
+### Dependency updates
+
+- update forsakringskassan/rimfrost-framework-regel action to v1.3.1 ([24c2d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/24c2da727a3272e) renovate[bot])  
+- pin forsakringskassan/.github action to 3d07e55 ([7724a](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/7724a3ef8fee3fb) renovate[bot])  
+- update forsakringskassan/rimfrost-framework-regel action to v1.2.4 ([970bb](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/970bbba9b3d6c0a) renovate[bot])  
 ## 1.2.6 (2026-06-29)
 
 ### Bug Fixes
