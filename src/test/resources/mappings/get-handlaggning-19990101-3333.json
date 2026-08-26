@@ -23,7 +23,7 @@
           "individYrkandeRoller": [
             {
               "individ": {
-                "typId": "123456789",
+                "typId": "personnummer",
                 "varde": "19990101-3333"
               },
               "yrkandeRollId": "d1b6721d-a3d8-4fd1-aae8-6ba11849e9bc"

@@ -16,8 +16,11 @@ import se.fk.rimfrost.adapter.arbetsgivare.exception.ArbetsgivareException;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordException;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
+import se.fk.rimfrost.framework.handlaggning.model.ImmutableIdtyp;
+import se.fk.rimfrost.framework.handlaggning.model.ImmutableIndividYrkandeRoll;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableProduceratResultat;
 import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
+import se.fk.rimfrost.framework.handlaggning.model.Yrkande;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 
@@ -155,11 +158,18 @@ class RtfServiceExceptionTest
       };
    }
 
+   /**
+    * IndividYrkandeRoll is a nested interface (Yrkande$IndividYrkandeRoll) that cannot be
+    * proxied by Mockito RETURNS_DEEP_STUBS. Real Immutable instances are used instead.
+    */
    private static Handlaggning handlaggningMock()
    {
-      var handlaggning = mock(Handlaggning.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
-      when(handlaggning.yrkande().individYrkandeRoller().getFirst().individ().varde())
-            .thenReturn("19901010-1234");
+      var idtyp = ImmutableIdtyp.builder().typId("personnummer").varde("19901010-1234").build();
+      var roll = ImmutableIndividYrkandeRoll.builder().individ(idtyp).yrkandeRollId("test-roll").build();
+      var yrkande = mock(Yrkande.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+      when(yrkande.individYrkandeRoller()).thenReturn(List.of(roll));
+      var handlaggning = mock(Handlaggning.class);
+      when(handlaggning.yrkande()).thenReturn(yrkande);
       return handlaggning;
    }
 
