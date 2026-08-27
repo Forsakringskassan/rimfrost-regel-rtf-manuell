@@ -21,7 +21,7 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
  */
 @ApplicationScoped
 public class RtfKompletteringSvarService
-      implements KompletteringSvarServiceInterface<RtfKompletteringData, RtfKompletteringData>
+      implements KompletteringSvarServiceInterface<RtfKompletteringData>
 {
    /**
     * Returns the current personnummer and avsikt from the handlaggning for the handläggare to review.
