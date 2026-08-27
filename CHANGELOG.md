@@ -2,6 +2,13 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.1 (2026-08-27)
+
+### Bug Fixes
+
+-  bump rimfrost-framework-regel-manuell to 1.3.1 ([fd4f5](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/fd4f5b677bde0e3) Ulf Slunga)  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel.manuell:rimfrost-framework-regel-manuell to v1.3.1 ([c06c9](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c06c9aa55eb777c) renovate[bot])  
+
 ## 1.3.0 (2026-08-26)
 
 ### Features
