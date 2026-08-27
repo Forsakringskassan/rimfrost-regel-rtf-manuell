@@ -15,6 +15,6 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 @Path("/regel/rtf-manuell")
 @ApplicationScoped
 public class RtfKompletteringController
-      extends KompletteringController<RtfKompletteringData, RtfKompletteringData>
+      extends KompletteringController<RtfKompletteringData>
 {
 }
