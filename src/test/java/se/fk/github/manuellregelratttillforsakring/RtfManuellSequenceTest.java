@@ -48,8 +48,8 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
       //
       // Verify PUT handlaggning
       //
-      var handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 2);
-      assertEquals(2, handlaggningPutRequests.size());
+      var handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 1);
+      assertEquals(1, handlaggningPutRequests.size());
       //
       // mock POST operation from portal FE
       //
@@ -57,8 +57,8 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
       //
       // Verify PUT handlaggning
       //
-      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 3);
-      assertEquals(3, handlaggningPutRequests.size());
+      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 2);
+      assertEquals(2, handlaggningPutRequests.size());
       //
       // Verify produced regel response
       //

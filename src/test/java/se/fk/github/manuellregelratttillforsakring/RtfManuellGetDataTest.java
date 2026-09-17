@@ -96,31 +96,4 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
             getDataResponse.getErsattningar().getFirst().getBeslutsutfall());
    }
 
-   @ParameterizedTest
-   @CsvSource(
-   {
-         "5367f6b8-cc4a-11f0-8de9-199901011234"
-   })
-   void get_data_should_update_handlaggning(String handlaggningId) throws JsonProcessingException
-   {
-      regelKafkaConnector.sendRegelRequest(handlaggningId, responseTopic);
-      waitForRegelManuellReady(handlaggningId);
-      //
-      // clear wiremock requests
-      //
-      WireMockRtfManuell.getWireMockServer().resetRequests();
-      //
-      // Send rtf manuell GET
-      //
-      sendGetRtfManuell(handlaggningId);
-      //
-      // verify PUT handlaggning
-      //
-      var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggning(handlaggningId);
-      assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
-      assertEquals(2, handlaggningPutUpdate.getHandlaggning().getVersion());
-      assertEquals("PLANERAD", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
-      assertEquals(1, handlaggningPutUpdate.getHandlaggning().getUppgift().getVersion());
-   }
-
 }
