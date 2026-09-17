@@ -45,7 +45,7 @@ public class RtfManuellPatchDataTest extends AbstractRegelManuellTest
       var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggning(handlaggningId);
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getVersion());
-      assertEquals("NY", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertEquals("PLANERAD", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getYrkande().getProduceradeResultat().size());
       var produceratResultat = handlaggningPutUpdate.getHandlaggning().getYrkande().getProduceradeResultat().getFirst();
       assertEquals(2, produceratResultat.getVersion());

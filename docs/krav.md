@@ -18,7 +18,6 @@ Lagstöd: Husdjursbalken, kap. 3, § 5, st. 1, p. 4 (gäller fr.o.m. 2010-02-11)
 | OUL (Operativt Uppgiftslager) | Hanterar uppgiftskön och uppgiftsstatusar |
 | Folkbokföringstjänsten | Levererar kundens personuppgifter |
 | Arbetsgivartjänsten | Levererar kundens anställningsinformation |
-| Sökanden | Registrerar kompletterande uppgifter via portalen |
 
 ---
 
@@ -53,14 +52,6 @@ Lagstöd: Husdjursbalken, kap. 3, § 5, st. 1, p. 4 (gäller fr.o.m. 2010-02-11)
 - **FR-04.3** Regelsvaret ska innehålla samma `correlationId` som den ursprungliga förfrågan.
 - **FR-04.4** När kontrollen avslutas ska uppgiften i OUL markeras som avslutad.
 
-### FR-06 — Komplettering
-
-- **FR-06.1** Tjänsten ska identifiera om personnummer saknas bland `individYrkandeRoller` på yrkandet och returnera ett kompletteringsbehov.
-- **FR-06.2** Tjänsten ska identifiera om `avsikt` saknas eller är tom på yrkandet och returnera ett kompletteringsbehov.
-- **FR-06.3** Kompletteringsgränssnittet ska tillåta sökanden att korrigera personnummer och `avsikt`.
-
----
-
 ### FR-05 — Felhantering mot beroende tjänster
 
 - **FR-05.1** Om folkbokföringstjänsten inte hittar kunden ska tjänsten fortsätta utan personuppgifter.
@@ -74,11 +65,12 @@ Lagstöd: Husdjursbalken, kap. 3, § 5, st. 1, p. 4 (gäller fr.o.m. 2010-02-11)
 
 Varje handläggningsärende genomgår följande statusar hos OUL:
 
-| Status | Benämning | Beskrivning |
-|---|---|---|
-| `NY` | Ny | Uppgiften har skapats men handläggning har ännu inte påbörjats |
-| `1` | Redo för handläggning | Underlaget har hämtats och ärendet visas i handläggarportalen |
-| `3` | Avslutad | Handläggaren har markerat kontrollen som klar |
+| Status | Beskrivning |
+|---|---|
+| Ny | Uppgiften har skapats i OUL men handläggning har ännu inte påbörjats |
+| Tilldelad | En handläggare har tilldelats uppgiften och handläggning påbörjad |
+| Avslutad | Handläggaren har markerat kontrollen som klar |
+| Avbruten | Handläggningen har avbrutits och ska inte slutföras |
 
 ---
 
@@ -111,7 +103,6 @@ Varje handläggningsärende genomgår följande statusar hos OUL:
 | API | Målgrupp | Specifikationsartefakt |
 |---|---|---|
 | REST — manuell kontrolldatahämtning och beslut | Handläggarportalen | `rimfrost-regel-rtf-manuell-openapi` |
-| REST — kompletteringsdata och svar | Sökanden / handläggarportalen | `rimfrost-regel-rtf-manuell-openapi` |
 | Kafka — inkommande regelförfrågan | Kundbehovsflödet | `rimfrost-regel-rtf-manuell-asyncapi` |
 | Kafka — utgående regelsvar | Kundbehovsflödet | `rimfrost-regel-rtf-manuell-asyncapi` |
 | Kafka — uppgiftsstatus-notifikationer (konsument) | OUL | `rimfrost-operativt-uppgiftslager-asyncapi` |

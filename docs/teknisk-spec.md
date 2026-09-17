@@ -2,7 +2,7 @@
 
 ## 1. Översikt
 
-Quarkus 3.x-tjänst (Java 21) som implementerar en manuell regelkontroll för rätt till VAH-försäkring. Tjänsten exponerar ett REST-API (2 endpoints) för handläggarportalen och kommunicerar asynkront med omgivande system via Kafka (1 inkommande + 1 utgående topic). Tillstånd lagras i PostgreSQL via Panache JPA, med Flyway för schemamigrationer.
+Quarkus 3.x-tjänst (Java 21) som implementerar en manuell regelkontroll för rätt till VAH-försäkring. Tjänsten exponerar ett REST-API (2 endpoints) för handläggarportalen och kommunicerar asynkront med omgivande system via Kafka (3 inkommande + 1 utgående topic). Tillstånd lagras i PostgreSQL via Panache JPA, med Flyway för schemamigrationer.
 
 ---
 
@@ -10,17 +10,22 @@ Quarkus 3.x-tjänst (Java 21) som implementerar en manuell regelkontroll för r�
 
 ```
 se.fk.github.manuellregelratttillforsakring
-├── RtfManuellController      # JAX-RS-kontroller, delegerar till framework-basklass
+├── presentation/rest/
+│   └── RtfManuellController  # JAX-RS-kontroller, delegerar till framework-basklass
 ├── logic/
 │   ├── RtfService            # Affärslogik: readData, updateData, done
 │   ├── RtfMapper             # Mappning mellan domänmodell och DTO
 │   └── RegelManuellMiddlewareServiceImpl  # Framework-integration (middleware)
 └── resources/
     ├── application.properties  # Quarkus- och Kafka-konfiguration
-    └── config.yaml             # Regelspecifikation, uppgifts- och lagrumsdefinition
+    ├── config.yaml             # Regelspecifikation, uppgifts- och lagrumsdefinition
+    └── db/migration/           # Flyway-migrationer för tjänstens tabeller
 ```
 
-Ramverkslogik (meddelanden, persistens, OUL-integration) hanteras av `rimfrost-framework-regel-manuell`.
+Ramverkslogik hanteras av `rimfrost-framework-regel-manuell` (meddelandehantering, REST-basklasser)
+och `rimfrost-framework-regel-oul` (OUL-integration, persistens, avbrottshantering). Det senare
+levererar även egna standardvärden för OUL- och JPA-konfiguration samt entiteter för tjänstens
+tabeller — tjänsten behöver därför bara ange schema och tabellprefix.
 
 ---
 
@@ -51,6 +56,7 @@ Meddelandescheman definieras i spec-repot `rimfrost-regel-rtf-manuell-asyncapi`.
 | Inkommande | `rtf-manuell-requests` | Nytt ärende initieras av kundbehovsflödet |
 | Utgående | `rtf-manuell-responses` | Handläggaren avslutar kontrollen (POST done) |
 | Inkommande | `operativt-uppgiftslager-status-notification.rtf-manuell` | Statusuppdatering från OUL |
+| Inkommande | `rtf-manuell-cancelled` | Ärendet avbryts av det anropande systemet |
 
 Svarsrouting sker dynamiskt: `replyTo`-headern i inkommande meddelande anger vilket topic regelsvaret ska publiceras till. `correlationId` kopplar samman förfrågan och svar.
 
@@ -63,9 +69,14 @@ Svarsrouting sker dynamiskt: `replyTo`-headern i inkommande meddelande anger vil
 | `mp.messaging.incoming.regel-requests.topic` | Inkommande Kafka-topic | `rtf-manuell-requests` |
 | `mp.messaging.outgoing.regel-responses.topic` | Utgående Kafka-topic | `rtf-manuell-responses` |
 | `mp.messaging.incoming.operativt-uppgiftslager-status-notification.topic` | OUL-statustopic | `operativt-uppgiftslager-status-notification.rtf-manuell` |
+| `kafka.cancelled.topic` | Topic för avbrottshändelser, konsumeras av `rimfrost-framework-regel-oul` | `rtf-manuell-cancelled` |
+| `kafka.source` | Källidentitet i utgående meddelanden | `RegelRtfManuell` |
+| `kafka.subtopic` | Tjänstens subtopic-suffix | `rtf-manuell` |
 | `folkbokford.api.base-url` | Bas-URL till folkbokföringstjänsten | `http://rimfrost-k8s-folkbokford:8080` |
 | `arbetsgivare.api.base-url` | Bas-URL till arbetsgivartjänsten | `http://rimfrost-k8s-arbetsgivare:8080` |
-| `oul.api.base-url` | Bas-URL till OUL | `http://rimfrost-operativt-uppgiftslager:8080` |
+| `referensdata.api.base-url` | Bas-URL till referensdatatjänsten | `http://rimfrost-k8s-referensdata:8080` |
+| `oul.api.base-url` | Bas-URL till OUL — sätts av `rimfrost-framework-regel-oul`, kan överstyras | `http://rimfrost-k8s-uppgiftslager:8080` |
+| `handlaggning.api.base-url` | Bas-URL till handläggningstjänsten — sätts av `rimfrost-framework-regel-oul`, kan överstyras | `http://rimfrost-k8s-handlaggning:8080` |
 | `quarkus.flyway.default-schema` | Databasschema | `regel_rtf_manuell` |
 | `regel.persistence.table-prefix` | Prefix för databastabeller | `rtf_manuell` |
 | `%prod.quarkus.datasource.username` | Databasanvändare (prod) | `${DB_USERNAME}` |
