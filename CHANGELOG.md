@@ -2,6 +2,22 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.2 (2026-09-17)
+
+### Bug Fixes
+
+-  removed komplettering from rtf-manuell, it is handled in rtf-manuell-komplettering instead (#97) ([000b4](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/000b4a8a2617aec) NilsElveros)  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel to v1.4.1 ([41f03](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/41f03b3d03e8e95) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel:rimfrost-framework-regel to v1.4.0 ([f3e67](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/f3e6708c9e72537) renovate[bot])  
+-  adopt single type parameter in KompletteringSvarServiceInterface (framework-regel 1.3.2) ([ccea2](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ccea2607e85357e) Ulf Slunga)  
+
+### Dependency updates
+
+- update forsakringskassan/rimfrost-framework-regel action to v1.4.2 ([818ab](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/818ab0e709ded63) renovate[bot])  
+- update forsakringskassan/rimfrost-framework-regel action to v1.4.1 ([de4b1](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/de4b169e5eb6ce1) renovate[bot])  
+- update forsakringskassan/rimfrost-framework-regel action to v1.4.0 ([fdc38](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/fdc380c94ab5f66) renovate[bot])  
+- update forsakringskassan/rimfrost-framework-regel action to v1.3.2 ([501d5](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/501d5357cb038a1) renovate[bot])  
+- update forsakringskassan/.github digest to d1349e6 ([14e98](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/14e988d8f828967) renovate[bot])  
 ## 1.3.1 (2026-08-27)
 
 ### Bug Fixes
