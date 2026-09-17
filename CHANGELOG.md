@@ -2,6 +2,12 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.4 (2026-09-17)
+
+### Bug Fixes
+
+-  Increment handlaggning version at PATCH operation ([4dc8c](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/4dc8cf9fefb049b) Lars Persson)  
+
 ## 1.3.3 (2026-09-17)
 
 ### Bug Fixes
