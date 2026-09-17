@@ -116,7 +116,7 @@ public class RtfService extends RegelManuellServiceBase
 
       return ImmutableHandlaggningUpdate.builder()
             .id(handlaggning.id())
-            .version(handlaggning.version())
+            .version(handlaggning.version() + 1)
             .yrkande(updatedYrkande)
             .processInstansId(handlaggning.processInstansId())
             .skapadTS(handlaggning.skapadTS())
