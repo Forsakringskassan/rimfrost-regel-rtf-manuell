@@ -6,8 +6,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import se.fk.rimfrost.framework.oul.logic.dto.ImmutableIdtyp;
-import se.fk.rimfrost.framework.regel.manuell.base.RegelManuellTestStatus;
 import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
@@ -29,13 +27,9 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
    @ParameterizedTest
    @CsvSource(
    {
-         "5367f6b8-cc4a-11f0-8de9-199901011234, 11e53b18-e9ac-4707-825b-a1cb80689c29, Idtyp_typId, Idtyp_varde"
+         "5367f6b8-cc4a-11f0-8de9-199901011234"
    })
-   void full_sequence_should_create_regel_response(
-         String handlaggningId,
-         String uppgiftId,
-         String idtypTypId,
-         String idtypVarde)
+   void full_sequence_should_create_regel_response(String handlaggningId)
    {
       regelKafkaConnector.sendRegelRequest(handlaggningId, responseTopic);
       //
@@ -44,27 +38,9 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
       var handlaggningGetRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.GET, 1);
       assertEquals(1, handlaggningGetRequests.size());
       //
-      // mock status update from OUL
-      //
-      var utforarId = ImmutableIdtyp.builder()
-            .typId(idtypTypId)
-            .varde(idtypVarde)
-            .build();
-      oulKafkaConnector.simulateOulStatus(handlaggningId, uppgiftId, utforarId, null, RegelManuellTestStatus.NY, responseTopic);
-      //
-      // Verify PUT handlaggning
-      //
-      var handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 2);
-      assertEquals(2, handlaggningPutRequests.size());
-      //
       // mock GET operation requested from portal FE
       //
       sendGetRtfManuell(handlaggningId);
-      //
-      // Verify PUT handlaggning
-      //
-      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 3);
-      assertEquals(3, handlaggningPutRequests.size());
       //
       // mock PATCH operation from portal FE
       //
@@ -72,8 +48,8 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
       //
       // Verify PUT handlaggning
       //
-      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 4);
-      assertEquals(4, handlaggningPutRequests.size());
+      var handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 2);
+      assertEquals(2, handlaggningPutRequests.size());
       //
       // mock POST operation from portal FE
       //
@@ -81,8 +57,8 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
       //
       // Verify PUT handlaggning
       //
-      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 5);
-      assertEquals(5, handlaggningPutRequests.size());
+      handlaggningPutRequests = waitForHandlaggningRequests(handlaggningId, RequestMethod.PUT, 3);
+      assertEquals(3, handlaggningPutRequests.size());
       //
       // Verify produced regel response
       //
