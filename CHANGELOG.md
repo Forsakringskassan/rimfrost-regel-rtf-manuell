@@ -2,6 +2,15 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.5 (2026-09-18)
+
+### Bug Fixes
+
+-  Bump rimfrost-framework-regel-manuell version ([8ea51](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/8ea510ab92aad54) Lars Persson)  
+-  **deps**  update dependency se.fk.rimfrost.regel.rtf.manuell:rimfrost-regel-rtf-manuell-openapi-jaxrs-spec to v1.2.1 ([1c393](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/1c3938dd672d9b2) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.framework.regel.manuell:rimfrost-framework-regel-manuell to v1.4.3 ([6adf9](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/6adf994efe869e1) renovate[bot])  
+-  removed unused stuff from pom.xml (#72) ([c9484](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/c9484e055885925) NilsElveros)  
+
 ## 1.3.4 (2026-09-17)
 
 ### Bug Fixes
