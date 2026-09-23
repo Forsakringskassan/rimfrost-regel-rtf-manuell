@@ -2,6 +2,17 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.6 (2026-09-23)
+
+### Bug Fixes
+
+-  Bump dependency versions in preparation for 1.2 ([a0d8a](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a0d8ae88dd58c90) Lars Persson)  
+-  **deps**  update dependency se.fk.rimfrost.adapter.arbetsgivare:rimfrost-adapter-arbetsgivare to v1.1.4 ([9599d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/9599d8ebd9d15a2) renovate[bot])  
+
+### Dependency updates
+
+- update forsakringskassan/.github digest to bfb01f7 ([a3112](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a31123f1faaaf09) renovate[bot])  
+- update forsakringskassan/rimfrost-framework-regel action to v1.4.3 ([f079f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/f079f6e3e38f29a) renovate[bot])  
 ## 1.3.5 (2026-09-18)
 
 ### Bug Fixes
