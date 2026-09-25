@@ -10,6 +10,6 @@ jobs:
       PACKAGES_RW_TOKEN: ${{ secrets.PACKAGES_RW_TOKEN }}
 
   validate-config:
-    uses: Forsakringskassan/rimfrost-framework-regel/.github/workflows/validate-config.yaml@2e485e6f46b33020fcef46874dab2660344feb7b # 1.4.3
+    uses: Forsakringskassan/rimfrost-framework-regel/.github/workflows/validate-config.yaml@497e7d8e15d0156a88eaa6a0a12249b16909834b # 1.4.4
     with:
       framework-ref: '1.2.3'
