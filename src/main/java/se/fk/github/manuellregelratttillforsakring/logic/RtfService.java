@@ -20,9 +20,9 @@ import se.fk.rimfrost.ersattningdata.ErsattningData;
 import se.fk.rimfrost.ersattningdata.Beslutsutfall;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.HandlaggningUpdate;
+import se.fk.rimfrost.framework.handlaggning.model.ImmutableHandlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableHandlaggningUpdate;
-import se.fk.rimfrost.framework.handlaggning.model.ImmutableProduceratResultat;
-import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
+import se.fk.rimfrost.framework.handlaggning.model.SakfragaStallningstagandeContainer;
 import se.fk.rimfrost.framework.regel.Utfall;
 import se.fk.rimfrost.framework.regel.logic.RegelUtils;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
@@ -56,10 +56,10 @@ public class RtfService extends RegelManuellServiceBase
    @Override
    public GetDataResponse readData(Handlaggning handlaggning)
    {
-      var indvidyrkandeRoll = handlaggning.yrkande().individYrkandeRoller().getFirst();
+      var rollIYrkande = handlaggning.yrkande().rollerIYrkande().getFirst();
 
       var folkbokfordRequest = ImmutableFolkbokfordRequest.builder()
-            .personnummer(indvidyrkandeRoll.individ().varde())
+            .personnummer(rollIYrkande.individ().varde())
             .build();
       FolkbokfordResponse folkbokfordResponse = null;
       try
@@ -81,7 +81,7 @@ public class RtfService extends RegelManuellServiceBase
       }
 
       var arbetsgivareRequest = ImmutableArbetsgivareRequest.builder()
-            .personnummer(indvidyrkandeRoll.individ().varde())
+            .personnummer(rollIYrkande.individ().varde())
             .build();
       ArbetsgivareResponse arbetsgivareResponse;
       try
@@ -108,20 +108,21 @@ public class RtfService extends RegelManuellServiceBase
    public HandlaggningUpdate updateData(Handlaggning handlaggning, PatchErsattningRequest request)
    {
       var updatedErsattningar = request.getErsattningar().stream()
-            .map(e -> createUpdatedProduceratResultat(handlaggning, e)).toList();
+            .map(e -> createUpdatedErsattning(handlaggning, e)).toList();
 
-      var updatedYrkande = RegelUtils.createYrkandeWithUpdatedProduceradeResultat(handlaggning.yrkande(), updatedErsattningar);
+      var updatedYrkande = RegelUtils.createYrkandeWithUpdatedSakfragorStallningstaganden(handlaggning.yrkande(),
+            updatedErsattningar);
 
       var correlation = oulUppgiftService.getCorrelationData(handlaggning.id());
 
-      return ImmutableHandlaggningUpdate.builder()
-            .id(handlaggning.id())
+      var updatedHandlaggning = ImmutableHandlaggning.builder()
+            .from(handlaggning)
             .version(handlaggning.version() + 1)
             .yrkande(updatedYrkande)
-            .processInstansId(handlaggning.processInstansId())
-            .skapadTS(handlaggning.skapadTS())
-            .avslutadTS(handlaggning.avslutadTS())
-            .handlaggningspecifikationId(handlaggning.handlaggningspecifikationId())
+            .build();
+
+      return ImmutableHandlaggningUpdate.builder()
+            .handlaggning(updatedHandlaggning)
             .uppgift(correlation.uppgift())
             .build();
    }
@@ -132,23 +133,25 @@ public class RtfService extends RegelManuellServiceBase
       sendRegelResponse(handlaggningId, Utfall.JA);
    }
 
-   private ProduceratResultat createUpdatedProduceratResultat(Handlaggning handlaggning, UpdateErsattning updateErsattning)
+   private SakfragaStallningstagandeContainer createUpdatedErsattning(Handlaggning handlaggning,
+         UpdateErsattning updateErsattning)
    {
-      ProduceratResultat produceratResultat;
+      SakfragaStallningstagandeContainer sakfragaStallningstagande;
       try
       {
-         produceratResultat = handlaggning.yrkande().produceradeResultat().stream()
-               .filter(pr -> pr.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
+         sakfragaStallningstagande = handlaggning.yrkande().sakfragorStallningstaganden().stream()
+               .filter(s -> s.objektTypId().equalsIgnoreCase(RtfMapper.ERSATTNING_OBJEKT_TYP_ID))
+               .filter(s -> s.id().equals(updateErsattning.getErsattningId())).findFirst().orElseThrow();
       }
       catch (NoSuchElementException e)
       {
-         LOGGER.error("Failed to locate ProduceratResultat with id {}", updateErsattning.getErsattningId(), e);
+         LOGGER.error("Failed to locate SakfragaStallningstagande with id {}", updateErsattning.getErsattningId(), e);
 
          throw new RegelManuellException(Response.Status.BAD_REQUEST,
                "Failed to locate ersattning with id " + updateErsattning.getErsattningId());
       }
 
-      var ersattning = ErsattningData.fromJson(produceratResultat.data(), objectMapper);
+      var ersattning = ErsattningData.fromJson(sakfragaStallningstagande.data(), objectMapper);
 
       try
       {
@@ -162,23 +165,19 @@ public class RtfService extends RegelManuellServiceBase
                + updateErsattning.getBeslutsutfall() + " provided for ersattning with id " + updateErsattning.getErsattningId());
       }
 
-      String updatedData;
+      ersattning.setAvslagsanledning(updateErsattning.getAvslagsanledning());
+      ersattning.setVersion(ersattning.getVersion() + 1);
+
       try
       {
-         updatedData = RegelUtils.createProduceratResultatData(ersattning, objectMapper);
+         return RegelUtils.createSakfragaStallningstagande(sakfragaStallningstagande.id(),
+               sakfragaStallningstagande.objektTypId(), ersattning, objectMapper);
       }
       catch (InternalError e)
       {
          LOGGER.error("Failed to serialize updated ersattning", e);
          throw new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, "Failed to create updated ersattning");
       }
-
-      return ImmutableProduceratResultat.builder()
-            .from(produceratResultat)
-            .version(produceratResultat.version() + 1)
-            .avslagsanledning(updateErsattning.getAvslagsanledning())
-            .data(updatedData)
-            .build();
    }
 
    private Beslutsutfall toBeslutsutfall(se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall beslutsutfall)

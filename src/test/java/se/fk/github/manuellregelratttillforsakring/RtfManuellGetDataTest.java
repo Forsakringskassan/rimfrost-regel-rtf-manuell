@@ -47,10 +47,14 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
       waitForRegelManuellReady(handlaggningId);
       var getDataResponse = sendGetRtfManuell(handlaggningId);
       Assertions.assertEquals(1, getDataResponse.getErsattningar().size());
-      Assertions.assertEquals(RtfManuellTestData.PRODUCERADE_RESULTAT_ID,
+      Assertions.assertEquals(RtfManuellTestData.ERSATTNINGSID,
             getDataResponse.getErsattningar().getFirst().getErsattningId().toString());
       Assertions.assertEquals(RtfManuellTestData.ERSATTNINGSTYP,
             getDataResponse.getErsattningar().getFirst().getErsattningstyp());
+      Assertions.assertEquals(RtfManuellTestData.ERSATTNING_FROM, getDataResponse.getErsattningar().getFirst().getFrom());
+      Assertions.assertEquals(RtfManuellTestData.ERSATTNING_TOM, getDataResponse.getErsattningar().getFirst().getTom());
+      Assertions.assertEquals(RtfManuellTestData.ERSATTNING_AVSLAGSANLEDNING,
+            getDataResponse.getErsattningar().getFirst().getAvslagsanledning());
    }
 
    @ParameterizedTest

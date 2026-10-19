@@ -1,11 +1,15 @@
 package se.fk.github.manuellregelratttillforsakring;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import se.fk.github.manuellregelratttillforsakring.logic.RtfMapper;
+import se.fk.rimfrost.ersattningdata.ErsattningData;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +25,9 @@ public class RtfManuellPatchDataTest extends AbstractRegelManuellTest
 {
    @ConfigProperty(name = "mp.messaging.outgoing.regel-responses.topic")
    String responseTopic;
+
+   @Inject
+   ObjectMapper objectMapper;
 
    @ParameterizedTest
    @CsvSource(
@@ -42,15 +49,20 @@ public class RtfManuellPatchDataTest extends AbstractRegelManuellTest
       //
       // verify PUT handlaggning
       //
-      var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggning(handlaggningId);
+      var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggningUpdate(handlaggningId);
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(2, handlaggningPutUpdate.getHandlaggning().getVersion());
-      assertEquals("PLANERAD", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
-      assertEquals(1, handlaggningPutUpdate.getHandlaggning().getYrkande().getProduceradeResultat().size());
-      var produceratResultat = handlaggningPutUpdate.getHandlaggning().getYrkande().getProduceradeResultat().getFirst();
-      assertEquals(2, produceratResultat.getVersion());
-      assertEquals(ERSATTNINGSID, produceratResultat.getId().toString());
-      assertEquals(AVSLAGSANLEDNING, produceratResultat.getAvslagsanledning());
+      assertEquals("PLANERAD", handlaggningPutUpdate.getUppgift().getUppgiftStatus());
+      assertEquals(1, handlaggningPutUpdate.getHandlaggning().getYrkande().getSakfragorStallningstaganden().size());
+      var ersattning = handlaggningPutUpdate.getHandlaggning().getYrkande().getSakfragorStallningstaganden().getFirst();
+      assertEquals(ERSATTNINGSID, ersattning.getId().toString());
+      assertEquals(RtfMapper.ERSATTNING_OBJEKT_TYP_ID, ersattning.getObjektTypId());
+      var ersattningData = ErsattningData.fromJson(ersattning.getData(), objectMapper);
+      assertEquals(2, ersattningData.getVersion());
+      assertEquals(ERSATTNING_FROM, ersattningData.getFrom());
+      assertEquals(ERSATTNING_TOM, ersattningData.getTom());
+      assertEquals(se.fk.rimfrost.ersattningdata.Beslutsutfall.JA, ersattningData.getBeslutsutfall());
+      assertEquals(AVSLAGSANLEDNING, ersattningData.getAvslagsanledning());
    }
 
 }
