@@ -43,11 +43,11 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
       //
       // verify PUT handlaggning
       //
-      var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggning(handlaggningId);
+      var handlaggningPutUpdate = WireMockRtfManuell.getLastPutHandlaggningUpdate(handlaggningId);
       assertEquals(handlaggningId, handlaggningPutUpdate.getHandlaggning().getId().toString());
       assertEquals(1, handlaggningPutUpdate.getHandlaggning().getVersion());
-      assertEquals(2, handlaggningPutUpdate.getHandlaggning().getUppgift().getVersion());
-      assertEquals("AVSLUTAD", handlaggningPutUpdate.getHandlaggning().getUppgift().getUppgiftStatus());
+      assertEquals(2, handlaggningPutUpdate.getUppgift().getVersion());
+      assertEquals("AVSLUTAD", handlaggningPutUpdate.getUppgift().getUppgiftStatus());
    }
 
    @ParameterizedTest
