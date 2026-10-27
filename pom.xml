@@ -89,7 +89,7 @@
     <dependency>
       <groupId>se.fk.rimfrost.ersattningdata</groupId>
       <artifactId>rimfrost-ersattning-data</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.referensdata</groupId>
