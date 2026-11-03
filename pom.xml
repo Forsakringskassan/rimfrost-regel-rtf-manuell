@@ -74,17 +74,17 @@
     <dependency>
       <groupId>se.fk.rimfrost.framework.sid</groupId>
       <artifactId>rimfrost-framework-sid-adapter</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.adapter.arbetsgivare</groupId>
       <artifactId>rimfrost-adapter-arbetsgivare</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.adapter.folkbokford</groupId>
       <artifactId>rimfrost-adapter-folkbokford</artifactId>
-      <version>1.1.5</version>
+      <version>1.1.6</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.ersattningdata</groupId>
