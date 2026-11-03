@@ -45,36 +45,36 @@
     <dependency>
       <groupId>se.fk.rimfrost.regel.rtf.manuell</groupId>
       <artifactId>rimfrost-regel-rtf-manuell-openapi-jaxrs-spec</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.5.0</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel.manuell</groupId>
       <artifactId>rimfrost-framework-regel-manuell</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.5.0</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel</groupId>
       <artifactId>rimfrost-framework-regel</artifactId>
-      <version>1.4.5-SNAPSHOT</version>
+      <version>1.5.0</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.regel</groupId>
       <artifactId>rimfrost-framework-regel</artifactId>
-      <version>1.4.5-SNAPSHOT</version>
+      <version>1.5.0</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.framework.sid</groupId>
       <artifactId>rimfrost-framework-sid-adapter</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.2</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.adapter.arbetsgivare</groupId>
@@ -89,12 +89,12 @@
     <dependency>
       <groupId>se.fk.rimfrost.ersattningdata</groupId>
       <artifactId>rimfrost-ersattning-data</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>se.fk.rimfrost.referensdata</groupId>
       <artifactId>rimfrost-referensdata-erbjudande</artifactId>
-      <version>1.1.1</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
