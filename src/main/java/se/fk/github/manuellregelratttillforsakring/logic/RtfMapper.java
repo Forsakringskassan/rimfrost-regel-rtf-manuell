@@ -11,7 +11,7 @@ import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse;
 import se.fk.rimfrost.adapter.folkbokford.dto.FolkbokfordResponse.Kon;
 import se.fk.rimfrost.ersattningdata.ErsattningData;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
-import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
+import se.fk.rimfrost.framework.handlaggning.model.SakfragaStallningstagandeContainer;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Anstallning;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
@@ -23,6 +23,8 @@ import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.mo
 @ApplicationScoped
 public class RtfMapper
 {
+   public static final String ERSATTNING_OBJEKT_TYP_ID = "ersattning";
+
    private final Logger LOGGER = LoggerFactory.getLogger(RtfMapper.class);
 
    public GetDataResponse toGetDataResponse(Handlaggning handlaggning, ArbetsgivareResponse arbetsgivareResponse,
@@ -52,8 +54,8 @@ public class RtfMapper
       kund.setAnstallning(anstallning);
 
       var ersattningsList = new ArrayList<Ersattning>();
-      var ersattningResult = handlaggning.yrkande().produceradeResultat().stream()
-            .filter(pr -> pr.typ().equalsIgnoreCase("ersattning")).toList();
+      var ersattningResult = handlaggning.yrkande().sakfragorStallningstaganden().stream()
+            .filter(s -> s.objektTypId().equalsIgnoreCase(ERSATTNING_OBJEKT_TYP_ID)).toList();
 
       for (var yrkandeErsattning : ersattningResult)
       {
@@ -76,12 +78,12 @@ public class RtfMapper
        };
    }
 
-   public Ersattning toErsattning(ProduceratResultat produceratResultat, ObjectMapper objectMapper)
+   public Ersattning toErsattning(SakfragaStallningstagandeContainer sakfragaStallningstagande, ObjectMapper objectMapper)
    {
       ErsattningData ersattningData;
       try
       {
-         ersattningData = ErsattningData.fromJson(produceratResultat.data(), objectMapper);
+         ersattningData = ErsattningData.fromJson(sakfragaStallningstagande.data(), objectMapper);
       }
       catch (RuntimeException e)
       {
@@ -90,14 +92,14 @@ public class RtfMapper
       }
 
       var ersattning = new Ersattning();
-      ersattning.setErsattningId(produceratResultat.id());
+      ersattning.setErsattningId(sakfragaStallningstagande.id());
       ersattning.setErsattningstyp(ersattningData.getErsattningstyp().id());
       ersattning.setOmfattningProcent(ersattningData.getOmfattningProcent());
       ersattning.setBelopp(ersattningData.getBelopp());
-      ersattning.setAvslagsanledning(produceratResultat.avslagsanledning());
+      ersattning.setAvslagsanledning(ersattningData.getAvslagsanledning());
       ersattning.setBeslutsutfall(toBeslutsutfall(ersattningData.getBeslutsutfall()));
-      ersattning.setFrom(produceratResultat.resultatFrom().toLocalDate());
-      ersattning.setTom(produceratResultat.resultatTom().toLocalDate());
+      ersattning.setFrom(ersattningData.getFrom());
+      ersattning.setTom(ersattningData.getTom());
       return ersattning;
    }
 
