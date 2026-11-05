@@ -2,6 +2,40 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.3.7 (2026-11-05)
+
+### Bug Fixes
+
+-  workflows (#107) ([33f8c](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/33f8ce41ac31828) NilsElveros)  
+-  **deps**  update dependency se.fk.rimfrost.regel.rtf.manuell:rimfrost-regel-rtf-manuell-openapi-jaxrs-spec to v1.2.2 ([5bd7d](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/5bd7d330e64d46e) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.referensdata:rimfrost-referensdata-erbjudande to v1.1.3 ([fe675](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/fe6758388b94c95) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.ersattningdata:rimfrost-ersattning-data to v1.1.3 ([9bb7e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/9bb7ece45ce9542) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.framework.sid:rimfrost-framework-sid-adapter to v0.0.3 ([4283e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/4283e922b5aa37a) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.adapter.folkbokford:rimfrost-adapter-folkbokford to v1.1.6 ([ff121](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/ff1219d6400d84a) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.referensdata:rimfrost-referensdata-erbjudande to v1.1.2 ([a6926](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a69267693b953a2) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.adapter.arbetsgivare:rimfrost-adapter-arbetsgivare to v1.1.5 ([76f8f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/76f8f68c3d88b7a) renovate[bot])  
+-  **deps**  update dependency se.fk.rimfrost.ersattningdata:rimfrost-ersattning-data to v1.1.1 ([b7a4f](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/b7a4f8c308cc332) renovate[bot])  
+
+### Dependency updates
+
+- update forsakringskassan/rimfrost-framework-regel action to v1.4.6 ([a4739](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a4739921dd1072d) renovate[bot])  
+- update forsakringskassan/.github digest to 625efb1 ([6ecf7](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/6ecf7fe8615b6f6) renovate[bot])  
+- update forsakringskassan/.github digest to 733eb32 ([41392](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/4139265514ddf7c) renovate[bot])  
+- update forsakringskassan/.github digest to cbd74f1 ([89a89](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/89a89231224dbc1) renovate[bot])  
+- update forsakringskassan/rimfrost-framework-regel action to v1.4.4 ([30a7e](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/30a7e70c31f5883) renovate[bot])  
+### Other changes
+
+**Fix/fkpoc 1183 update to new framework version (#105)**
+
+* fix: update to use the new framework version with the new objectmodel 
+* fix: update pom 
+* fix: tests and updated folkbokfordadapter 
+
+[a62b9](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/a62b919929a5ac5) NilsElveros *2026-11-05 12:29:14*
+
+
+## rimfrost-1_2 (2026-09-23)
+
 ## 1.3.6 (2026-09-23)
 
 ### Bug Fixes
