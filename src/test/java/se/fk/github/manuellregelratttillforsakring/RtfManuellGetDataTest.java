@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.framework.regel.manuell.base.AbstractRegelManuellTest;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
+import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellRestMock.sendGetRtfManuell;
 
@@ -51,6 +52,12 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
             getDataResponse.getErsattningar().getFirst().getErsattningId().toString());
       Assertions.assertEquals(RtfManuellTestData.ERSATTNINGSTYP,
             getDataResponse.getErsattningar().getFirst().getErsattningstyp());
+      Assertions.assertEquals(LocalDate.parse(RtfManuellTestData.FIXTURE_FROM),
+            getDataResponse.getErsattningar().getFirst().getFrom());
+      Assertions.assertEquals(LocalDate.parse(RtfManuellTestData.FIXTURE_TOM),
+            getDataResponse.getErsattningar().getFirst().getTom());
+      Assertions.assertEquals(RtfManuellTestData.FIXTURE_AVSLAGSANLEDNING,
+            getDataResponse.getErsattningar().getFirst().getAvslagsanledning());
    }
 
    @ParameterizedTest

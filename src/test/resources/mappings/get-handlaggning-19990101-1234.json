@@ -35,7 +35,12 @@
             {
               "id": "bc6e5150-29be-4758-a2ee-e241f1d7ccf7",
               "objektTypId": "ersattning",
-              "data": "{\"belopp\":40000,\"berakningsgrund\":100,\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"omfattningProcent\":100,\"beslutsutfall\":\"FU\",\"id\":\"bc6e5150-29be-4758-a2ee-e241f1d7ccf7\",\"version\":1,\"from\":\"2025-01-10\",\"tom\":\"2025-01-10\",\"yrkandeStatus\":\"YRKAT\"}"
+              "data": "{\"belopp\":40000,\"berakningsgrund\":100,\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"omfattningProcent\":100,\"beslutsutfall\":\"FU\",\"id\":\"bc6e5150-29be-4758-a2ee-e241f1d7ccf7\",\"version\":1,\"from\":\"2025-01-10\",\"tom\":\"2025-01-10\",\"yrkandeStatus\":\"YRKAT\",\"avslagsanledning\":\"UrsprungligAvslagsanledning\"}"
+            },
+            {
+              "id": "7a1c3e9d-2b4f-4c8a-9e61-0d5f3b2a8c47",
+              "objektTypId": "underlag",
+              "data": "{\"beskrivning\":\"ska inte andras av rtf-manuell\"}"
             }
           ],
           "beslut": []

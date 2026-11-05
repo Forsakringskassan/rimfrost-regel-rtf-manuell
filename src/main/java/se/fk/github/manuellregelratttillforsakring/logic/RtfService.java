@@ -115,6 +115,12 @@ public class RtfService extends RegelManuellServiceBase
 
       var correlation = oulUppgiftService.getCorrelationData(handlaggning.id());
 
+      if (correlation == null)
+      {
+         LOGGER.error("Failed to find correlation data for id: {}", handlaggning.id());
+         throw new RegelManuellException(Response.Status.INTERNAL_SERVER_ERROR, "Internal Server Error");
+      }
+
       var updatedHandlaggning = ImmutableHandlaggning.builder()
             .from(handlaggning)
             .version(handlaggning.version() + 1)

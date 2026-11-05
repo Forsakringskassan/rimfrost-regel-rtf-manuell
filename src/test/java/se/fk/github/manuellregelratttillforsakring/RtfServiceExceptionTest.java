@@ -24,6 +24,7 @@ import se.fk.rimfrost.framework.handlaggning.model.Yrkande;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ANNAN_SAKFRAGA_DATA;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ANNAN_SAKFRAGA_ID;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ANNAN_SAKFRAGA_OBJEKT_TYP_ID;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ERSATTNINGSID;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.newPatchErsattningRequest;
 
@@ -133,6 +137,55 @@ class RtfServiceExceptionTest
       var exception = assertThrows(RegelManuellException.class,
             () -> rtfService.updateData(handlaggning, patchErsattningRequest));
       assertEquals(Response.Status.BAD_REQUEST, exception.getStatus());
+   }
+
+   @Test
+   void patch_targeting_non_ersattning_sakfraga_maps_to_bad_request()
+   {
+      var annanSakfraga = ImmutableSakfragaStallningstagandeContainer.builder()
+            .id(UUID.fromString(ANNAN_SAKFRAGA_ID))
+            .objektTypId(ANNAN_SAKFRAGA_OBJEKT_TYP_ID)
+            .data(ANNAN_SAKFRAGA_DATA)
+            .build();
+
+      var patchErsattningRequest = newPatchErsattningRequest(Beslutsutfall.JA);
+      var ersattning = patchErsattningRequest.getErsattningar().getFirst();
+      ersattning.setErsattningId(UUID.fromString(ANNAN_SAKFRAGA_ID));
+      patchErsattningRequest.setErsattningar(List.of(ersattning));
+
+      var handlaggning = handlaggningMock();
+      when(handlaggning.yrkande().sakfragorStallningstaganden())
+            .thenReturn(List.of(createErsattningContainer(), annanSakfraga));
+
+      var exception = assertThrows(RegelManuellException.class,
+            () -> rtfService.updateData(handlaggning, patchErsattningRequest));
+      assertEquals(Response.Status.BAD_REQUEST, exception.getStatus());
+   }
+
+   @Test
+   void missing_correlation_data_on_patch_maps_to_internal_server_error()
+   {
+      var patchErsattningRequest = newPatchErsattningRequest(Beslutsutfall.JA);
+
+      var handlaggning = handlaggningMock();
+      // no regel request has been received for this id, so OulUppgiftService has no correlation data
+      when(handlaggning.id()).thenReturn(UUID.randomUUID());
+      var yrkande = handlaggning.yrkande();
+      // RegelUtils copies the yrkande via ImmutableYrkande.builder().from(...), which requires non-null values
+      var now = OffsetDateTime.now();
+      when(yrkande.id()).thenReturn(UUID.randomUUID());
+      when(yrkande.ingangtypId()).thenReturn("test-ingangtyp");
+      when(yrkande.yrkandeDatum()).thenReturn(now);
+      when(yrkande.yrkandeStatus()).thenReturn("YRKAT");
+      when(yrkande.yrkandeFrom()).thenReturn(now);
+      when(yrkande.yrkandeTom()).thenReturn(now);
+      when(yrkande.avsikt()).thenReturn("NY");
+      when(yrkande.beslut()).thenReturn(List.of());
+      when(yrkande.sakfragorStallningstaganden()).thenReturn(List.of(createErsattningContainer()));
+
+      var exception = assertThrows(RegelManuellException.class,
+            () -> rtfService.updateData(handlaggning, patchErsattningRequest));
+      assertEquals(Response.Status.INTERNAL_SERVER_ERROR, exception.getStatus());
    }
 
    private static Response.Status expectedStatus(FolkbokfordException.ErrorType errorType)
