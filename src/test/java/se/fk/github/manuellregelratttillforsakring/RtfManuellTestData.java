@@ -10,6 +10,12 @@ public class RtfManuellTestData
    // TODO consider refactoring to avoid copy/paste of test data in wiremock mappings
 
    public static String AVSLAGSANLEDNING = "TestAvslagsAnledning";
+   public static String FIXTURE_AVSLAGSANLEDNING = "UrsprungligAvslagsanledning";
+   public static String FIXTURE_FROM = "2025-01-10";
+   public static String FIXTURE_TOM = "2025-01-10";
+   public static String ANNAN_SAKFRAGA_ID = "7a1c3e9d-2b4f-4c8a-9e61-0d5f3b2a8c47";
+   public static String ANNAN_SAKFRAGA_OBJEKT_TYP_ID = "underlag";
+   public static String ANNAN_SAKFRAGA_DATA = "{\"beskrivning\":\"ska inte andras av rtf-manuell\"}";
    public static String ERSATTNINGSTYP = "361779e2-cc93-471a-815b-50bad66cd427";
    public static String ERSATTNINGSID = "bc6e5150-29be-4758-a2ee-e241f1d7ccf7";
    public static String PRODUCERADE_RESULTAT_ID = "bc6e5150-29be-4758-a2ee-e241f1d7ccf7";

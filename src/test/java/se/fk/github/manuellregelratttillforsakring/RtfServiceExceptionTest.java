@@ -17,9 +17,9 @@ import se.fk.rimfrost.adapter.folkbokford.FolkbokfordAdapter;
 import se.fk.rimfrost.adapter.folkbokford.FolkbokfordException;
 import se.fk.rimfrost.framework.handlaggning.model.Handlaggning;
 import se.fk.rimfrost.framework.handlaggning.model.ImmutableIdtyp;
-import se.fk.rimfrost.framework.handlaggning.model.ImmutableIndividYrkandeRoll;
-import se.fk.rimfrost.framework.handlaggning.model.ImmutableProduceratResultat;
-import se.fk.rimfrost.framework.handlaggning.model.ProduceratResultat;
+import se.fk.rimfrost.framework.handlaggning.model.ImmutableRollIYrkande;
+import se.fk.rimfrost.framework.handlaggning.model.ImmutableSakfragaStallningstagandeContainer;
+import se.fk.rimfrost.framework.handlaggning.model.SakfragaStallningstagandeContainer;
 import se.fk.rimfrost.framework.handlaggning.model.Yrkande;
 import se.fk.rimfrost.framework.regel.manuell.logic.RegelManuellException;
 import se.fk.rimfrost.regel.rtf.manuell.jaxrsspec.controllers.generatedsource.model.Beslutsutfall;
@@ -33,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ANNAN_SAKFRAGA_DATA;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ANNAN_SAKFRAGA_ID;
+import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ANNAN_SAKFRAGA_OBJEKT_TYP_ID;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.ERSATTNINGSID;
 import static se.fk.github.manuellregelratttillforsakring.RtfManuellTestData.newPatchErsattningRequest;
 
@@ -93,13 +96,13 @@ class RtfServiceExceptionTest
       when(arbetsgivareAdapter.getArbetsgivareInfo(any()))
             .thenReturn(null);
 
-      var produceratResultat = ImmutableProduceratResultat.builder()
-            .from(createProduceratResultat())
+      var ersattningContainer = ImmutableSakfragaStallningstagandeContainer.builder()
+            .from(createErsattningContainer())
             .data("{?:")
             .build();
 
       var handlaggning = handlaggningMock();
-      when(handlaggning.yrkande().produceradeResultat()).thenReturn(List.of(produceratResultat));
+      when(handlaggning.yrkande().sakfragorStallningstaganden()).thenReturn(List.of(ersattningContainer));
 
       var exception = assertThrows(RegelManuellException.class,
             () -> rtfService.readData(handlaggning));
@@ -129,11 +132,60 @@ class RtfServiceExceptionTest
       patchErsattningRequest.setErsattningar(List.of(ersattning));
 
       var handlaggning = handlaggningMock();
-      when(handlaggning.yrkande().produceradeResultat()).thenReturn(List.of(createProduceratResultat()));
+      when(handlaggning.yrkande().sakfragorStallningstaganden()).thenReturn(List.of(createErsattningContainer()));
 
       var exception = assertThrows(RegelManuellException.class,
             () -> rtfService.updateData(handlaggning, patchErsattningRequest));
       assertEquals(Response.Status.BAD_REQUEST, exception.getStatus());
+   }
+
+   @Test
+   void patch_targeting_non_ersattning_sakfraga_maps_to_bad_request()
+   {
+      var annanSakfraga = ImmutableSakfragaStallningstagandeContainer.builder()
+            .id(UUID.fromString(ANNAN_SAKFRAGA_ID))
+            .objektTypId(ANNAN_SAKFRAGA_OBJEKT_TYP_ID)
+            .data(ANNAN_SAKFRAGA_DATA)
+            .build();
+
+      var patchErsattningRequest = newPatchErsattningRequest(Beslutsutfall.JA);
+      var ersattning = patchErsattningRequest.getErsattningar().getFirst();
+      ersattning.setErsattningId(UUID.fromString(ANNAN_SAKFRAGA_ID));
+      patchErsattningRequest.setErsattningar(List.of(ersattning));
+
+      var handlaggning = handlaggningMock();
+      when(handlaggning.yrkande().sakfragorStallningstaganden())
+            .thenReturn(List.of(createErsattningContainer(), annanSakfraga));
+
+      var exception = assertThrows(RegelManuellException.class,
+            () -> rtfService.updateData(handlaggning, patchErsattningRequest));
+      assertEquals(Response.Status.BAD_REQUEST, exception.getStatus());
+   }
+
+   @Test
+   void missing_correlation_data_on_patch_maps_to_internal_server_error()
+   {
+      var patchErsattningRequest = newPatchErsattningRequest(Beslutsutfall.JA);
+
+      var handlaggning = handlaggningMock();
+      // no regel request has been received for this id, so OulUppgiftService has no correlation data
+      when(handlaggning.id()).thenReturn(UUID.randomUUID());
+      var yrkande = handlaggning.yrkande();
+      // RegelUtils copies the yrkande via ImmutableYrkande.builder().from(...), which requires non-null values
+      var now = OffsetDateTime.now();
+      when(yrkande.id()).thenReturn(UUID.randomUUID());
+      when(yrkande.ingangtypId()).thenReturn("test-ingangtyp");
+      when(yrkande.yrkandeDatum()).thenReturn(now);
+      when(yrkande.yrkandeStatus()).thenReturn("YRKAT");
+      when(yrkande.yrkandeFrom()).thenReturn(now);
+      when(yrkande.yrkandeTom()).thenReturn(now);
+      when(yrkande.avsikt()).thenReturn("NY");
+      when(yrkande.beslut()).thenReturn(List.of());
+      when(yrkande.sakfragorStallningstaganden()).thenReturn(List.of(createErsattningContainer()));
+
+      var exception = assertThrows(RegelManuellException.class,
+            () -> rtfService.updateData(handlaggning, patchErsattningRequest));
+      assertEquals(Response.Status.INTERNAL_SERVER_ERROR, exception.getStatus());
    }
 
    private static Response.Status expectedStatus(FolkbokfordException.ErrorType errorType)
@@ -159,30 +211,32 @@ class RtfServiceExceptionTest
    }
 
    /**
-    * IndividYrkandeRoll is a nested interface (Yrkande$IndividYrkandeRoll) that cannot be
-    * proxied by Mockito RETURNS_DEEP_STUBS. Real Immutable instances are used instead.
+    * RollIYrkande instances are built as real Immutable instances instead of relying on
+    * Mockito RETURNS_DEEP_STUBS for the list elements.
     */
    private static Handlaggning handlaggningMock()
    {
       var idtyp = ImmutableIdtyp.builder().typId("personnummer").varde("19901010-1234").build();
-      var roll = ImmutableIndividYrkandeRoll.builder().individ(idtyp).yrkandeRollId("test-roll").build();
+      var roll = ImmutableRollIYrkande.builder()
+            .id(UUID.randomUUID())
+            .individ(idtyp)
+            .yrkandeRollId("test-roll")
+            .avserYrkande(UUID.randomUUID())
+            .build();
       var yrkande = mock(Yrkande.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
-      when(yrkande.individYrkandeRoller()).thenReturn(List.of(roll));
+      when(yrkande.rollerIYrkande()).thenReturn(List.of(roll));
       var handlaggning = mock(Handlaggning.class);
       when(handlaggning.yrkande()).thenReturn(yrkande);
       return handlaggning;
    }
 
-   private static ProduceratResultat createProduceratResultat()
+   private static SakfragaStallningstagandeContainer createErsattningContainer()
    {
-      return ImmutableProduceratResultat.builder()
+      return ImmutableSakfragaStallningstagandeContainer.builder()
             .id(UUID.fromString(ERSATTNINGSID))
-            .version(1)
-            .resultatFrom(OffsetDateTime.now())
-            .resultatTom(OffsetDateTime.now())
-            .yrkandeStatus("abc")
-            .typ("ersattning")
-            .data("{\"belopp\":40000,\"berakningsgrund\":100,\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"omfattningProcent\":100,\"beslutsutfall\":\"FU\"}")
+            .objektTypId("ersattning")
+            .data("{\"id\":\"" + ERSATTNINGSID
+                  + "\",\"version\":1,\"from\":\"2025-01-10\",\"tom\":\"2025-01-10\",\"yrkandeStatus\":\"abc\",\"belopp\":40000,\"berakningsgrund\":100,\"ersattningstyp\":{\"id\":\"361779e2-cc93-471a-815b-50bad66cd427\",\"namn\":\"HUNDBIDRAG\"},\"omfattningProcent\":100,\"beslutsutfall\":\"FU\"}")
             .build();
    }
 
