@@ -3,7 +3,6 @@ package se.fk.github.manuellregelratttillforsakring;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import se.fk.rimfrost.framework.regel.Utfall;
@@ -21,9 +20,6 @@ import static se.fk.rimfrost.framework.regel.WireMockHandlaggning.waitForHandlag
 })
 public class RtfManuellSequenceTest extends AbstractRegelManuellTest
 {
-   @ConfigProperty(name = "mp.messaging.outgoing.regel-responses.topic")
-   String responseTopic;
-
    @ParameterizedTest
    @CsvSource(
    {
@@ -31,7 +27,7 @@ public class RtfManuellSequenceTest extends AbstractRegelManuellTest
    })
    void full_sequence_should_create_regel_response(String handlaggningId)
    {
-      regelKafkaConnector.sendRegelRequest(handlaggningId, responseTopic);
+      regelKafkaConnector.sendRegelRequest(handlaggningId);
       //
       // Verify GET handläggning requested
       //

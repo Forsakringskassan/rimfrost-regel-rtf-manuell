@@ -27,7 +27,7 @@ Lagstöd: Husdjursbalken, kap. 3, § 5, st. 1, p. 4 (gäller fr.o.m. 2010-02-11)
 
 - **FR-01.1** Tjänsten ska ta emot en regelförfrågan via ett asynkront meddelande och skapa ett nytt handläggningsärende.
 - **FR-01.2** Förfrågan ska innehålla ett `kundbehovsflodeId` som identifierar det aktuella kundbehovsflödet.
-- **FR-01.3** Förfrågan ska innehålla ett `correlationId` och ett `replyTo`-fält som används vid svar.
+- **FR-01.3** Förfrågan ska innehålla ett `correlationId` som används vid svar.
 
 ### FR-02 — Hämta handläggningsunderlag
 
@@ -48,7 +48,7 @@ Lagstöd: Husdjursbalken, kap. 3, § 5, st. 1, p. 4 (gäller fr.o.m. 2010-02-11)
 ### FR-04 — Avsluta manuell kontroll
 
 - **FR-04.1** Handläggaren ska kunna markera en manuell kontroll som slutförd.
-- **FR-04.2** När kontrollen avslutas ska ett regelsvar med utfall `JA` skickas tillbaka till det anropande systemet via det angivna `replyTo`-ämnet.
+- **FR-04.2** När kontrollen avslutas ska ett regelsvar med utfall `JA` skickas tillbaka till det anropande systemet via regelns konfigurerade svars-topic.
 - **FR-04.3** Regelsvaret ska innehålla samma `correlationId` som den ursprungliga förfrågan.
 - **FR-04.4** När kontrollen avslutas ska uppgiften i OUL markeras som avslutad.
 
