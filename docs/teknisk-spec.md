@@ -58,7 +58,7 @@ Meddelandescheman definieras i spec-repot `rimfrost-regel-rtf-manuell-asyncapi`.
 | Inkommande | `operativt-uppgiftslager-status-notification.rtf-manuell` | Statusuppdatering från OUL |
 | Inkommande | `rtf-manuell-cancelled` | Ärendet avbryts av det anropande systemet |
 
-Svarsrouting sker dynamiskt: `replyTo`-headern i inkommande meddelande anger vilket topic regelsvaret ska publiceras till. `correlationId` kopplar samman förfrågan och svar.
+`correlationId` kopplar samman förfrågan och svar.
 
 ---
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import java.util.UUID;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
@@ -19,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 })
 public class RtfManuellPostDataTest extends AbstractRegelManuellTest
 {
-   @ConfigProperty(name = "mp.messaging.outgoing.regel-responses.topic")
-   String responseTopic;
-
    @ParameterizedTest
    @CsvSource(
    {
@@ -30,7 +26,7 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
    void post_data_done_should_update_handlaggning_uppgift_avslutad(String handlaggningId)
          throws JsonProcessingException
    {
-      regelKafkaConnector.sendRegelRequest(handlaggningId, responseTopic);
+      regelKafkaConnector.sendRegelRequest(handlaggningId);
       waitForRegelManuellReady(handlaggningId);
       //
       // clear wiremock requests
@@ -57,7 +53,7 @@ public class RtfManuellPostDataTest extends AbstractRegelManuellTest
    })
    void post_data_done_should_update_oul_status(String handlaggningId, String uppgiftId) throws OulServiceException
    {
-      regelKafkaConnector.sendRegelRequest(handlaggningId, responseTopic);
+      regelKafkaConnector.sendRegelRequest(handlaggningId);
       waitForRegelManuellReady(handlaggningId);
       //
       // mock POST done operation from portal FE
