@@ -13,6 +13,6 @@ jobs:
 
 
   validate-config:
-    uses: Forsakringskassan/rimfrost-framework-regel/.github/workflows/validate-config.yaml@bc5ba708d6cfb22c817a8ca8e9cba4d5c0e85e4e # 1.6.1
+    uses: Forsakringskassan/rimfrost-framework-regel/.github/workflows/validate-config.yaml@c4c0fd199d94e76d5b1e8f3472df9319ee101a7c # 1.6.2
     with:
       framework-ref: '1.2.3'
