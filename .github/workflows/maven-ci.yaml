@@ -9,7 +9,7 @@ jobs:
       actions: read
       contents: read
       packages: write
-    uses: Forsakringskassan/.github/.github/workflows/bundle-maven-quarkus-ci.yaml@cbc0db833d2d0584b3b0e3b7ed4fd27867b3f6ed # main
+    uses: Forsakringskassan/.github/.github/workflows/bundle-maven-quarkus-ci.yaml@1c8b290ebd7bd260f75ccca9841cf9372221e231 # main
 
 
   validate-config:
