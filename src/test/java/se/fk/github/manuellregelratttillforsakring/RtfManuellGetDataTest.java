@@ -48,6 +48,8 @@ public class RtfManuellGetDataTest extends AbstractRegelManuellTest
       Assertions.assertEquals(RtfManuellTestData.ERSATTNING_TOM, getDataResponse.getErsattningar().getFirst().getTom());
       Assertions.assertEquals(RtfManuellTestData.ERSATTNING_AVSLAGSANLEDNING,
             getDataResponse.getErsattningar().getFirst().getAvslagsanledning());
+      Assertions.assertEquals(RtfManuellTestData.ERSATTNING_BERAKNINGSGRUND,
+            getDataResponse.getErsattningar().getFirst().getBerakningsgrund());
    }
 
    @ParameterizedTest

@@ -96,6 +96,7 @@ public class RtfMapper
       ersattning.setErsattningstyp(ersattningData.getErsattningstyp().id());
       ersattning.setOmfattningProcent(ersattningData.getOmfattningProcent());
       ersattning.setBelopp(ersattningData.getBelopp());
+      ersattning.setBerakningsgrund(ersattningData.getBerakningsgrund());
       ersattning.setAvslagsanledning(ersattningData.getAvslagsanledning());
       ersattning.setBeslutsutfall(toBeslutsutfall(ersattningData.getBeslutsutfall()));
       ersattning.setFrom(ersattningData.getFrom());

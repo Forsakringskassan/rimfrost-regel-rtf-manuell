@@ -16,6 +16,7 @@ public class RtfManuellTestData
    public static LocalDate ERSATTNING_FROM = LocalDate.of(2025, 1, 10);
    public static LocalDate ERSATTNING_TOM = LocalDate.of(2025, 1, 31);
    public static String ERSATTNING_AVSLAGSANLEDNING = "BefintligAvslagsanledning";
+   public static Integer ERSATTNING_BERAKNINGSGRUND = 100;
    public static String KUND_FORNAMN = "Lisa";
    public static String KUND_EFTERNAMN = "Tass";
 
