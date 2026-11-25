@@ -2,6 +2,12 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.4.2 (2026-11-25)
+
+### Bug Fixes
+
+-  set berakningsgrund (#113) ([e38c2](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/e38c2fbcebd9800) NilsElveros)  
+
 ## 1.4.1 (2026-11-23)
 
 ### Bug Fixes
