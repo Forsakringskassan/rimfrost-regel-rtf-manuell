@@ -2,6 +2,14 @@
 
 Changelog of rimfrost-regel-rtf-manuell.
 
+## 1.4.3 (2026-11-25)
+
+### Bug Fixes
+
+-  **deps**  update dependency se.fk.rimfrost.framework.regel.manuell:rimfrost-framework-regel-manuell to v1.6.4 ([96e86](https://github.com/Forsakringskassan/rimfrost-regel-rtf-manuell/commit/96e865d9b07e593) renovate[bot])  
+
+## rimfrost-1_3 (2026-11-25)
+
 ## 1.4.2 (2026-11-25)
 
 ### Bug Fixes
